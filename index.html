@@ -3,150 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CP2414 · Network Security — Instructor Dashboard</title>
+<title>CP2414 · Network Security — Mastery Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#10151c;
-    --surface:#171f29;
-    --surface-2:#1e2733;
-    --border:#2a3644;
-    --text:#e7ecf2;
-    --text-dim:#8c98a8;
-    --accent:#e8a33d;
-    --accent-dim:#b8822f;
-    --danger:#d8654f;
-    --danger-bg:rgba(216,101,79,.12);
-    --mid:#c9a227;
-    --mid-bg:rgba(201,162,39,.12);
-    --ok:#4f9d78;
-    --ok-bg:rgba(79,157,120,.12);
+    --bg:#10151c; --surface:#171f29; --surface-2:#1e2733; --border:#2a3644;
+    --text:#e7ecf2; --text-dim:#8c98a8;
+    --accent:#e8a33d; --accent-bg:rgba(232,163,61,.10);
+    --danger:#d8654f; --danger-bg:rgba(216,101,79,.12);
+    --mid:#c9a227; --mid-bg:rgba(201,162,39,.12);
+    --ok:#4f9d78; --ok-bg:rgba(79,157,120,.12);
+    --blue:#5b9bd5; --blue-bg:rgba(91,155,213,.12);
     --radius:10px;
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'IBM Plex Sans',sans-serif;
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-  }
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'IBM Plex Sans',sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased;}
   .mono{font-family:'IBM Plex Mono',monospace;}
   a{color:var(--accent);}
+  code{font-family:'IBM Plex Mono',monospace; background:var(--surface-2); padding:1px 6px; border-radius:4px; font-size:.9em;}
 
-  /* ---- top nav ---- */
-  nav{
-    position:sticky; top:0; z-index:50;
-    background:rgba(16,21,28,.92);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 20px;
-  }
-  nav .brand{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; letter-spacing:.04em; color:var(--text);}
+  nav{position:sticky; top:0; z-index:50; background:rgba(16,21,28,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:14px 20px; flex-wrap:wrap; gap:10px;}
+  nav .brand{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; letter-spacing:.04em;}
   nav .brand span{color:var(--accent);}
-  nav .links{display:flex; gap:18px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.03em;}
+  nav .links{display:flex; gap:16px; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.02em; flex-wrap:wrap;}
   nav .links a{color:var(--text-dim); text-decoration:none; text-transform:uppercase;}
   nav .links a:hover{color:var(--accent);}
 
-  main{max-width:920px; margin:0 auto; padding:0 20px 80px;}
+  main{max-width:960px; margin:0 auto; padding:0 20px 90px;}
 
-  /* ---- hero / SITREP ---- */
-  .sitrep{
-    margin-top:28px;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    background:linear-gradient(180deg, var(--surface), var(--bg));
-    overflow:hidden;
-  }
-  .sitrep-head{
-    display:flex; align-items:center; gap:10px;
-    padding:12px 18px;
-    border-bottom:1px solid var(--border);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--text-dim);
-  }
+  .sitrep{margin-top:28px; border:1px solid var(--border); border-radius:var(--radius); background:linear-gradient(180deg, var(--surface), var(--bg)); overflow:hidden;}
+  .sitrep-head{display:flex; align-items:center; gap:10px; padding:12px 18px; border-bottom:1px solid var(--border); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim);}
   .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
   .sitrep-body{padding:22px 18px 24px;}
-  .sitrep-title{font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:700; color:var(--text); margin:0 0 6px;}
-  .sitrep-sub{color:var(--text-dim); font-size:14.5px; margin:0 0 20px;}
-  .sitrep-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .sitrep-title{font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:700; margin:0 0 6px;}
+  .sitrep-sub{color:var(--text-dim); font-size:14px; margin:0 0 20px;}
+  .sitrep-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
   @media (max-width:640px){.sitrep-grid{grid-template-columns:1fr;}}
   .sitrep-stat{background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:14px;}
   .sitrep-stat .label{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-bottom:6px;}
-  .sitrep-stat .value{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600; color:var(--text);}
+  .sitrep-stat .value{font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600;}
   .sitrep-stat .value.accent{color:var(--accent);}
 
-  /* ---- section headers ---- */
   section{margin-top:56px;}
   .section-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin:0 0 6px;}
-  .section-title{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:700; margin:0 0 18px;}
+  .section-title{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:700; margin:0 0 10px;}
+  .section-desc{color:var(--text-dim); font-size:14px; margin:0 0 20px; max-width:70ch;}
 
-  /* ---- effort badge ---- */
-  .badge{
-    display:inline-flex; align-items:center; gap:6px;
-    font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
-    text-transform:uppercase; letter-spacing:.05em;
-    padding:4px 9px; border-radius:5px;
-  }
+  /* Mastery plan phases */
+  .phase{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:14px; overflow:hidden;}
+  .phase-head{display:flex; align-items:center; justify-content:space-between; padding:16px 18px; cursor:pointer; user-select:none; gap:12px;}
+  .phase-head:hover{background:var(--surface-2);}
+  .phase-head-left{display:flex; align-items:center; gap:14px; min-width:0;}
+  .phase-num{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:700; color:var(--accent); flex-shrink:0; width:34px;}
+  .phase-titles{min-width:0;}
+  .phase-title{font-size:15.5px; font-weight:600;}
+  .phase-dates{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+  .phase-chev{color:var(--text-dim); font-family:'IBM Plex Mono',monospace; transition:transform .2s; flex-shrink:0;}
+  .phase.open .phase-chev{transform:rotate(90deg);}
+  .phase-panel{display:none; padding:4px 18px 20px; border-top:1px solid var(--border);}
+  .phase.open .phase-panel{display:block;}
+  .phase-goal{background:var(--accent-bg); border-left:3px solid var(--accent); padding:10px 12px; border-radius:0 6px 6px 0; font-size:13.5px; margin:16px 0;}
+  .task{display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:14px;}
+  .task:last-child{border-bottom:none;}
+  .task-check{flex-shrink:0; width:18px; height:18px; border:1.5px solid var(--text-dim); border-radius:4px; margin-top:2px;}
+  .task-label{color:var(--text);}
+  .task-tag{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; color:var(--text-dim); margin-left:8px;}
+
+  /* effort badge */
+  .badge{display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:5px;}
   .badge.high{background:var(--danger-bg); color:var(--danger);}
   .badge.medium{background:var(--mid-bg); color:var(--mid);}
   .badge.low{background:var(--ok-bg); color:var(--ok);}
   .badge::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
 
-  /* ---- week accordion ---- */
-  .week{
-    border:1px solid var(--border); border-radius:var(--radius);
-    background:var(--surface); margin-bottom:10px; overflow:hidden;
-  }
-  .week-head{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:16px 18px; cursor:pointer; user-select:none;
-  }
+  /* week cards */
+  .week{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:10px; overflow:hidden;}
+  .week-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; cursor:pointer; user-select:none;}
   .week-head:hover{background:var(--surface-2);}
   .week-head-left{display:flex; align-items:center; gap:14px; min-width:0;}
   .week-num{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--text-dim); flex-shrink:0;}
-  .week-topic{font-size:15.5px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .week-topic{font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .week-chev{color:var(--text-dim); font-family:'IBM Plex Mono',monospace; transition:transform .2s; flex-shrink:0;}
   .week.open .week-chev{transform:rotate(90deg);}
   .week-panel{display:none; padding:0 18px 20px; border-top:1px solid var(--border);}
   .week.open .week-panel{display:block;}
-  .week-panel h4{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin:16px 0 6px;}
-  .week-panel p, .week-panel li{font-size:14px; color:var(--text); margin:0 0 4px;}
-  .week-panel .note{
-    background:var(--surface-2); border-left:3px solid var(--accent);
-    padding:10px 12px; border-radius:0 6px 6px 0; font-size:13.5px; color:var(--text-dim); margin-top:8px;
-  }
-  .week-panel .note.warn{border-left-color:var(--danger); color:var(--text);}
+  .week-panel h4{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin:16px 0 8px;}
+  .week-panel ul{margin:0; padding-left:18px; font-size:13.8px;}
+  .week-panel li{margin-bottom:4px;}
+  .week-panel p{font-size:13.8px; margin:0 0 6px;}
+  .note{background:var(--surface-2); border-left:3px solid var(--accent); padding:10px 12px; border-radius:0 6px 6px 0; font-size:13.5px; color:var(--text-dim); margin-top:8px;}
+  .note.warn{border-left-color:var(--danger); color:var(--text);}
+  .note.fix{border-left-color:var(--blue); color:var(--text);}
   .tool-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
   .tool-tag{font-family:'IBM Plex Mono',monospace; font-size:11px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); padding:3px 8px; border-radius:5px;}
 
-  /* ---- assessment cards ---- */
-  .assess-grid{display:grid; gap:14px;}
-  .assess-card{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); padding:18px 20px;}
+  /* crib sheets */
+  .crib{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:14px; padding:18px 20px;}
+  .crib-title{font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; margin:0 0 4px; color:var(--accent);}
+  .crib-sub{font-size:12.5px; color:var(--text-dim); margin:0 0 14px;}
+  .crib-flow{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:14px; font-family:'IBM Plex Mono',monospace; font-size:12px;}
+  .crib-step{background:var(--surface-2); border:1px solid var(--border); padding:6px 10px; border-radius:6px;}
+  .crib-arrow{color:var(--text-dim);}
+  .crib ul{margin:0; padding-left:18px; font-size:13.5px;}
+  .crib li{margin-bottom:5px;}
+
+  /* assessment cards */
+  .assess-card{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); padding:18px 20px; margin-bottom:14px;}
   .assess-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;}
   .assess-name{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:16px;}
   .assess-weight{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--accent); font-weight:600;}
   .assess-due{font-size:13px; color:var(--text-dim); margin-top:4px;}
-  .assess-desc{font-size:14px; margin-top:10px; color:var(--text);}
-  .assess-rubric{margin-top:12px; font-size:13px; color:var(--text-dim);}
-  .assess-rubric span{color:var(--text);}
+  .assess-desc{font-size:14px; margin-top:10px;}
+  .assess-tips{margin-top:12px; font-size:13.5px;}
+  .assess-tips ul{margin:6px 0 0; padding-left:18px;}
+  .assess-tips li{margin-bottom:4px;}
 
-  /* ---- journal ---- */
+  /* journal */
   .journal-entry{border-left:2px solid var(--border); padding:2px 0 20px 18px; position:relative;}
   .journal-entry::before{content:''; position:absolute; left:-5px; top:6px; width:8px; height:8px; border-radius:50%; background:var(--accent);}
   .journal-date{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent); margin-bottom:4px;}
-  .journal-text{font-size:14.5px; color:var(--text);}
-  .journal-hint{
-    margin-top:20px; font-size:13px; color:var(--text-dim);
-    background:var(--surface); border:1px dashed var(--border); border-radius:8px; padding:14px 16px;
-  }
+  .journal-text{font-size:14.5px;}
 
   footer{border-top:1px solid var(--border); margin-top:70px; padding:24px 20px; text-align:center; color:var(--text-dim); font-size:12px; font-family:'IBM Plex Mono',monospace;}
 </style>
@@ -154,10 +134,12 @@
 <body>
 
 <nav>
-  <div class="brand">CP2414<span>_</span>DASH</div>
+  <div class="brand">CP2414<span>_</span>MASTERY</div>
   <div class="links">
     <a href="#sitrep">Status</a>
+    <a href="#plan">Plan</a>
     <a href="#weeks">Weeks</a>
+    <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
     <a href="#journal">Journal</a>
   </div>
@@ -168,180 +150,225 @@
   <div class="sitrep" id="sitrep">
     <div class="sitrep-head"><span class="dot"></span> SITREP — LIVE STATUS</div>
     <div class="sitrep-body">
-      <p class="sitrep-title">CP2414 Network Security</p>
-      <p class="sitrep-sub">26-CP2414-SIN-CAM-TR3 · JCU Singapore · TR3 2026 · Solo instructor, ~75–78 students</p>
+      <p class="sitrep-title">CP2414 Network Security — Mastery Program</p>
+      <p class="sitrep-sub">26-CP2414-SIN-CAM-TR3 · JCU Singapore · Solo instructor, ~75–78 students · Prep window: 17 Aug → 14 Sep 2026</p>
       <div class="sitrep-grid">
-        <div class="sitrep-stat">
-          <div class="label">Term begins</div>
-          <div class="value">Mon 14 Sep 2026</div>
-        </div>
-        <div class="sitrep-stat">
-          <div class="label">Days to term start</div>
-          <div class="value accent" id="daysToStart">—</div>
-        </div>
-        <div class="sitrep-stat">
-          <div class="label">Current status</div>
-          <div class="value" id="currentStatus" style="font-size:15px;">—</div>
-        </div>
+        <div class="sitrep-stat"><div class="label">Term begins</div><div class="value">Mon 14 Sep 2026</div></div>
+        <div class="sitrep-stat"><div class="label">Days remaining</div><div class="value accent" id="daysToStart">—</div></div>
+        <div class="sitrep-stat"><div class="label">Current phase</div><div class="value" id="currentPhase" style="font-size:14px;">—</div></div>
       </div>
     </div>
   </div>
 
+  <section id="plan">
+    <p class="section-eyebrow">Your 4-week runway</p>
+    <h2 class="section-title">Mastery Plan</h2>
+    <p class="section-desc">Built from the actual lecture slides, practicals, and seminar materials you uploaded — not guesswork. Four phases, each with a clear goal and concrete tasks. Tick things off as you go.</p>
+    <div id="phaseList"></div>
+  </section>
+
   <section id="weeks">
-    <p class="section-eyebrow">10-week breakdown</p>
-    <h2 class="section-title">Weeks &amp; prep load</h2>
-    <p style="color:var(--text-dim); font-size:14px; margin-top:-8px; margin-bottom:18px;">
-      Quizzes are auto-graded and short-answer solutions are pre-provided as self-check — marking load is near zero every week.
-      What varies is <strong style="color:var(--text)">your technical prep load</strong> to run three live 2-hour practicals confidently.
-    </p>
+    <p class="section-eyebrow">10-week breakdown — corrected against real materials</p>
+    <h2 class="section-title">Weeks, concepts &amp; practicals</h2>
+    <p class="section-desc">Every week below reflects what's actually in the slides and prac PDFs you uploaded — including a few corrections to earlier assumptions (Week 6's prac is digital signatures, not Kerberos hands-on; Week 9 is QR codes, not wireless hardware; Week 10 has no hands-on component at all).</p>
     <div id="weekList"></div>
+  </section>
+
+  <section id="crib">
+    <p class="section-eyebrow">The three hardest weeks</p>
+    <h2 class="section-title">Concept crib sheets</h2>
+    <p class="section-desc">Kerberos, the TLS handshake, and IPsec are the densest material in the subject — and two of them are exactly what Assessment 2 and the exam will test. Quick-reference flows for each.</p>
+    <div id="cribList"></div>
   </section>
 
   <section id="assessments">
     <p class="section-eyebrow">Graded work</p>
     <h2 class="section-title">Assessments</h2>
-    <div class="assess-grid">
-
-      <div class="assess-card">
-        <div class="assess-top">
-          <div>
-            <div class="assess-name">Assessment 1 — Case Study + Quiz</div>
-            <div class="assess-due">Individual · Due Sunday, end of Week 5 · 11:59pm SGT</div>
-          </div>
-          <div class="assess-weight">30%</div>
-        </div>
-        <p class="assess-desc">Networking scenario for a small org: identify &amp; analyse application/network-based threats, then recommend admin strategies + network security technologies (firewall, honeypot) with a labelled diagram.</p>
-        <div class="assess-rubric">Rubric: <span>Threat ID 10%</span> · <span>Threat analysis 20%</span> · <span>Recommendations 20%</span> · <span>Firewall/honeypot diagram 20%</span> · <span>Analysis &amp; recommendation 30%</span></div>
-      </div>
-
-      <div class="assess-card">
-        <div class="assess-top">
-          <div>
-            <div class="assess-name">Assessment 2 — Case Study + Quiz</div>
-            <div class="assess-due">Individual · Due Sunday, end of Week 10 · 11:59pm SGT</div>
-          </div>
-          <div class="assess-weight">30%</div>
-        </div>
-        <p class="assess-desc">Report to a CEO: how cryptography secures company data, cryptographic keys &amp; user authentication (Kerberos), and secure cloud computing for licensing data to others.</p>
-        <div class="assess-rubric">Rubric (confirmed weights): <span>Kerberos &amp; user auth 15%</span> · <span>Secure cloud computing 25%</span> · <span>Cloud computing recommendation 20%</span> · <span>Network diagram (Kerberos + CC) 15%</span></div>
-      </div>
-
-      <div class="assess-card">
-        <div class="assess-top">
-          <div>
-            <div class="assess-name">Assessment 3 — Final Exam</div>
-            <div class="assess-due">Individual · Centrally administered · Exam period (Dec 2026)</div>
-          </div>
-          <div class="assess-weight">40%</div>
-        </div>
-        <p class="assess-desc">2-hour written exam, MCQ + direct-answer, covers the whole subject. GenAI not permitted. Format is centrally administered — not solely a subject-coordinator decision.</p>
-        <div class="assess-rubric" style="color:var(--accent);">📌 Personal note: exploring an e-exam / sustainability proposal — needs central exams office sign-off before drafting further.</div>
-      </div>
-
-    </div>
+    <div id="assessList"></div>
   </section>
 
   <section id="journal">
     <p class="section-eyebrow">Running log</p>
     <h2 class="section-title">Teaching journal</h2>
-    <p style="color:var(--text-dim); font-size:14px; margin-top:-8px; margin-bottom:20px;">
-      Real entries as the term develops. Edit the <code class="mono">journalEntries</code> array in this file to add more — this is raw material for later, not just notes.
-    </p>
+    <p class="section-desc">Edit the <span class="mono">journalEntries</span> array in this file to add more.</p>
     <div id="journalList"></div>
-    <div class="journal-hint">To add an entry: edit the <span class="mono">journalEntries</span> array near the bottom of this file and push the change to the repo.</div>
   </section>
 
 </main>
 
-<footer>CP2414 Network Security · Instructor Dashboard · Built &amp; maintained by Prof Dr Tan</footer>
+<footer>CP2414 Network Security · Mastery Dashboard · Built &amp; maintained by Prof Dr Tan</footer>
 
 <script>
-  // ---- term status ----
   const termStart = new Date('2026-09-14T00:00:00+08:00');
   const now = new Date();
   const msPerDay = 86400000;
   const daysToStart = Math.ceil((termStart - now) / msPerDay);
-  const daysToStartEl = document.getElementById('daysToStart');
-  const statusEl = document.getElementById('currentStatus');
-  if(daysToStart > 0){
-    daysToStartEl.textContent = daysToStart + ' days';
-    statusEl.textContent = 'Pre-term prep window';
-  } else {
-    const weekNum = Math.min(10, Math.max(1, Math.floor((-daysToStart)/7)+1));
-    daysToStartEl.textContent = 'Term underway';
-    statusEl.textContent = '~Week ' + weekNum + ' (approx.)';
-  }
+  document.getElementById('daysToStart').textContent = daysToStart > 0 ? daysToStart + ' days' : 'Term underway';
 
-  // ---- week data ----
-  // Note: exact calendar dates per week are NOT hardcoded here on purpose —
-  // study weeks (Oct 19–23, Nov 30–Dec 4) mean simple date math is unreliable.
-  // Cross-check against the official TR3 CP2414 timetable once published.
+  // ---------- MASTERY PLAN ----------
+  const phases = [
+    {
+      n:1, title:"Foundations & Environment Build", dates:"17–23 Aug",
+      goal:"Get the technical environment running end-to-end yourself, and lock in the conceptual base (Modules 1–3) before touching crypto.",
+      tasks:[
+        {tag:"Build", label:"Install VirtualBox, import BeeBox, install Burp Suite Community, connect to bWAPP — set BOTH VMs' network adapter to <strong>Bridged Adapter</strong> (confirmed requirement from Week 3's prac, and the likely root of the Week 8 SSH issue if set wrong)."},
+        {tag:"Study", label:"Module 1: CIA Triad, OSI Security Architecture (X.800) — 5 service categories, passive vs active attacks, server-side (XSS/SQLi/XML injection) vs client-side attacks, cookies."},
+        {tag:"Study", label:"Module 2: network devices (hubs/switches/routers), switch attacks (MAC flooding, ARP poisoning) + defences, NAT/PAT, DMZ, VLANs, port security (802.1x)."},
+        {tag:"Study", label:"Module 3: intruder types, intrusion detection approaches, honeypot placement (3 locations), firewall types &amp; configurations (screening router → double bastion T)."},
+        {tag:"Practice", label:"Run Week 2's actual prac yourself: SQL Injection (GET/Search) and Directory Traversal on bWAPP via Burp Suite."},
+        {tag:"Practice", label:"Run Week 3's actual prac: Wireshark capture of a ping to google.com.au, filter on <code>icmp</code>."}
+      ]
+    },
+    {
+      n:2, title:"Cryptography Core", dates:"24–30 Aug",
+      goal:"This is the heaviest theory block in the subject (Modules 4–5) — symmetric crypto, hashing, MACs, and public-key. Budget real focused time here, not a skim.",
+      tasks:[
+        {tag:"Study", label:"Module 4: DES / 3DES / AES comparison (key length, rounds, block size, speed, security), Feistel structure, the 5 cipher block modes (ECB/CBC/CFB/OFB/CTR), TRNG vs PRNG vs PRF."},
+        {tag:"Study", label:"Module 5: message authentication (hash vs MAC), SHA-512 processing steps, HMAC/CMAC/CCM, Diffie-Hellman (1976) and RSA (1978) background, digital signatures (DSA/RSA-PSS/ECDSA)."},
+        {tag:"Build", label:"Install CrypTool 1.4.42 (from cryptool.org) — this is what students use for Weeks 4–5."},
+        {tag:"Practice", label:"CrypTool: Caesar/ROT-13 cipher (Week 4's exact exercise), then AES (CBC) with a 128-bit hex key (Week 5's exact exercise) — try the built-in Analysis tab too."},
+        {tag:"Know", label:"The seminar coding project starts here: students implement Caesar themselves, then DES via the PyCryptodome library, replacing Week 3's hash function. If you want to demo this, have Python + <code>pycryptodome</code> ready."}
+      ]
+    },
+    {
+      n:3, title:"Identity, Access & Transport Security", dates:"31 Aug – 6 Sep",
+      goal:"Modules 6–8 — the densest conceptual material, and where two real gotchas live: a textbook gap on Kerberos, and the confirmed SSH host-key issue.",
+      tasks:[
+        {tag:"Critical", label:"Module 6 (Kerberos): the slides explicitly say <strong>\"MUST-HAVE: READ TEXTBOOK SECTION 4.3 FOR DETAILS\"</strong> — the slide deck deliberately skips the full AS→TGS→Client→Server message flow. Get the textbook (Stallings, Cryptography and Network Security) section 4.3 before you try to teach this fluently."},
+        {tag:"Study", label:"Module 6 continued: 4 options for key distribution, KDC operation, Kerberos v4 vs v5 differences, X.509 certificates, PKI/PKIX, federated identity management."},
+        {tag:"Study", label:"Module 7: NAC elements (AR/NAS/Policy Server), EAP + EAPOL, cloud computing (NIST's 5 characteristics, 3 service models, 4 deployment models), cloud security risks — this maps directly onto Assessment 2's cloud computing section."},
+        {tag:"Study", label:"Module 8: TLS architecture (connection vs session), 4-phase Handshake Protocol, HTTPS, then SSH's 3 protocols (transport/user-auth/connection) and host key trust models."},
+        {tag:"Critical", label:"Dry-run Week 8's exact prac yourself: turn on BeeBox, find its IPv4 address, then from your host run <code>ssh bee@&lt;ip&gt;</code> (password: <code>bug</code>). Reproduce the \"no matching host key type found\" error, then apply the documented fix (OpenSSH-Win64 v8.9.1.0 + manual legacy key type override) before term starts."},
+        {tag:"Practice", label:"Run Week 6's actual prac: create a self-signed digital ID in Adobe Acrobat and sign a JCU form — not Kerberos hands-on, despite the topic name."},
+        {tag:"Practice", label:"Run Week 7's actual prac: set up TeamViewer remote access, then explore SaaS/PaaS/IaaS/SecaaS products (Dropbox, Azure App Service, Azure, Azure Sentinel)."}
+      ]
+    },
+    {
+      n:4, title:"Wireless, IPsec & Final Rehearsal", dates:"7–13 Sep",
+      goal:"Finish the syllabus, then spend the last stretch rehearsing delivery — not learning new content for the first time.",
+      tasks:[
+        {tag:"Study", label:"Module 9: wireless vulnerability factors, WEP → WPA → WPA2/RSN evolution, the 4-phase 802.11i operation (discovery/authentication/key management/data transfer), TKIP vs CCMP."},
+        {tag:"Study", label:"Module 10: AH vs ESP, transport vs tunnel mode, SAD/SPD databases, security association bundles, IKE/ISAKMP/Oakley."},
+        {tag:"Practice", label:"Week 9's actual prac is light: generate and scan QR codes at qrstuff.com, discuss attacker misuse. No wireless hardware needed — this corrects an earlier assumption."},
+        {tag:"Know", label:"Week 10's prac has zero hands-on component — pure short-answer theory questions. Nothing to rehearse technically here, just concept fluency."},
+        {tag:"Rehearse", label:"Full timed dry-run of Week 1's session end-to-end, as if teaching it live — this is your highest-leverage single rehearsal given it's the heaviest onboarding week."},
+        {tag:"Rehearse", label:"Read through Assessment 2's real coaching notes below (see Assessments section) and pre-plan how you'll deliver that guidance in Week 8's seminar."},
+        {tag:"Build", label:"Consolidate every gotcha found in Phases 1–3 into a one-page cheat sheet you can glance at mid-class."}
+      ]
+    }
+  ];
+
+  const phaseList = document.getElementById('phaseList');
+  phases.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'phase';
+    el.innerHTML = `
+      <div class="phase-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="phase-head-left">
+          <span class="phase-num mono">${p.n}</span>
+          <div class="phase-titles">
+            <div class="phase-title">${p.title}</div>
+            <div class="phase-dates">${p.dates}</div>
+          </div>
+        </div>
+        <span class="phase-chev mono">▸</span>
+      </div>
+      <div class="phase-panel">
+        <div class="phase-goal">${p.goal}</div>
+        ${p.tasks.map(t=>`<div class="task"><div class="task-check"></div><div class="task-label">${t.label}<span class="task-tag">${t.tag}</span></div></div>`).join('')}
+      </div>
+    `;
+    phaseList.appendChild(el);
+  });
+
+  // set current phase
+  const phaseRanges = [
+    {start:new Date('2026-08-17'), end:new Date('2026-08-24'), label:"Phase 1 — Foundations"},
+    {start:new Date('2026-08-24'), end:new Date('2026-08-31'), label:"Phase 2 — Cryptography Core"},
+    {start:new Date('2026-08-31'), end:new Date('2026-09-07'), label:"Phase 3 — Identity & Transport"},
+    {start:new Date('2026-09-07'), end:new Date('2026-09-14'), label:"Phase 4 — Final Rehearsal"}
+  ];
+  let currentPhaseLabel = daysToStart > 0 ? "Term hasn't started" : "Term underway";
+  for(const pr of phaseRanges){ if(now >= pr.start && now < pr.end){ currentPhaseLabel = pr.label; break; } }
+  document.getElementById('currentPhase').textContent = currentPhaseLabel;
+
+  // ---------- WEEKS ----------
   const weeks = [
     {
       n:1, topic:"Introduction & App/Network-based Attacks", effort:"high",
+      concepts:["CIA Triad (confidentiality, integrity, availability)","OSI Security Architecture X.800 — attack / mechanism / service","5 X.800 service categories: authentication, access control, data confidentiality, data integrity, nonrepudiation","Passive vs active attacks","Server-side attacks: XSS, SQL injection, XML injection","Client-side attacks: drive-by download","Networking-based attacks: DoS, interception, poisoning, access-rights attacks","Cookies: first/third-party, session/persistent"],
       tools:["VirtualBox","BeeBox","Burp Suite CE","bWAPP"],
-      prac:"21-page setup guide: import BeeBox (vulnerable VM), install Burp Suite Community, connect to bWAPP. This is the term's biggest technical onboarding lift.",
-      notes:[
-        "Dry-run this end-to-end yourself before term — this exact stack is the root cause of the Week 8 SSH issue.",
-        "Test both bridged and NAT VirtualBox networking modes so you know which one breaks before a student hits it live."
-      ],
-      warn:true
+      prac:"21-page setup guide: import BeeBox (vulnerable VM), install Burp Suite Community, connect to bWAPP.",
+      notes:[{type:"warn", text:"Set network adapter to <strong>Bridged Adapter</strong> on both VMs — confirmed from the Week 3 prac and directly implicated in the Week 8 SSH issue if set wrong."}]
     },
     {
       n:2, topic:"Administering Secure Networks", effort:"medium",
-      tools:[], prac:"Standard prac + short-answer solutions provided.",
-      notes:["No new software stack — standard week."]
+      concepts:["OSI 7-layer model recap","Network devices: hubs, switches, routers, load balancers, proxies","Switch attacks: MAC flooding, MAC address impersonation, ARP poisoning + defences","NAT / PAT","Network Access Control (NAC) — intro (full detail in Week 7)","DMZ, VLANs, remote access","Device security: router config tasks, flood guard","Log monitoring: access/audit/event logs","Port security: disabling unused interfaces, MAC limiting, IEEE 802.1x"],
+      tools:["Burp Suite","bWAPP"],
+      prac:"SQL Injection (GET/Search) on bWAPP — try <code>blah' or 1=1#</code> in the search box. Then Directory Traversal via the URL's <code>directory=</code> parameter.",
+      notes:[{type:"fix", text:"The Week 1 seminar slide states the assessment weighting as \"30% quizzes + 2×20% assignments + 30% exam\" — this <strong>contradicts the official Assessment Overview</strong> (A1=30%, A2=30%, quiz folded into each, Exam=40%). Fix this before reusing the slide."}]
     },
     {
       n:3, topic:"Intruders and Firewalls", effort:"medium",
-      tools:["Wireshark"], prac:"8-page walkthrough: install Wireshark, capture traffic, interpret intrusion-relevant packets.",
-      notes:["Given your networking background this is a quick refresh — just match fluency to this course's specific capture scenario."]
+      concepts:["Intruder types: masquerader, misfeasor, clandestine user","Intrusion techniques: guessing, Trojan horse, physical, exploiting attacks","Password vulnerabilities &amp; hashed password storage","Intrusion detection: statistics-based vs rule-based","Honeypots — 3 deployment locations, trade-offs of each","Base-rate fallacy: true/false positive/negative","Firewall types: packet filtering, stateful inspection, application proxy, circuit-level proxy","Firewall configurations: screening router → single bastion → double bastion T"],
+      tools:["Wireshark"],
+      prac:"Capture a ping to google.com.au in Wireshark, filter on <code>icmp</code>, inspect the ICMP data field. Then continue BeeBox/Burp Suite work (adapter must be Bridged).",
+      notes:[]
     },
     {
       n:4, topic:"Symmetric Cryptography", effort:"high",
-      tools:["CrypTool 1.4.42","CrypTool 2.1"], prac:"Two separate installers — legacy CT1 (classic Windows GUI) and modern CT2 (node-based workflow editor).",
-      notes:["Budget a full day. The two versions have meaningfully different interfaces — build fluency in both, not just one."],
-      warn:true
+      concepts:["Terminology: plaintext/ciphertext/key, cryptology vs cryptography vs cryptanalysis","Computational security &amp; brute-force attacks","Substitution vs transposition; Caesar cipher / ROT13","5 ingredients of symmetric encryption","Block cipher design (Feistel structure)","DES vs 3DES vs AES — key length, rounds, block size, speed, security","AES: 4 atomic operations (SubBytes, ShiftRows, MixColumns, AddRoundKey)","Randomness: TRNG vs PRNG vs PRF","Stream ciphers vs block ciphers","5 cipher block modes: ECB, CBC, CFB, OFB, CTR"],
+      tools:["CrypTool 1.4.42"],
+      prac:"CrypTool: Encrypt/Decrypt → Symmetric (Classic) → Caesar/ROT-13. Try both, vary the key/shift value, observe output.",
+      notes:[{type:"info", text:"Seminar coding project (running across Weeks 3–7): implement Caesar yourself, then DES via <code>PyCryptodome</code>, replacing Week 3's hash function."}]
     },
     {
       n:5, topic:"Message Authentication & Public-Key Cryptography", effort:"medium",
-      tools:[], prac:"Standard prac + short-answer solutions.",
-      notes:["Assessment 1 due Sunday this week — expect a spike in questions, not new technical setup."]
+      concepts:["Message authentication vs confidentiality","One-way hash function vs Message Authentication Code (MAC)","SHA family (SHA-0 → SHA-3), SHA-512 processing steps","HMAC, CMAC, CCM","Public-key background: Diffie-Hellman (1976), RSA (1978)","4 public-key algorithms compared: RSA, Diffie-Hellman, DSS, Elliptic curve","Digital signatures: DSA, RSA-PSS, ECDSA"],
+      tools:["CrypTool 1.4.42"],
+      prac:"CrypTool: Encrypt/Decrypt → Symmetric (modern) → AES (CBC), 128-bit hex key. Then use the Analysis tab to inspect it.",
+      notes:[{type:"info", text:"Assessment 1 due Sunday this week. Seminar project continues: implement RSA via Python's <code>rsa</code> library, replacing Week 4's DES."}]
     },
     {
-      n:6, topic:"Key Distribution and User Authentication", effort:"medium",
-      tools:[], prac:"Kerberos-focused prac + short-answer + extra info.",
-      notes:["Conceptually dense, not tool-heavy. Rehearse explaining TGT/TGS and replay-attack handling out loud — this maps directly onto Assessment 2's rubric language."]
+      n:6, topic:"Key Distribution and User Authentication", effort:"medium-high",
+      concepts:["User authentication (RFC 4949, NIST SP 800-63-2) — identification + verification steps","4 means of authentication: know / possess / are (static biometric) / do (dynamic biometric)","4 options for two-party key distribution; KDC operation","Kerberos v4 vs v5 — realms, principals, environmental &amp; technical differences","X.509 certificates, PKI, PKIX","Identity management &amp; federated identity management"],
+      tools:["Adobe Acrobat Reader"],
+      prac:"NOT Kerberos hands-on. Create a self-signed digital ID in Adobe Acrobat (Edit → Preferences → Signatures → Digital IDs), then digitally sign a JCU form.",
+      notes:[
+        {type:"warn", text:"The slides <strong>explicitly say twice</strong>: \"MUST-HAVE: READ TEXTBOOK SECTION 4.3 FOR DETAILS.\" The deck deliberately doesn't cover the full Kerberos AS→TGS→Client→Server message flow — get the textbook (Stallings) before relying on these slides alone."},
+        {type:"info", text:"Seminar project: implement a secret-value hash function, then research cloud key-storage options (Azure Key Vault / AWS KMS / GCP KMS) — this thread pays off in Week 7."}
+      ]
     },
     {
       n:7, topic:"Network Access Control and Cloud Security", effort:"medium",
-      tools:[], prac:"Standard prac + short-answer + extra info.",
-      notes:["Feeds Assessment 2's cloud computing section — good week to reread that rubric criterion."]
+      concepts:["NAC components: Access Requestor, Network Access Server, Policy Server","Enforcement methods: 802.1X, VLANs, Firewall, DHCP management","EAP (Extensible Authentication Protocol) &amp; EAPOL","Cloud computing — NIST definition, 5 essential characteristics","3 service models: SaaS, PaaS, IaaS","4 deployment models: public, private, hybrid, community","Cloud security risks &amp; countermeasures (7 categories)","Security-as-a-Service (SecaaS) categories"],
+      tools:["TeamViewer"],
+      prac:"Set up TeamViewer remote access between two devices. Then explore SaaS/PaaS/IaaS/SecaaS products: Dropbox, Google Docs, Azure App Service, Azure, Azure Sentinel — note pricing, whether free trials are available.",
+      notes:[{type:"info", text:"Seminar project: research and choose one of Azure Key Vault / AWS KMS / GCP Cloud KMS, then <strong>actually store project keys in the cloud using a free trial</strong>. Directly feeds Assessment 2's cloud computing section (25% weight)."}]
     },
     {
       n:8, topic:"Transport Layer Security", effort:"high",
-      tools:["OpenSSH-Win64 v8.9.1.0"], prac:"Includes an Assignment 2 helper resource, plus a dedicated fix doc for a known recurring issue.",
+      concepts:["4 categories of web security threats: integrity, confidentiality, DoS, authentication","TLS architecture: connection vs session","Handshake Protocol — 4 phases, message types (client_hello → finished)","Change Cipher Spec, Alert, Heartbeat, Record protocols","HTTPS connection init &amp; closure","SSH — 3 protocols: transport layer, user authentication, connection","SSH host key trust models; port forwarding (local vs remote)"],
+      tools:["SSH client"],
+      prac:"Turn on BeeBox VM (bridged adapter). Find its IPv4 address. From host: <code>ssh bee@&lt;ip&gt;</code>, password <code>bug</code>.",
       notes:[
-        "Known issue: modern SSH clients refuse BeeBox's legacy ssh-rsa host key by default (\"no matching host key type found\"). Fix: install OpenSSH-Win64 v8.9.1.0 and manually allow the legacy key type in client config.",
-        "Credited to a student (Minghao) who solved this last offering — confirmed real, not hypothetical.",
-        "Expect Assignment 2 questions to ramp up sharply this week."
-      ],
-      warn:true
+        {type:"warn", text:"<strong>This is the exact command that triggers the known SSH host-key error.</strong> Modern SSH clients refuse BeeBox's legacy ssh-rsa host key by default (\"no matching host key type found\"). Fix: install OpenSSH-Win64 v8.9.1.0, then manually allow the legacy key type. Credited to a student, Minghao, from the prior offering — confirmed real."},
+        {type:"info", text:"The seminar this week is a dedicated <strong>Assessment 2 writing workshop</strong> — see the Assessments section below for the real coaching notes (Kerberos explanation, cloud recommendation, diagram scope, IEEE referencing)."}
+      ]
     },
     {
-      n:9, topic:"Wireless Network Security", effort:"low",
-      tools:[], prac:"Lecture only listed (no Seminar) — structurally the lightest week.",
-      notes:["⚠ Unverified in detail — open this week's actual Prac Instruction before assuming it's software-only. Wireless labs sometimes need specific Wi-Fi adapter hardware (monitor-mode support), which has real lead time if you need to order something."],
-      warn:true
+      n:9, topic:"Wireless Network Security", effort:"medium",
+      concepts:["4 wireless vulnerability factors: channel, mobility, resources, accessibility","Threats: accidental/malicious association, ad hoc networks, identity theft (MAC spoofing), MitM, DoS, network injection","3 groups of security measures: transmission, access point, network","Mobile device threats &amp; the 3-part mobile security strategy","IEEE 802.11 — BSS/ESS, 9 services","WEP → WPA → WPA2/RSN evolution","4-phase 802.11i operation: discovery, authentication, key management, data transfer","TKIP vs CCMP"],
+      tools:["QR code reader"],
+      prac:"Generate QR codes at qrstuff.com (URL and Location types), scan with a mobile app, discuss how an attacker could misuse them.",
+      notes:[{type:"fix", text:"Corrects an earlier assumption: <strong>no wireless hardware or adapter needed</strong> — the actual prac is QR-code based, not a Wi-Fi monitor-mode exercise."}]
     },
     {
       n:10, topic:"IP Security", effort:"high",
-      tools:[], prac:"Prac + short-answer + a separately named \"IPSec Experiment\" + a dedicated exam-review clinic session.",
-      notes:[
-        "Heaviest week of the term: Assessment 2 due Sunday, an experiment component beyond the standard prac format, plus an added exam-clinic session on top of normal teaching.",
-        "\"Experiment\" naming suggests more involved setup than a standard prac — worth opening early to check for multi-VM tunnel configuration."
-      ],
-      warn:true
+      concepts:["IPsec overview: encrypt/authenticate at the IP layer","AH (Authentication Header) vs ESP (Encapsulating Security Payload)","Transport mode vs tunnel mode","Security Association Database (SAD) &amp; Security Policy Database (SPD)","Security association bundles: transport adjacency vs iterated tunnelling","ESP anti-replay service (sequence numbers)","IKE, ISAKMP, Oakley key determination"],
+      tools:[],
+      prac:"No hands-on component — pure short-answer theory questions covering IPsec functional areas, AH/ESP, transport/tunnel mode, SA parameters.",
+      notes:[{type:"info", text:"Heaviest week overall: Assessment 2 due Sunday, no lab distraction (theory-only prac), plus a dedicated exam-review clinic session on top of normal teaching."}]
     }
   ];
 
@@ -356,35 +383,114 @@
           <span class="week-topic">${w.topic}</span>
         </div>
         <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
-          <span class="badge ${w.effort}">${w.effort}</span>
+          <span class="badge ${w.effort.includes('high')?'high':w.effort.includes('medium')?'medium':'low'}">${w.effort}</span>
           <span class="week-chev mono">▸</span>
         </div>
       </div>
       <div class="week-panel">
-        <h4>Practical content</h4>
+        <h4>Core concepts</h4>
+        <ul>${w.concepts.map(c=>`<li>${c}</li>`).join('')}</ul>
+        <h4>Practical (verified from actual prac PDF)</h4>
         <p>${w.prac}</p>
         ${w.tools.length ? `<div class="tool-tags">${w.tools.map(t=>`<span class="tool-tag">${t}</span>`).join('')}</div>` : ''}
-        <h4>Prep notes</h4>
-        ${w.notes.map(n=>`<div class="note ${w.warn?'warn':''}">${n}</div>`).join('')}
+        ${w.notes.map(n=>`<div class="note ${n.type==='warn'?'warn':n.type==='fix'?'fix':''}">${n.text}</div>`).join('')}
       </div>
     `;
     weekList.appendChild(el);
   });
 
-  // ---- journal data ----
-  const journalEntries = [
+  // ---------- CRIB SHEETS ----------
+  const cribs = [
     {
-      date:"2026-08-17",
-      text:"First deep dive into CP2414's previous offering (TR1S 2026) with Claude. Confirmed cohort will be ~75–78 students, and I'll be the sole marker. Also confirmed weekly quizzes and short-answer pracs are self-check / auto-graded — the real prep burden is technical fluency for live practicals, not marking volume."
+      title:"Kerberos (v4 core flow)", sub:"Module 6 — the slides skip this; from Stallings §4.3. This is the flow Assessment 2 expects you to explain in plain language.",
+      flow:["Client → AS: request TGT","AS → Client: TGT (encrypted)","Client → TGS: TGT + service request","TGS → Client: service ticket","Client → Server: service ticket","Server → Client: access granted"],
+      points:[
+        "<strong>AS</strong> (Authentication Server) verifies identity once, issues a Ticket Granting Ticket (TGT) — avoids sending the password repeatedly.",
+        "<strong>TGS</strong> (Ticket Granting Server) issues short-lived service tickets using the TGT, so the user isn't re-authenticating for every service.",
+        "<strong>Replay attacks</strong> are handled via timestamps and ticket lifetimes (v4: hard-coded ~21hrs; v5: arbitrary, explicit start/end times) plus nonces in v5 to guarantee freshness.",
+        "v5 fixes: any encryption scheme (not just DES), any network address type, unambiguous byte ordering (ASN.1/BER), authentication forwarding, and hierarchical inter-realm trust (avoids v4's N² realm-to-realm relationships problem)."
+      ]
     },
     {
-      date:"2026-08-17",
-      text:"Found a documented SSH–BeeBox connection issue in the Week 8 materials (credited to a student, Minghao, from the prior offering). Root cause: modern SSH clients refuse BeeBox's legacy ssh-rsa host key by default. Plan: dry-run and pre-solve this myself before term starts."
+      title:"TLS Handshake (4 phases)", sub:"Module 8 — this is what actually happens before any HTTPS data flows.",
+      flow:["Establish security capabilities","Server auth &amp; key exchange","Client auth &amp; key exchange","Finish"],
+      points:[
+        "<strong>Phase 1:</strong> client_hello / server_hello exchange — version, random values, session ID, cipher suite.",
+        "<strong>Phase 2:</strong> server sends its certificate, key exchange params, optionally requests client certificate.",
+        "<strong>Phase 3:</strong> client responds with its own key exchange info and certificate if requested.",
+        "<strong>Phase 4:</strong> both sides send Change Cipher Spec, then a \"finished\" message — connection is now protected.",
+        "A <strong>TLS session</strong> (from the Handshake) can support multiple <strong>TLS connections</strong> — this is what avoids expensive renegotiation for every request."
+      ]
     },
     {
-      date:"2026-08-17",
-      text:"Considering proposing an oral defense / presentation component for Assessment 1 & 2, given GenAI is explicitly unrestricted on both. Would need coordinator + curriculum committee approval — not something I can add unilaterally. Possible angle for a future book: assessment design for technical education in the GenAI era."
+      title:"IPsec — AH vs ESP, Transport vs Tunnel", sub:"Module 10 — the two axes students (and you) most often confuse.",
+      flow:["Transport mode: protects payload only","Tunnel mode: protects entire original packet"],
+      points:[
+        "<strong>AH (Authentication Header):</strong> authentication only — no encryption. Protects against tampering, doesn't hide content.",
+        "<strong>ESP (Encapsulating Security Payload):</strong> encryption + optional authentication. This is the one that actually hides data.",
+        "<strong>Transport mode:</strong> end-to-end between two hosts on the same network — protects the payload, not the outer IP header.",
+        "<strong>Tunnel mode:</strong> used when at least one end is a security gateway (firewall/router) — wraps and protects the <em>entire</em> original packet inside a new one.",
+        "An SA (Security Association) is one-way and uses either AH or ESP, never both — to get both, you bundle multiple SAs (transport adjacency or iterated tunnelling)."
+      ]
     }
+  ];
+  const cribList = document.getElementById('cribList');
+  cribs.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'crib';
+    el.innerHTML = `
+      <div class="crib-title">${c.title}</div>
+      <div class="crib-sub">${c.sub}</div>
+      <div class="crib-flow">${c.flow.map((f,i)=>`<span class="crib-step">${f}</span>${i<c.flow.length-1?'<span class="crib-arrow">→</span>':''}`).join('')}</div>
+      <ul>${c.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+    `;
+    cribList.appendChild(el);
+  });
+
+  // ---------- ASSESSMENTS ----------
+  const assessList = document.getElementById('assessList');
+  assessList.innerHTML = `
+    <div class="assess-card">
+      <div class="assess-top">
+        <div><div class="assess-name">Assessment 1 — Case Study + Quiz</div><div class="assess-due">Individual · Due Sunday, end of Week 5 · 11:59pm SGT</div></div>
+        <div class="assess-weight">30%</div>
+      </div>
+      <p class="assess-desc">Networking scenario for a small org: identify &amp; analyse threats, recommend admin strategies + network security tech (firewall, honeypot) with a labelled diagram.</p>
+      <div class="assess-tips"><strong>Rubric weights:</strong> Threat ID 10% · Threat analysis 20% · Recommendations 20% · Firewall/honeypot diagram 20% · Analysis &amp; recommendation 30%</div>
+    </div>
+    <div class="assess-card">
+      <div class="assess-top">
+        <div><div class="assess-name">Assessment 2 — Case Study + Quiz</div><div class="assess-due">Individual · Due Sunday, end of Week 10 · 11:59pm SGT</div></div>
+        <div class="assess-weight">30%</div>
+      </div>
+      <p class="assess-desc">Report to a CEO: cryptography for data security, Kerberos/user authentication, secure cloud computing.</p>
+      <div class="assess-tips">
+        <strong>Real coaching notes from the Week 8 seminar (not just the rubric):</strong>
+        <ul>
+          <li><strong>Part 1 (Kerberos, 15%):</strong> explain it for a non-technical person, include "User Authentication", then find a real commercial product built on Kerberos and justify it by linking back to your explanation.</li>
+          <li><strong>Part 2 (Cloud Computing, 25%):</strong> only concerned with services for the company's valuable data — brief pros/cons paragraph, then recommend specific service(s) including sharing with partners, and justify vs. alternatives (e.g. on-premise).</li>
+          <li><strong>Part 3 (Diagram, 15%):</strong> <strong>Perth branch only.</strong> Show where the Ticket Granting Server sits, cloud computing placement, and existing infrastructure carried over from Assignment 1 (firewalls).</li>
+          <li><strong>Justification (part of the 20% Cloud Computing Recommendation):</strong> justify every piece of hardware/software placed. Don't just say "it's obviously in the cloud" — explain why, and answer "why should the company spend money on this?"</li>
+          <li><strong>Referencing:</strong> IEEE style (not APA) — <a href="https://libguides.jcu.edu.au/IEEE" target="_blank">libguides.jcu.edu.au/IEEE</a>. Between 5–10 sources, closer to 10. Reference the textbook for subject content, not the lecture slides.</li>
+          <li><strong>Delivery tips:</strong> use "I RECOMMEND..." language, not "you could get X or Y". Diagrams must be tool-made (Visio, draw.io) — no hand-drawn. Use Word's built-in styles; don't leave template question text in the final document.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="assess-card">
+      <div class="assess-top">
+        <div><div class="assess-name">Assessment 3 — Final Exam</div><div class="assess-due">Individual · Centrally administered · Exam period (Dec 2026)</div></div>
+        <div class="assess-weight">40%</div>
+      </div>
+      <p class="assess-desc">2-hour written exam, MCQ + direct-answer, covers the whole subject. GenAI not permitted. Format is centrally administered.</p>
+    </div>
+  `;
+
+  // ---------- JOURNAL ----------
+  const journalEntries = [
+    {date:"2026-08-17", text:"Went through every uploaded lecture, seminar, and prac file in detail. Corrected several assumptions: Week 6's prac is Adobe Acrobat digital signatures (not Kerberos hands-on), Week 7's prac is TeamViewer + cloud product exploration, Week 9 is QR codes (no wireless hardware needed), Week 10 has zero hands-on component. Also found a real gotcha: the Week 1 seminar slide states the wrong assessment weighting."},
+    {date:"2026-08-17", text:"Discovered the seminars carry a cumulative Python coding project across Weeks 3–7: hashlib → Caesar + DES (PyCryptodome) → RSA (rsa library) → optional face recognition → cloud key storage (Azure Key Vault / AWS KMS / GCP KMS, using free trials). This runs in parallel with the Specialised/Prac track."},
+    {date:"2026-08-17", text:"Found the real Assessment 2 coaching content in the Week 8 seminar — including a scenario detail (\"Perth branch only\" for the diagram) and specific delivery tips (IEEE referencing, no hand-drawn diagrams, \"I RECOMMEND\" language) that go well beyond the published rubric."},
+    {date:"2026-08-17", text:"Confirmed the Kerberos slides explicitly defer to textbook Section 4.3 for the full message flow — twice. Need to source the textbook (Stallings) before I can teach the AS→TGS→Client→Server flow fluently, since the deck alone doesn't cover it."}
   ];
   const journalList = document.getElementById('journalList');
   journalEntries.slice().reverse().forEach(j=>{

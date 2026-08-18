@@ -80,6 +80,45 @@
   .badge.low{background:var(--ok-bg); color:var(--ok);}
   .badge::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
 
+  /* daily countdown */
+  .progress-wrap{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-bottom:18px;}
+  .progress-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .progress-label{font-size:13px; color:var(--text-dim);}
+  .progress-count{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; color:var(--accent);}
+  .progress-bar{height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--accent); border-radius:3px; transition:width .3s;}
+  .day{border:1px solid var(--border); border-radius:10px; background:var(--surface); margin-bottom:8px; overflow:hidden;}
+  .day.today{border-color:var(--accent);}
+  .day-head{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:13px 15px; cursor:pointer; user-select:none;}
+  .day-head:hover{background:var(--surface-2);}
+  .day-head-left{display:flex; align-items:center; gap:12px; min-width:0;}
+  .day-num{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); flex-shrink:0; width:38px;}
+  .day-titles{min-width:0;}
+  .day-date{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);}
+  .day-focus{font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .today-badge{font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; background:var(--accent-bg); color:var(--accent); padding:2px 7px; border-radius:4px; margin-left:8px; flex-shrink:0;}
+  .day-right{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+  .day-count{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);}
+  .day-panel{display:none; padding:0 15px 14px; border-top:1px solid var(--border);}
+  .day.open .day-panel{display:block;}
+  .why{font-size:12.5px; color:var(--text-dim); padding:11px 0 4px; font-style:italic;}
+  .daytask{display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13.5px; cursor:pointer;}
+  .daytask:last-child{border-bottom:none;}
+  .daytask-check{flex-shrink:0; width:18px; height:18px; border:1.5px solid var(--text-dim); border-radius:4px; margin-top:2px; display:flex; align-items:center; justify-content:center; transition:all .15s;}
+  .daytask.done .daytask-check{background:var(--ok); border-color:var(--ok);}
+  .daytask-check svg{width:11px; height:11px; opacity:0; transition:opacity .15s;}
+  .daytask.done .daytask-check svg{opacity:1;}
+  .daytask-label{color:var(--text); transition:color .15s;}
+  .daytask.done .daytask-label{color:var(--text-dim); text-decoration:line-through;}
+  .watch-box{margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);}
+  .watch-label{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--blue); margin-bottom:6px;}
+  .watch-item{font-size:13px; margin-bottom:8px;}
+  .watch-item a{color:var(--text); text-decoration:none; border-bottom:1px solid var(--blue);}
+  .watch-item a:hover{color:var(--blue);}
+  .watch-meta{color:var(--text-dim); font-size:11.5px;}
+  .reset-btn{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); background:none; border:1px solid var(--border); border-radius:6px; padding:6px 12px; margin-top:14px; cursor:pointer;}
+  .reset-btn:hover{border-color:var(--danger); color:var(--danger);}
+
   /* week cards */
   .week{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:10px; overflow:hidden;}
   .week-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; cursor:pointer; user-select:none;}
@@ -138,6 +177,7 @@
   <div class="links">
     <a href="#sitrep">Status</a>
     <a href="#plan">Plan</a>
+    <a href="#daily">Daily</a>
     <a href="#weeks">Weeks</a>
     <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
@@ -165,6 +205,21 @@
     <h2 class="section-title">Mastery Plan</h2>
     <p class="section-desc">Built from the actual lecture slides, practicals, and seminar materials you uploaded — not guesswork. Four phases, each with a clear goal and concrete tasks. Tick things off as you go.</p>
     <div id="phaseList"></div>
+  </section>
+
+  <section id="daily">
+    <p class="section-eyebrow">27 days, one focus per day</p>
+    <h2 class="section-title">Daily Countdown</h2>
+    <p class="section-desc">Tap a day to open it, tap a task to check it off — your progress is saved automatically on this device. Days flagged <span style="color:var(--danger); font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase;">critical</span> are the two places where skipping the hands-on prep means finding out what's broken live, in front of the class, instead of tonight.</p>
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-label">Overall progress</span>
+        <span class="progress-count" id="progressCount">0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div id="dayList"></div>
+    <button class="reset-btn" onclick="resetAllDays()">Reset daily progress</button>
   </section>
 
   <section id="weeks">
@@ -206,6 +261,300 @@
   document.getElementById('daysToStart').textContent = daysToStart > 0 ? daysToStart + ' days' : 'Term underway';
 
   // ---------- MASTERY PLAN ----------
+  // ---------- DAILY COUNTDOWN ----------
+  const days = [
+    {date:"2026-08-18", focus:"Build the VM base",
+      why:"Everything downstream — Weeks 1, 2, 3, and 8's pracs — depends on this VM existing and being configured right. Get it working before anything else.",
+      tasks:[
+        {t:"Install VirtualBox, import the BeeBox VM"},
+        {t:"Set BeeBox's network adapter to <strong>Bridged Adapter</strong> (not NAT)", critical:true}
+      ]},
+    {date:"2026-08-19", focus:"Finish the lab environment",
+      why:"Burp Suite and bWAPP are the tools every practical from Week 1 to Week 3 runs on. One clean setup now saves repeated troubleshooting later.",
+      tasks:[
+        {t:"Install Burp Suite Community Edition VM"},
+        {t:"Set its network adapter to Bridged Adapter too"},
+        {t:"Open bWAPP homepage on Firefox in the Burp VM, log in"}
+      ]},
+    {date:"2026-08-20", focus:"Module 1 concepts, part 1",
+      why:"CIA Triad and X.800 are the vocabulary the entire subject is built on — every later week assumes you can use these terms fluently without re-explaining them.",
+      tasks:[
+        {t:"CIA Triad — confidentiality, integrity, availability"},
+        {t:"OSI Security Architecture X.800 — attack / mechanism / service"},
+        {t:"5 X.800 service categories: authentication, access control, data confidentiality, data integrity, nonrepudiation"}
+      ]},
+    {date:"2026-08-21", focus:"Module 1 concepts, part 2",
+      why:"These attack categories reappear as building blocks in Weeks 2, 3, 7, and 8 — get the classification straight now so later weeks are recognition, not re-learning.",
+      tasks:[
+        {t:"Passive vs active attacks"},
+        {t:"Server-side attacks: XSS, SQL injection, XML injection"},
+        {t:"Client-side attacks: drive-by download"},
+        {t:"Cookies: first/third-party, session/persistent"},
+        {t:"Self-test: answer every \"Quick Quiz\" slide in Module 1 cold, no notes"}
+      ]},
+    {date:"2026-08-22", focus:"Module 2 — Administering Secure Networks",
+      why:"This is the practical vocabulary of network hardware — you'll need it to explain the Week 8 diagram task in Assessment 2, which references existing firewalls from Assignment 1.",
+      tasks:[
+        {t:"Network devices: hubs, switches, routers, load balancers, proxies"},
+        {t:"Switch attacks: MAC flooding, MAC impersonation, ARP poisoning + defences"},
+        {t:"NAT/PAT, DMZ, VLANs, port security (802.1x)"}
+      ]},
+    {date:"2026-08-23", focus:"Run Week 2's actual prac",
+      why:"Running it yourself is the only way to know what actually breaks for a student, versus what the instructions merely assume works.",
+      tasks:[
+        {t:"SQL Injection (GET/Search) on bWAPP — try <code>blah' or 1=1#</code>"},
+        {t:"Directory Traversal — inspect the <code>directory=</code> URL parameter"}
+      ],
+      watch:[{title:"PortSwigger — SQL injection (official documentation)", channel:"PortSwigger (makers of Burp Suite)", url:"https://portswigger.net/web-security/sql-injection", note:"Written, not video — but it's the authoritative source for the exact tool your students use."}]
+    },
+    {date:"2026-08-24", focus:"Module 3 + Week 3 prac",
+      why:"Firewalls and honeypots are 40% of Assessment 1's rubric by themselves — this is one of the highest-stakes weeks to actually understand, not just skim.",
+      tasks:[
+        {t:"Intruder types, intrusion detection, honeypot placement (3 locations)"},
+        {t:"Firewall types &amp; configurations (screening router → double bastion T)"},
+        {t:"Run the prac: Wireshark capture of a ping to google.com.au, filter on <code>icmp</code>"}
+      ],
+      watch:[{title:"What is a Firewall?", channel:"PowerCert Animated Videos", url:"https://www.youtube.com/watch?v=kDEX1HXybrU", note:"8 min, clean animated overview — good to assign to students too."}]
+    },
+    {date:"2026-08-25", focus:"Set up crypto tooling + start Module 4",
+      why:"The next 9 days are the heaviest theory stretch in the whole subject. Getting the tool working today means Days 9–13 are pure concept time, not install troubleshooting.",
+      tasks:[
+        {t:"Install CrypTool 1.4.42 from cryptool.org"},
+        {t:"Crypto terminology: plaintext/ciphertext/key, computational security, brute-force attacks"}
+      ]},
+    {date:"2026-08-26", focus:"Module 4 — symmetric crypto core",
+      why:"The DES/3DES/AES comparison table is exam-favourite material — it's the kind of thing that gets asked as a direct short-answer question.",
+      tasks:[
+        {t:"DES vs 3DES vs AES comparison (key length, rounds, block size, speed)"},
+        {t:"Feistel structure, AES's 4 atomic operations"}
+      ],
+      watch:[{title:"AES Explained (Advanced Encryption Standard)", channel:"Computerphile (Dr Mike Pound)", url:"https://www.youtube.com/watch?v=O4xNJsjtN6E", note:"The clearest walkthrough of why AES replaced DES, and how it actually works. Strong pick to recommend to students."}]
+    },
+    {date:"2026-08-27", focus:"Module 4 — finish + first CrypTool exercise",
+      why:"Doing the exercise yourself first means you can anticipate exactly where students get confused with key entry format (hex vs number vs character).",
+      tasks:[
+        {t:"Randomness: TRNG vs PRNG vs PRF, the 5 cipher block modes (ECB/CBC/CFB/OFB/CTR)"},
+        {t:"CrypTool: Caesar/ROT-13 cipher — try both, vary the key"}
+      ]},
+    {date:"2026-08-28", focus:"Module 5 — message authentication",
+      why:"Hash vs MAC is a distinction students consistently blur — being able to explain it in one clean sentence is worth more prep time than it looks like.",
+      tasks:[
+        {t:"Message authentication vs confidentiality"},
+        {t:"Hash function vs MAC, SHA-512 processing steps"}
+      ]},
+    {date:"2026-08-29", focus:"Module 5 — public-key crypto",
+      why:"This is the conceptual foundation Kerberos, TLS, and IPsec all build on in Weeks 6, 8, and 10 — worth getting genuinely comfortable with now rather than patching gaps later.",
+      tasks:[
+        {t:"HMAC, CMAC, CCM"},
+        {t:"Diffie-Hellman (1976) and RSA (1978) background"},
+        {t:"4 public-key algorithms compared: RSA, Diffie-Hellman, DSS, Elliptic curve"}
+      ],
+      watch:[
+        {title:"Secret Key Exchange (Diffie-Hellman)", channel:"Computerphile (Dr Mike Pound)", url:"https://www.youtube.com/watch?v=NmM9HA2MQGI", note:"The famous paint-mixing analogy — genuinely makes the concept click, great for students."},
+        {title:"Public Key Cryptography: RSA Encryption Algorithm", channel:"Art of the Problem", url:"https://www.youtube.com/watch?v=wXB-V_Keiu8", note:"Goes into the actual math (Euler's theorem, modular exponentiation) — good for you; may be more than most students need."}
+      ]},
+    {date:"2026-08-30", focus:"Second CrypTool exercise + digital signatures",
+      why:"AES(CBC) with a real hex key is the exact exercise students do — running it yourself surfaces the \"key still shows 00 after typing 0F\" quirk before a student asks about it.",
+      tasks:[
+        {t:"CrypTool: AES (CBC), 128-bit hex key — then try the Analysis tab"},
+        {t:"Digital signatures: DSA, RSA-PSS, ECDSA"}
+      ]},
+    {date:"2026-08-31", focus:"Buffer day — consolidate Weeks 1–5",
+      why:"Half the value of a buffer day is finding out what you don't actually know yet, while there's still time to fix it — not confirming what you do.",
+      tasks:[
+        {t:"Re-answer every Quick Quiz slide from Modules 1–5 cold"},
+        {t:"Note anywhere you hesitated — that's your real gap, not what you assume"}
+      ]},
+    {date:"2026-09-01", focus:"Source the textbook — this is the critical one",
+      why:"The slides literally tell students to go read this section — if you haven't, you're one question away from being caught short in front of the class.",
+      tasks:[
+        {t:"Get access to Stallings, <em>Cryptography and Network Security</em>", critical:true},
+        {t:"Read Section 4.3 in full — the slides deliberately skip the Kerberos message flow here", critical:true}
+      ]},
+    {date:"2026-09-02", focus:"Module 6, part 1",
+      why:"The 4 means of authentication and KDC operation are the setup that makes Kerberos make sense tomorrow — skipping ahead without this will make Kerberos feel arbitrary.",
+      tasks:[
+        {t:"User authentication (RFC 4949, NIST) — identification + verification steps"},
+        {t:"4 means of authentication: know / possess / are / do"},
+        {t:"4 options for key distribution, KDC operation"}
+      ]},
+    {date:"2026-09-03", focus:"Module 6, part 2 — Kerberos + PKI",
+      why:"This is the single most textbook-dependent concept in the entire subject, and it's also 15% of Assessment 2. Highest-leverage day of the whole 27.",
+      tasks:[
+        {t:"Kerberos v4 vs v5 full flow — with the textbook this time, not just the deck"},
+        {t:"X.509 certificates, PKI, PKIX"}
+      ],
+      watch:[{title:"Taming Kerberos", channel:"Computerphile (Dr Mike Pound)", url:"https://www.youtube.com/watch?v=qW361k3-BtU", note:"Genuinely the best short explanation of Kerberos available — worth recommending to students directly for Assessment 2."}]
+    },
+    {date:"2026-09-04", focus:"Week 6 prac + Module 7 start",
+      why:"Knowing the prac is digital signatures (not Kerberos hands-on) before you walk in avoids a confusing moment in class where students expect one thing and get another.",
+      tasks:[
+        {t:"Run the actual prac: self-signed digital ID in Adobe Acrobat, sign a JCU form (not Kerberos hands-on)"},
+        {t:"NAC components (AR/NAS/Policy Server), EAP + EAPOL"}
+      ]},
+    {date:"2026-09-05", focus:"Module 7 — cloud computing",
+      why:"This is 25% of Assessment 2 — the single heaviest-weighted concept block in the second assignment, worth matching your prep effort to that weight.",
+      tasks:[
+        {t:"NIST's 5 essential characteristics, 3 service models (SaaS/PaaS/IaaS), 4 deployment models"},
+        {t:"Cloud security risks + countermeasures, SecaaS categories"}
+      ]},
+    {date:"2026-09-06", focus:"Run Week 7's actual prac",
+      why:"Free-trial cloud signups (Azure, AWS, GCP) can have friction — payment verification, region availability — that's better discovered by you now than by 75 students during class.",
+      tasks:[
+        {t:"Set up TeamViewer remote access between two devices"},
+        {t:"Explore SaaS/PaaS/IaaS/SecaaS products: Dropbox, Azure App Service, Azure, Azure Sentinel"}
+      ]},
+    {date:"2026-09-07", focus:"Module 8 — TLS &amp; SSH concepts",
+      why:"Tomorrow's SSH dry-run will make far more sense once you understand what the handshake is actually negotiating — don't skip straight to the hands-on part.",
+      tasks:[
+        {t:"4 categories of web security threats"},
+        {t:"TLS architecture, the 4-phase Handshake Protocol"},
+        {t:"SSH's 3 protocols: transport layer, user authentication, connection"}
+      ],
+      watch:[
+        {title:"TLS Handshake Explained", channel:"Computerphile (Dr Mike Pound)", url:"https://www.youtube.com/watch?v=86cQJ0MMses", note:"Walks through client_hello → server_hello → finished step by step — matches the exact message sequence in the lecture slides."},
+        {title:"Telnet vs SSH Explained", channel:"PowerCert Animated Videos", url:"https://www.youtube.com/watch?v=tZop-zjYkrU", note:"Short, clear on why SSH replaced Telnet — good context before the hands-on tomorrow."}
+      ]},
+    {date:"2026-09-08", focus:"Dry-run the SSH prac — critical",
+      why:"This is the one moment in the whole plan where doing it yourself first isn't optional — every one of your ~75 students will hit this exact error otherwise, live, with no fix ready.",
+      tasks:[
+        {t:"Turn on BeeBox, find its IPv4 address"},
+        {t:"From host: <code>ssh bee@&lt;ip&gt;</code>, password <code>bug</code> — reproduce the host-key error", critical:true},
+        {t:"Apply the fix: OpenSSH-Win64 v8.9.1.0 + manual legacy key type override", critical:true}
+      ]},
+    {date:"2026-09-09", focus:"Assessment 2 delivery prep",
+      why:"These notes exist nowhere in the official rubric — they're the difference between students getting a generic answer and the specific standard you'll actually mark against.",
+      tasks:[
+        {t:"Read through the real Week 8 seminar coaching notes in full"},
+        {t:"Plan how you'll deliver: Kerberos explanation, cloud recommendation, \"Perth branch only\" diagram scope, IEEE referencing"}
+      ]},
+    {date:"2026-09-10", focus:"Module 9 + Week 9 prac",
+      why:"Wireless security fits the pattern you've now seen four times (encryption + authentication + key management) — recognising that pattern is faster than learning it as new material.",
+      tasks:[
+        {t:"Wireless vulnerability factors, WEP → WPA → WPA2/RSN, 802.11i's 4 phases"},
+        {t:"Run the actual prac: QR codes at qrstuff.com (no wireless hardware needed)"}
+      ],
+      watch:[{title:"WiFi (Wireless) Password Security - WEP, WPA, WPA2, WPA3, WPS Explained", channel:"PowerCert Animated Videos", url:"https://www.youtube.com/watch?v=WZaIfyvERcA", note:"Covers exactly the WEP → WPA → WPA2/WPA3 progression the lecture slides walk through — solid one to point students to."}]
+    },
+    {date:"2026-09-11", focus:"Module 10 — IPsec",
+      why:"AH vs ESP and transport vs tunnel mode is the pair of distinctions students confuse most on the final exam — worth extra repetition here, not just one pass.",
+      tasks:[
+        {t:"AH vs ESP, transport vs tunnel mode, SAD/SPD, IKE/ISAKMP"},
+        {t:"Skim Week 10's short-answer questions — no hands-on component to rehearse here"}
+      ],
+      watch:[{title:"What is IPsec?", channel:"CBT Nuggets (Keith Barker)", url:"https://www.youtube.com/watch?v=-JrXllTuI2s", note:"Clear, practitioner-level explanation of AH vs ESP and why IPsec is used the way it is."}]
+    },
+    {date:"2026-09-12", focus:"Full rehearsal — Week 1",
+      why:"Week 1 sets the tone for the whole term and has the heaviest technical setup of any single session — the highest-leverage single rehearsal in the whole 27 days.",
+      tasks:[
+        {t:"Timed dry-run of Week 1's entire session, as if teaching it live"},
+        {t:"Note anywhere you stumbled or lost pace"}
+      ]},
+    {date:"2026-09-13", focus:"Final consolidation — light day only",
+      why:"New material the night before term starts doesn't stick — it just adds anxiety. Consolidation is the higher-value use of this day.",
+      tasks:[
+        {t:"Build a one-page cheat sheet from every gotcha found across the 27 days"},
+        {t:"No new material today — review only"}
+      ]}
+  ];
+
+  const dayList = document.getElementById('dayList');
+  const todayDateStr = new Date().toISOString().slice(0,10);
+
+  function dayNameShort(dateStr){
+    const d = new Date(dateStr+'T00:00:00');
+    return d.toLocaleDateString('en-SG',{weekday:'short', day:'numeric', month:'short'});
+  }
+
+  days.forEach((day, di)=>{
+    const el = document.createElement('div');
+    const isToday = day.date === todayDateStr;
+    el.className = 'day' + (isToday ? ' today open' : '');
+    el.id = 'day-' + di;
+    const taskRows = day.tasks.map((task, ti)=>`
+      <div class="daytask" data-day="${di}" data-task="${ti}" onclick="toggleDayTask(${di},${ti})">
+        <div class="daytask-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="daytask-label">${task.t}${task.critical ? '<span class="tag critical">critical</span>' : ''}</div>
+      </div>
+    `).join('');
+    const watchRows = day.watch ? `
+      <div class="watch-box">
+        <div class="watch-label">Worth watching (yours &amp; students')</div>
+        ${day.watch.map(w=>`
+          <div class="watch-item">
+            <a href="${w.url}" target="_blank" rel="noopener">${w.title}</a> — <span class="watch-meta">${w.channel}</span><br><span style="font-size:12px; color:var(--text-dim);">${w.note}</span>
+          </div>
+        `).join('')}
+      </div>` : '';
+    el.innerHTML = `
+      <div class="day-head" onclick="toggleDayOpen(${di})">
+        <div class="day-head-left">
+          <span class="day-num mono">D${di+1}</span>
+          <div class="day-titles">
+            <div class="day-date">${dayNameShort(day.date)}</div>
+            <div class="day-focus">${day.focus}${isToday ? '<span class="today-badge">Today</span>' : ''}</div>
+          </div>
+        </div>
+        <div class="day-right">
+          <span class="day-count mono" id="daycount-${di}">0/${day.tasks.length}</span>
+          <span class="chev mono">▸</span>
+        </div>
+      </div>
+      <div class="day-panel">
+        <div class="why">${day.why}</div>
+        ${taskRows}
+        ${watchRows}
+      </div>
+    `;
+    dayList.appendChild(el);
+  });
+
+  let dayState = {};
+  try{
+    const saved = localStorage.getItem('cp2414-27day-progress');
+    if(saved) dayState = JSON.parse(saved);
+  }catch(e){ dayState = {}; }
+
+  function saveDayState(){
+    try{ localStorage.setItem('cp2414-27day-progress', JSON.stringify(dayState)); }catch(e){}
+  }
+
+  function applyDayState(){
+    days.forEach((day, di)=>{
+      let doneCount = 0;
+      day.tasks.forEach((task, ti)=>{
+        const key = di+'-'+ti;
+        const taskEl = document.querySelector(`.daytask[data-day="${di}"][data-task="${ti}"]`);
+        if(dayState[key]){ taskEl.classList.add('done'); doneCount++; }
+        else { taskEl.classList.remove('done'); }
+      });
+      document.getElementById('daycount-'+di).textContent = doneCount + '/' + day.tasks.length;
+    });
+    let total = 0, done = 0;
+    days.forEach((day, di)=>{ day.tasks.forEach((task, ti)=>{ total++; if(dayState[di+'-'+ti]) done++; }); });
+    document.getElementById('progressCount').textContent = done + ' / ' + total;
+    document.getElementById('progressFill').style.width = (total ? (done/total*100) : 0) + '%';
+  }
+
+  function toggleDayOpen(di){
+    document.getElementById('day-'+di).classList.toggle('open');
+  }
+
+  function toggleDayTask(di, ti){
+    const key = di+'-'+ti;
+    dayState[key] = !dayState[key];
+    applyDayState();
+    saveDayState();
+  }
+
+  function resetAllDays(){
+    dayState = {};
+    applyDayState();
+    saveDayState();
+  }
+
+  applyDayState();
+
   const phases = [
     {
       n:1, title:"Foundations & Environment Build", dates:"17–23 Aug",

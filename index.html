@@ -178,6 +178,7 @@
     <a href="#sitrep">Status</a>
     <a href="#plan">Plan</a>
     <a href="#daily">Daily</a>
+    <a href="#playbook">Playbook</a>
     <a href="#weeks">Weeks</a>
     <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
@@ -220,6 +221,78 @@
     </div>
     <div id="dayList"></div>
     <button class="reset-btn" onclick="resetAllDays()">Reset daily progress</button>
+  </section>
+
+  <section id="playbook">
+    <p class="section-eyebrow">Hard-won, TR3 2026 — reuse this next time</p>
+    <h2 class="section-title">Setup Playbook: VirtualBox + BeeBox</h2>
+    <p class="section-desc">This exact setup took a full extra day to get right the first time — an ARM laptop dead end, a corrupted-looking snapshot chain that turned out to be a genuine VirtualBox limitation, and a wrong-window mix-up or two along the way. Everything below is what actually happened and what actually fixed it, so a future trimester doesn't have to rediscover any of it.</p>
+
+    <div class="crib">
+      <div class="crib-title">Step 0 — Check hardware BEFORE downloading anything</div>
+      <div class="crib-sub">This alone would have saved an entire afternoon the first time through.</div>
+      <p style="font-size:13.8px; margin:0 0 10px;">On the machine you intend to use: <strong>Settings → System → About → System type.</strong> You need it to say <strong>"x64-based processor."</strong></p>
+      <div class="note warn">If it says <strong>"ARM-based processor"</strong> (e.g. Surface Pro 11th-gen, any Snapdragon X Elite laptop) — stop here. As of VirtualBox 7.2.16 (Aug 2026), running this old x86 Linux VM on an ARM host is not reliably possible — not slow, genuinely non-functional in testing. Find a different, genuinely x64 machine before doing anything else. Don't spend time troubleshooting on ARM hardware; it's a hardware-language mismatch, not a settings problem.</div>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Step 1 — Where to actually download BeeBox from</div>
+      <div class="note warn">The primary SourceForge listing (<span class="mono" style="font-size:12px;">sourceforge.net/projects/bwapp/files/bee-box/</span>) carries a persistent "Malware detected" warning on the exact <span class="mono" style="font-size:12px;">bee-box_v1.6.7z</span> file. This isn't a one-off flag — it's a known, standing issue with that file. Don't download it, even if it seems to be the "official" source.</div>
+      <div class="note fix">Use the <strong>"Alternative (maybe faster) BeeBox download"</strong> link from the Blackboard Week 1 content instead — it's a Google Drive file (<span class="mono" style="font-size:12px;">bee-box_v1.6-new.zip</span>) hosted through the course itself, and is the trustworthy source.</div>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Step 2 — Extract to the internal C: drive, never a USB stick</div>
+      <p style="font-size:13.8px; margin:0;">The extracted VM needs roughly <strong>5 GB free</strong>. A USB stick both often lacks the space and is genuinely unreliable for running a VM's disk files from directly. Extract straight to something like <span class="mono" style="font-size:12.5px;">C:\CP2414\bee-box</span>. If a laptop reboots mid-extraction (it happened once here), the safest move is to delete the extracted folder entirely and re-extract fresh rather than assume it's intact.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Step 3 — Building the VM (it's VMware format, not a VirtualBox .ova)</div>
+      <p style="font-size:13.8px; margin:0 0 10px;">BeeBox ships as VMware's own format (<span class="mono" style="font-size:12px;">.vmx</span> / <span class="mono" style="font-size:12px;">.vmdk</span> files), not a VirtualBox <span class="mono" style="font-size:12px;">.ova</span> — so <strong>File → Import Appliance won't work.</strong> Build it manually instead:</p>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
+        <li>VirtualBox → <strong>New</strong> → name it, leave ISO Image as <span class="mono" style="font-size:12px;">&lt;not selected&gt;</span></li>
+        <li><strong>OS: Linux</strong>, <strong>Distribution: Ubuntu (64-bit).</strong> Double-check this manually — the wizard has been seen auto-guessing "Microsoft Windows" or even an ARM variant based on host hardware, regardless of what's actually being installed.</li>
+        <li>Click through to Finish — this creates a VM with a throwaway blank disk. That's expected; you're about to replace it.</li>
+        <li>Right-click the new VM → <strong>Settings → Storage</strong> → select the blank disk → remove/delete it → <strong>Add Hard Disk → Choose Existing</strong> → browse to the extracted folder</li>
+      </ul>
+      <div class="note warn">
+        <strong>The snapshot chain trap:</strong> BeeBox ships with 11 chained snapshot files (<span class="mono" style="font-size:12px;">bee-box-s001.vmdk</span> through <span class="mono" style="font-size:12px;">bee-box-s011.vmdk</span>). Attaching the highest one (<span class="mono" style="font-size:12px;">s011</span>), expecting it to be the "final, ready" state, reliably fails with:
+        <div class="note" style="margin-top:8px; background:var(--surface); border-left-color:var(--danger);"><span class="mono" style="font-size:12px;">Failed to open the disk image file... (VERR_NOT_SUPPORTED)</span>, Result Code <span class="mono" style="font-size:12px;">VBOX_E_IPRT_ERROR</span></div>
+        This happened <strong>twice</strong>, including after a completely fresh re-extraction — confirming it's a genuine VirtualBox limitation reading VMware's chained-snapshot format, not a corrupted download. Don't waste time re-downloading if you hit this.
+      </div>
+      <div class="note fix">
+        <strong>The fix that worked:</strong> attach the plain <span class="mono" style="font-size:12px;">bee-box.vmdk</span> instead — the base disk, no <span class="mono" style="font-size:12px;">-s0</span> in the filename. It opened immediately and booted to a fully working, auto-logged-in desktop with bWAPP shortcuts present. The base disk turned out to be entirely sufficient — the snapshot chain wasn't actually necessary to reach a working state.
+      </div>
+      <div class="note">
+        <strong>If the base disk also fails</strong> on some future machine: install <strong>VMware Workstation Pro</strong> (genuinely free for personal/educational/commercial use since Nov 2024, no license key) and open <span class="mono" style="font-size:12px;">bee-box.vmx</span> directly — it's the tool this VM was actually built for, so this sidesteps the format question entirely.
+      </div>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Step 4 — Network: Bridged Adapter, not NAT</div>
+      <p style="font-size:13.8px; margin:0;">VM Settings → Network → Attached to: <strong>Bridged Adapter.</strong> This is what lets your laptop and BeeBox see each other as two separate devices on the same network — required for Wireshark captures, browser access to bWAPP, and the Week 8 SSH exercise. Confirmed working when BeeBox's IP and the host laptop's own Wi-Fi IP share the same subnet (e.g. both <span class="mono" style="font-size:12px;">192.168.1.x</span>) but different last numbers.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Step 5 — Finding BeeBox's IP address (easy to get wrong)</div>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
+        <li>The command must run <strong>inside the BeeBox VM window itself</strong> — not in a PowerShell/Command Prompt window on the host laptop. Both look like black terminal windows and are easy to mix up mid-session.</li>
+        <li>Inside BeeBox: right-click the desktop → <strong>Open Terminal</strong> (or Applications → Accessories → Terminal)</li>
+        <li>The command is <span class="mono" style="font-size:12px;">ifconfig</span> — <strong>not</strong> <span class="mono" style="font-size:12px;">ipconfig</span> (that's the Windows-only spelling, will error with "command not found" on Linux)</li>
+        <li>Look for the <span class="mono" style="font-size:12px;">eth0</span> block → <span class="mono" style="font-size:12px;">inet addr:</span> — that's the IP</li>
+      </ul>
+      <p style="font-size:13.8px; margin:0;">Verify from the <strong>host</strong> laptop's normal browser (Chrome/Firefox/Edge — not typed into PowerShell): <span class="mono" style="font-size:12px;">http://&lt;that-ip&gt;/bWAPP/login.php</span> should load the login page.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Reference: credentials that keep coming up</div>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li><strong>Linux login (auto-applied on boot):</strong> <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span></li>
+        <li><strong>bWAPP web login:</strong> <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span> — same as Linux, and the same as Week 8's SSH exercise (<span class="mono" style="font-size:12px;">ssh bee@&lt;ip&gt;</span>)</li>
+        <li><strong>Linux root:</strong> <span class="mono" style="font-size:12px;">root</span> / <span class="mono" style="font-size:12px;">bug</span></li>
+        <li><strong>MySQL root:</strong> <span class="mono" style="font-size:12px;">root</span> / <span class="mono" style="font-size:12px;">bug</span></li>
+      </ul>
+    </div>
   </section>
 
   <section id="weeks">

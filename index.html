@@ -119,6 +119,29 @@
   .reset-btn{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); background:none; border:1px solid var(--border); border-radius:6px; padding:6px 12px; margin-top:14px; cursor:pointer;}
   .reset-btn:hover{border-color:var(--danger); color:var(--danger);}
 
+  /* cheat sheet flip cards */
+  .cheat-week{border:1px solid var(--border); border-radius:10px; background:var(--surface); margin-bottom:8px; overflow:hidden;}
+  .cheat-week-head{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; user-select:none;}
+  .cheat-week-head:hover{background:var(--surface-2);}
+  .cheat-week-title{font-size:14.5px; font-weight:600;}
+  .cheat-week-count{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);}
+  .cheat-chev{color:var(--text-dim); font-family:'IBM Plex Mono',monospace; transition:transform .2s;}
+  .cheat-week.open .cheat-chev{transform:rotate(90deg);}
+  .cheat-panel{display:none; padding:4px 16px 16px;}
+  .cheat-week.open .cheat-panel{display:block;}
+  .flip-card{perspective:1000px; height:118px; margin-bottom:10px; cursor:pointer;}
+  .flip-inner{position:relative; width:100%; height:100%; transition:transform .45s; transform-style:preserve-3d;}
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:10px; padding:14px 16px; display:flex; align-items:center; box-sizing:border-box;}
+  .flip-front{background:var(--surface-2); border:1px solid var(--border);}
+  .flip-back{background:var(--accent-bg); border:1px solid var(--accent); transform:rotateY(180deg); overflow-y:auto;}
+  .flip-label{font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); position:absolute; top:8px; left:14px;}
+  .flip-front .flip-label{color:var(--text-dim);}
+  .flip-back .flip-label{color:var(--accent);}
+  .flip-text{font-size:14px; line-height:1.4; padding-top:10px;}
+  .flip-front .flip-text{font-weight:600;}
+  .flip-tap-hint{position:absolute; bottom:6px; right:10px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--text-dim); opacity:.6;}
+
   /* week cards */
   .week{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:10px; overflow:hidden;}
   .week-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; cursor:pointer; user-select:none;}
@@ -178,6 +201,7 @@
     <a href="#sitrep">Status</a>
     <a href="#plan">Plan</a>
     <a href="#daily">Daily</a>
+    <a href="#cheatsheet">Cheat Sheet</a>
     <a href="#playbook">Playbook</a>
     <a href="#weeks">Weeks</a>
     <a href="#crib">Crib Sheets</a>
@@ -295,6 +319,13 @@
     </div>
   </section>
 
+  <section id="cheatsheet">
+    <p class="section-eyebrow">Real slide content, tap to reveal</p>
+    <h2 class="section-title">Cheat Sheet</h2>
+    <p class="section-desc">Built for reviewing on your phone between things — not another summary to read top to bottom. Tap a card to flip it. Say the answer out loud before you flip; that's what actually sticks.</p>
+    <div id="cheatWeekList"></div>
+  </section>
+
   <section id="weeks">
     <p class="section-eyebrow">10-week breakdown — corrected against real materials</p>
     <h2 class="section-title">Weeks, concepts &amp; practicals</h2>
@@ -335,6 +366,95 @@
 
   // ---------- MASTERY PLAN ----------
   // ---------- DAILY COUNTDOWN ----------
+  // ---------- CHEAT SHEET ----------
+  const cheatWeeks = [
+    {n:1, topic:"Intro & app/network attacks", cards:[
+      {q:"What does CIA stand for?", a:"Confidentiality, Integrity, Availability — the three things every security control is ultimately protecting."},
+      {q:"Passive vs active attack — one line each?", a:"Passive: eavesdropping, doesn't change anything, hard to detect but easy to prevent. Active: modifies data or systems, easy to detect but hard to prevent."},
+      {q:"Name 3 server-side attacks.", a:"XSS, SQL injection, XML injection."},
+      {q:"X.800 in one sentence?", a:"It splits security into 3 parts: attacks (the threats), mechanisms (the defences), and services (the goals — authentication, access control, confidentiality, integrity, nonrepudiation)."}
+    ]},
+    {n:2, topic:"Administering secure networks", cards:[
+      {q:"What is MAC flooding, in one sentence?", a:"Flooding a switch's MAC table so it can't learn addresses — forces it to broadcast everything like a hub, letting the attacker sniff all traffic."},
+      {q:"What is ARP poisoning?", a:"Sending fake ARP replies to trick devices into sending their traffic to the attacker instead of the real destination."},
+      {q:"What's a DMZ, in one sentence?", a:"A buffer network zone between the internet and your internal network — public-facing servers sit there so a breach doesn't reach internal systems."}
+    ]},
+    {n:3, topic:"Intruders and firewalls", cards:[
+      {q:"Name the 3 intruder types.", a:"Masquerader (pretends to be someone else), misfeasor (legit user misusing their access), clandestine user (seizes admin control to evade detection)."},
+      {q:"Where do honeypots go — 3 locations?", a:"In front of the firewall, in the DMZ, or behind the firewall (inside) — each trades detection visibility against internal risk differently."},
+      {q:"Screening router vs double bastion T?", a:"Screening router: one router filtering traffic, simplest and weakest. Double bastion T: two firewalls with a DMZ between them, strongest and most complex."}
+    ]},
+    {n:4, topic:"Symmetric cryptography", cards:[
+      {q:"DES: key length, rounds, block size?", a:"56-bit key, 16 rounds, 64-bit block. Built by IBM, 1973."},
+      {q:"3DES: key length, rounds, block size?", a:"168-bit key (112-bit effective if k1=k3), 48 rounds, 64-bit block. Uses Encrypt-Decrypt-Encrypt (EDE)."},
+      {q:"AES: key length, rounds, block size?", a:"128/192/256-bit key gives 10/12/14 rounds respectively, always a 128-bit block. Built by Daemen & Rijmen, 1998 — original name \"Rijndael.\""},
+      {q:"Why did AES replace DES?", a:"DES's 64-bit block and 56-bit key are too small for modern security. AES is both faster AND more secure."},
+      {q:"AES round 1's 4 atomic operations?", a:"SubBytes, ShiftRows, MixColumns, AddRoundKey."}
+    ]},
+    {n:5, topic:"Message auth & public-key crypto", cards:[
+      {q:"Hash function vs MAC — one line each?", a:"Hash: one input (the message), no secret key, anyone can compute it. MAC: two inputs (message + secret key), only someone with the key can compute or verify it."},
+      {q:"SHA-512's hash buffer size?", a:"512 bits — same length as its output."},
+      {q:"Diffie-Hellman vs RSA — year and purpose?", a:"Diffie-Hellman, 1976: key exchange only. RSA, 1978: full public-key encryption plus digital signatures."}
+    ]},
+    {n:6, topic:"Key distribution & Kerberos", cards:[
+      {q:"What does the AS do, in one sentence?", a:"The Authentication Server verifies your identity once and issues a Ticket Granting Ticket (TGT), so you're not sending your password over and over."},
+      {q:"What does the TGS do?", a:"The Ticket Granting Server uses your TGT to issue short-lived tickets for specific services, without you re-authenticating each time."},
+      {q:"Kerberos v4's big weakness, fixed in v5?", a:"v4 needs N² Kerberos-to-Kerberos relationships between realms. v5 fixes this with hierarchical inter-realm keys."},
+      {q:"Kerberos principal name format?", a:"principal-name.instance-name@realm-name — e.g. joe.user@realm1."}
+    ]},
+    {n:7, topic:"NAC & cloud security", cards:[
+      {q:"NIST's 3 cloud service models?", a:"SaaS (software), PaaS (platform), IaaS (infrastructure) — increasing control as you go, decreasing how much the provider manages for you."},
+      {q:"NAC's 3 core components?", a:"Access Requestor (the device wanting in), Network Access Server (the gatekeeper), Policy Server (decides the rules)."}
+    ]},
+    {n:8, topic:"Transport layer security", cards:[
+      {q:"TLS handshake's 4 phases, in order?", a:"1. Establish security capabilities. 2. Server auth + key exchange. 3. Client auth + key exchange. 4. Finish."},
+      {q:"SSH's 3 protocols?", a:"Transport layer protocol, user authentication protocol, connection protocol."},
+      {q:"Why does the Week 8 SSH prac break on modern machines?", a:"BeeBox's SSH server only offers an old ssh-rsa host key type, which modern SSH clients refuse by default — you have to manually allow legacy key types."}
+    ]},
+    {n:9, topic:"Wireless network security", cards:[
+      {q:"WEP vs WPA vs WPA2, one line each?", a:"WEP: broken, easily cracked. WPA: stopgap fix using TKIP. WPA2: the real fix, using AES/CCMP — still the current standard."},
+      {q:"802.11i's 4 phases?", a:"Discovery, authentication, key management, data transfer."}
+    ]},
+    {n:10, topic:"IP security", cards:[
+      {q:"AH vs ESP — one sentence each?", a:"AH: authentication only, no encryption — proves the data wasn't tampered with. ESP: encryption plus optional authentication — actually hides the content."},
+      {q:"Transport mode vs tunnel mode?", a:"Transport: protects just the payload, used host-to-host. Tunnel: wraps the entire original packet, used when a security gateway (firewall/router) is involved."}
+    ]}
+  ];
+
+  const cheatWeekList = document.getElementById('cheatWeekList');
+  cheatWeeks.forEach(w=>{
+    const el = document.createElement('div');
+    el.className = 'cheat-week';
+    const cardsHtml = w.cards.map((c,ci)=>`
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <span class="flip-label">Q</span>
+            <div class="flip-text">${c.q}</div>
+            <span class="flip-tap-hint">tap</span>
+          </div>
+          <div class="flip-face flip-back">
+            <span class="flip-label">A</span>
+            <div class="flip-text">${c.a}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    el.innerHTML = `
+      <div class="cheat-week-head" onclick="this.parentElement.classList.toggle('open')">
+        <div>
+          <span class="cheat-week-title">Week ${w.n} — ${w.topic}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="cheat-week-count">${w.cards.length} cards</span>
+          <span class="cheat-chev mono">▸</span>
+        </div>
+      </div>
+      <div class="cheat-panel">${cardsHtml}</div>
+    `;
+    cheatWeekList.appendChild(el);
+  });
+
   const days = [
     {date:"2026-08-18", focus:"Build the VM base",
       why:"Everything downstream — Weeks 1, 2, 3, and 8's pracs — depends on this VM existing and being configured right. Get it working before anything else.",

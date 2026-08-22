@@ -377,7 +377,8 @@
     {n:2, topic:"Administering secure networks", cards:[
       {q:"What is MAC flooding, in one sentence?", a:"Flooding a switch's MAC table so it can't learn addresses — forces it to broadcast everything like a hub, letting the attacker sniff all traffic."},
       {q:"What is ARP poisoning?", a:"Sending fake ARP replies to trick devices into sending their traffic to the attacker instead of the real destination."},
-      {q:"What's a DMZ, in one sentence?", a:"A buffer network zone between the internet and your internal network — public-facing servers sit there so a breach doesn't reach internal systems."}
+      {q:"What's a DMZ, in one sentence?", a:"A buffer network zone between the internet and your internal network — public-facing servers sit there so a breach doesn't reach internal systems."},
+      {q:"How does ARP poisoning chain into DNS cache poisoning?", a:"ARP poisoning gets the attacker's machine sitting in the traffic path between a victim and the real DNS server. From there, they can intercept or forge DNS responses, poisoning the victim's DNS cache with fake IP addresses — redirecting them to malicious sites even though the victim typed the correct domain name."}
     ]},
     {n:3, topic:"Intruders and firewalls", cards:[
       {q:"Name the 3 intruder types.", a:"Masquerader (pretends to be someone else), misfeasor (legit user misusing their access), clandestine user (seizes admin control to evade detection)."},
@@ -400,7 +401,9 @@
       {q:"What does the AS do, in one sentence?", a:"The Authentication Server verifies your identity once and issues a Ticket Granting Ticket (TGT), so you're not sending your password over and over."},
       {q:"What does the TGS do?", a:"The Ticket Granting Server uses your TGT to issue short-lived tickets for specific services, without you re-authenticating each time."},
       {q:"Kerberos v4's big weakness, fixed in v5?", a:"v4 needs N² Kerberos-to-Kerberos relationships between realms. v5 fixes this with hierarchical inter-realm keys."},
-      {q:"Kerberos principal name format?", a:"principal-name.instance-name@realm-name — e.g. joe.user@realm1."}
+      {q:"Kerberos principal name format?", a:"principal-name.instance-name@realm-name — e.g. joe.user@realm1."},
+      {q:"Why do Kerberos tickets have a timestamp and lifetime?", a:"To stop replay attacks — an attacker who intercepts a ticket can't reuse it forever. v4 hard-coded this to ~21 hours (8-bit field × 5 min); v5 allows arbitrary lifetimes with explicit start/end times instead. Other protections: encrypting the ticket contents, keeping lifetimes short, and binding the ticket to the client's address."},
+      {q:"How does SSO work with a third-party identity provider, in plain steps?", a:"1. You try to log into App A. 2. App A redirects you to the identity provider (e.g. Google/Okta) instead of asking for a password itself. 3. You log in once at the identity provider. 4. It sends App A a signed token proving who you are. 5. App A trusts that token and lets you in. 6. When you then visit App B, it does the same redirect — but you're often already logged in at the identity provider, so no second password needed."}
     ]},
     {n:7, topic:"NAC & cloud security", cards:[
       {q:"NIST's 3 cloud service models?", a:"SaaS (software), PaaS (platform), IaaS (infrastructure) — increasing control as you go, decreasing how much the provider manages for you."},
@@ -417,7 +420,8 @@
     ]},
     {n:10, topic:"IP security", cards:[
       {q:"AH vs ESP — one sentence each?", a:"AH: authentication only, no encryption — proves the data wasn't tampered with. ESP: encryption plus optional authentication — actually hides the content."},
-      {q:"Transport mode vs tunnel mode?", a:"Transport: protects just the payload, used host-to-host. Tunnel: wraps the entire original packet, used when a security gateway (firewall/router) is involved."}
+      {q:"Transport mode vs tunnel mode?", a:"Transport: protects just the payload, used host-to-host. Tunnel: wraps the entire original packet, used when a security gateway (firewall/router) is involved."},
+      {q:"IPsec's 3 functional areas — exact phrasing?", a:"Authentication, confidentiality, and key management. This is tested as exact wording, not just concept — worth memorizing verbatim."}
     ]}
   ];
 

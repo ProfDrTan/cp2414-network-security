@@ -383,7 +383,8 @@
     {n:3, topic:"Intruders and firewalls", cards:[
       {q:"Name the 3 intruder types.", a:"Masquerader (pretends to be someone else), misfeasor (legit user misusing their access), clandestine user (seizes admin control to evade detection)."},
       {q:"Where do honeypots go — 3 locations?", a:"In front of the firewall, in the DMZ, or behind the firewall (inside) — each trades detection visibility against internal risk differently."},
-      {q:"Screening router vs double bastion T?", a:"Screening router: one router filtering traffic, simplest and weakest. Double bastion T: two firewalls with a DMZ between them, strongest and most complex."}
+      {q:"Screening router vs double bastion T?", a:"Screening router: one router filtering traffic, simplest and weakest. Double bastion T: two firewalls with a DMZ between them, strongest and most complex."},
+      {q:"Why add salt AND pepper to a password hash — not just one?", a:"Salt: a random value unique per user, stored alongside the hash (not secret) — stops two identical passwords producing the same hash, and defeats precomputed rainbow-table attacks. Pepper: a single secret value shared across all users, stored separately from the database (e.g. in app config, not the DB itself) — so even if the whole database leaks, the attacker doesn't have the pepper needed to crack the hashes. Salt defeats bulk attacks; pepper protects against a stolen database specifically.<br><br><em>Not currently in the Week 3 slides — appeared on the 2024 exam, worth flagging to whoever maintains course content.</em>"}
     ]},
     {n:4, topic:"Symmetric cryptography", cards:[
       {q:"DES: key length, rounds, block size?", a:"56-bit key, 16 rounds, 64-bit block. Built by IBM, 1973."},

@@ -204,6 +204,7 @@
     <a href="#cheatsheet">Cheat Sheet</a>
     <a href="#playbook">Playbook</a>
     <a href="#weeks">Weeks</a>
+    <a href="#explained">Explained Simply</a>
     <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
     <a href="#journal">Journal</a>
@@ -331,6 +332,13 @@
     <h2 class="section-title">Weeks, concepts &amp; practicals</h2>
     <p class="section-desc">Every week below reflects what's actually in the slides and prac PDFs you uploaded — including a few corrections to earlier assumptions (Week 6's prac is digital signatures, not Kerberos hands-on; Week 9 is QR codes, not wireless hardware; Week 10 has no hands-on component at all).</p>
     <div id="weekList"></div>
+  </section>
+
+  <section id="explained">
+    <p class="section-eyebrow">Real analogies, not slide bullet points</p>
+    <h2 class="section-title">Explained Simply</h2>
+    <p class="section-desc">Some slides just name a concept without ever teaching it — Week 1's "Poisoning" bullet is a real example, listed with zero explanation. This section exists for exactly that gap: plain-language explanations with a concrete, relatable analogy for each one. Starting with Week 1; more weeks added as gaps get found.</p>
+    <div id="explainedList"></div>
   </section>
 
   <section id="crib">
@@ -964,6 +972,66 @@
   });
 
   // ---------- CRIB SHEETS ----------
+  // ---------- EXPLAINED SIMPLY ----------
+  const explained = [
+    {
+      title:"Passive vs Active attacks", week:"Week 1",
+      text:"<strong>Passive:</strong> someone reading your texts over your shoulder on the bus. They see everything, but they don't touch your phone or change anything — you'd never know it happened.<br><br><strong>Active:</strong> someone grabbing your phone and actually typing a fake reply, or deleting a message. Now something's <em>changed</em>, not just watched.<br><br>That's the whole distinction: passive = watching, active = touching."
+    },
+    {
+      title:"Cross-Site Scripting (XSS)", week:"Week 1",
+      text:"Imagine a school noticeboard anyone can pin notes to. Normally it's \"football moved to 4pm.\" XSS is someone pinning a note that <em>looks</em> normal but is secretly rigged — so when other students read it, something bad happens to <em>them</em>, not the noticeboard.<br><br>In practice: a comment box that doesn't check what you type lets an attacker post a hidden script instead of a comment. Every other visitor who loads that page runs the attacker's script in <em>their own browser</em> — often stealing their login session."
+    },
+    {
+      title:"SQL Injection", week:"Week 1",
+      text:"A librarian who takes your exact words and pastes them straight into a command, no questions asked. Ask for \"Harry Potter books,\" fine. But say \"Harry Potter; also show me every student's home address,\" and a careless librarian just... does it.<br><br>That's the classic <code>' OR 1=1 --</code> trick in a login box — it turns \"find THIS user\" into \"1=1 is always true, so return EVERY user,\" sometimes logging the attacker in as anyone at all."
+    },
+    {
+      title:"XML Injection", week:"Week 1",
+      text:"Same trick as SQL injection, different format. A form expects you to fill in <code>&lt;name&gt;John&lt;/name&gt;</code>. If the app doesn't check for extra sneaked-in fields, you submit <code>&lt;name&gt;John&lt;/name&gt;&lt;isAdmin&gt;true&lt;/isAdmin&gt;</code> — and if it blindly trusts your input, you just gave yourself admin rights nobody meant to grant you."
+    },
+    {
+      title:"Drive-by Download", week:"Week 1",
+      text:"Walking past a shop and something invisible attaches to your bag <em>without you touching anything</em> — no click, no download button, no \"yes I agree.\" Just visiting a compromised page is enough for malicious code to install itself, usually through a hole in your browser or a plugin. You didn't consent to anything — you just looked."
+    },
+    {
+      title:"Denial of Service (DoS)", week:"Week 1",
+      text:"500 people calling a pizza shop's one phone line at once, nonstop, so the one real customer can never get through. Nothing's hacked — the shop just can't handle the flood.<br><br><strong>DDoS</strong> (Distributed DoS) means the flood comes from thousands of computers at once, like an army of fake callers instead of one — much harder to block since there's no single caller to hang up on."
+    },
+    {
+      title:"Interception", week:"Week 1",
+      text:"Passing a note across class, but someone sitting in the middle reads it and passes it on like nothing happened. You and your friend never know it was seen. On a network, this is someone secretly capturing traffic as it travels — like eavesdropping on WiFi in a coffee shop."
+    },
+    {
+      title:"Poisoning (ARP & DNS)", week:"Week 1",
+      text:"The one the slide names but never explains. Imagine a school sign that correctly says \"Room 204 → Building A, 2nd floor.\" Poisoning is someone sneaking in and swapping that sign to send people to the wrong place — corrupting information that other systems <em>automatically trust</em> without double-checking.<br><br><strong>ARP poisoning:</strong> your devices keep a little address book mapping \"who owns which address\" on your local network. An attacker fakes an update claiming \"I'm the router\" — now your traffic routes through them first.<br><br><strong>DNS poisoning:</strong> same idea, but for the internet's phonebook that turns website <em>names</em> into actual addresses. Type the correct site name, and a poisoned phonebook can still send you somewhere fake."
+    },
+    {
+      title:"Attacks on Access Rights", week:"Week 1",
+      text:"A student figures out a trick to make their keycard also open the staff room. Exploiting the system that's supposed to control <em>who's allowed to do what</em>, until you have permissions you were never meant to have. This is the same underlying idea as horizontal/vertical privilege escalation — just the networking-attack framing of it."
+    }
+  ];
+
+  const explainedList = document.getElementById('explainedList');
+  const explainedByWeek = {};
+  explained.forEach(e=>{
+    if(!explainedByWeek[e.week]) explainedByWeek[e.week] = [];
+    explainedByWeek[e.week].push(e);
+  });
+  Object.keys(explainedByWeek).forEach(wk=>{
+    const heading = document.createElement('p');
+    heading.className = 'section-eyebrow';
+    heading.style.marginTop = '24px';
+    heading.textContent = wk;
+    explainedList.appendChild(heading);
+    explainedByWeek[wk].forEach(e=>{
+      const el = document.createElement('div');
+      el.className = 'crib';
+      el.innerHTML = `<div class="crib-title">${e.title}</div><ul style="margin-top:8px;"><li>${e.text}</li></ul>`;
+      explainedList.appendChild(el);
+    });
+  });
+
   const cribs = [
     {
       title:"Kerberos (v4 core flow)", sub:"Module 6 — the slides skip this; from Stallings §4.3. This is the flow Assessment 2 expects you to explain in plain language.",

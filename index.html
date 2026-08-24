@@ -247,6 +247,7 @@
     <a href="#daily">Daily</a>
     <a href="#cheatsheet">Cheat Sheet</a>
     <a href="#playbook">Playbook</a>
+    <a href="#prac1">Prac 1 Guide</a>
     <a href="#weeks">Weeks</a>
     <a href="#explained">Explained Simply</a>
     <a href="#crib">Crib Sheets</a>
@@ -397,6 +398,81 @@
         <strong>CA certificate — skip unless testing HTTPS:</strong> bWAPP runs on plain HTTP, so this step isn't needed for the standard exercises. If it ever is: with the browser already proxied, visit <span class="mono" style="font-size:12px;">http://burp</span>, download the CA cert, import it into the browser's certificate store.
       </div>
       <p style="font-size:13.8px; margin:0;"><strong>Confirm it's working:</strong> load <span class="mono" style="font-size:12px;">http://&lt;beebox-ip&gt;/bWAPP/login.php</span> in the proxied browser, log in with <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span>, then check Burp's <strong>Proxy → HTTP history</strong> tab — requests like <span class="mono" style="font-size:12px;">GET /bWAPP/login.php</span> should appear as you click around. <strong>If history stays empty even though the page loaded fine</strong>, that's the tell-tale sign the browser's proxy setting silently didn't take (see the warning above) — go back and re-verify the proxy toggle/fields, fully close and reopen the browser (proxy settings are read at browser startup, not live), then reload the page.</p>
+    </div>
+  </section>
+
+  <section id="prac1">
+    <p class="section-eyebrow">What every menu item is for, and what order to do things in</p>
+    <div class="section-title-row"><h2 class="section-title">Practical 1 — Full Orientation Guide</h2><button class="tts-btn" onclick="toggleReadAloud('prac1', this)">Listen</button></div>
+    <p class="section-desc">Week 1's Blackboard folder has seven items sitting next to each other with no explanation of what each one is for or what order to touch them in. This section exists to remove that confusion entirely — what the prac is actually about, what every single link is, and a step-by-step path for both "using the lab's computer" and "using your own laptop," since those two paths genuinely diverge.</p>
+
+    <div class="crib">
+      <div class="crib-title">What Practical 1 actually is, in one paragraph</div>
+      <p style="font-size:13.8px; margin:0;">Prac 1 has two halves. <strong>Half 1</strong> is nine short-answer written questions covering core security concepts (CIA Triad, threats vs attacks, security design principles, SQL injection, session hijacking, etc.) — no VM needed, answer these from the lecture material and your own understanding. <strong>Half 2</strong> is hands-on: a 20-25 minute warm-up on a live hacking practice site, then a guided walkthrough of HTML Injection attacks against a deliberately vulnerable local web app (bWAPP), using Burp Suite to intercept and manipulate your own web traffic. The hands-on half needs the VM/software setup — that's what the rest of this section walks through.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Decoding the Week 1 menu: what each item is and the order to use them in</div>
+      <p style="font-size:13.8px; margin:0 0 10px;">These items are listed alphabetically/by-type on Blackboard, NOT in the order you're meant to use them. Here's the actual order and purpose of each:</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:8px;"><strong>Prac Instruction</strong> — the master document (the PDF this guide is built from). Read this first, top to bottom, before opening anything else. Everything below is referenced from inside it.</li>
+        <li style="margin-bottom:8px;"><strong>Oracle Virtual Box</strong> — the free software that lets you run a virtual computer (a "VM") inside your real one. This is the download link for the VirtualBox program itself — install this before anything else that follows.</li>
+        <li style="margin-bottom:8px;"><strong>BeeBox</strong> (and <strong>Alternative (maybe faster) BeeBox download</strong> — same file, second mirror) — this is the pre-built vulnerable practice server itself, packaged as a virtual machine. It's what you'll be attacking. Download ONE of these two links (they're the same file), not both. <span style="color:var(--danger); font-weight:600;">See the warning below about which source to trust.</span></li>
+        <li style="margin-bottom:8px;"><strong>Burp Suite Community Edition</strong> — the free traffic-interception tool you'll use to see and modify web requests as they happen. Download link for the actual software.</li>
+        <li style="margin-bottom:8px;"><strong>bWAPP, or a buggy web application</strong> — this link is just background reading/reference about bWAPP itself (the vulnerable app that lives inside BeeBox) — not something you need to separately download. BeeBox already contains bWAPP pre-installed.</li>
+        <li><strong>Short Ans Questions Solution</strong> and <strong>Module 1 Quiz</strong> — these come after you've done the work above: the solution doc is for checking your written answers (released later in the week), and the quiz is the graded checkpoint.</li>
+      </ol>
+      <div class="note warn" style="margin-top:10px;"><strong>Trust warning on BeeBox specifically:</strong> the original SourceForge listing for <span class="mono" style="font-size:12px;">bee-box_v1.6.7z</span> carries a persistent "Malware detected" flag — a known, standing issue with that exact file, not a one-off. Use the course's own "Alternative (maybe faster) BeeBox download" link instead (a Google Drive-hosted copy), which is the trustworthy source.</div>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Which path applies to you: lab computer vs your own laptop</div>
+      <p style="font-size:13.8px; margin:0 0 10px;">The official instructions genuinely branch here — don't mix steps from both paths.</p>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:8px;"><strong>Lab computer:</strong> VirtualBox, BeeBox, AND Burp Suite ALL run as separate virtual machines (three VMs total, or two if BeeBox/Burp images are pre-installed). Both VMs need their network adapter set to Bridged, both need their own IP addresses on the same subnet, and you manually type BeeBox's IP into the Burp VM's browser.</li>
+        <li><strong>Your own laptop (this is the path this dashboard's Playbook/Step 0-6 above already documents in full):</strong> only BeeBox runs as a VM. Burp Suite installs directly on your real laptop (the "host"), not inside a second VM. This is simpler — you don't need to configure a second IP address for Burp, since it's just running as a normal program on your own machine. You only need BeeBox's IP (via <span class="mono" style="font-size:12px;">ifconfig</span> inside the VM, per Step 5 above) and Burp's own proxy listener (127.0.0.1:8080, per Step 6 above).</li>
+      </ul>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">The full hands-on sequence, start to finish (own-laptop path)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Install VirtualBox on your laptop</li>
+        <li style="margin-bottom:6px;">Download BeeBox (via the Alternative link), extract it, build a VM around the existing <span class="mono" style="font-size:12px;">bee-box.vmdk</span> disk (see Playbook Steps 0-3 above for the exact gotchas)</li>
+        <li style="margin-bottom:6px;">Set BeeBox's network adapter to Bridged (Playbook Step 4)</li>
+        <li style="margin-bottom:6px;">Boot BeeBox, run <span class="mono" style="font-size:12px;">ifconfig</span> inside it to get its IP (Playbook Step 5)</li>
+        <li style="margin-bottom:6px;">Install Burp Suite Community Edition directly on your laptop (not in a VM)</li>
+        <li style="margin-bottom:6px;">Start Burp fully (past the welcome screen), confirm the 127.0.0.1:8080 listener is Running, and make sure Intercept is switched to <strong>off</strong> for now (Playbook Step 6)</li>
+        <li style="margin-bottom:6px;">Point your laptop browser's proxy at 127.0.0.1:8080 (Firefox: browser-level setting; Chrome: Windows system proxy setting — both detailed in Playbook Step 6)</li>
+        <li style="margin-bottom:6px;">Visit <span class="mono" style="font-size:12px;">http://&lt;beebox-ip&gt;/bWAPP/login.php</span>, confirm the request shows up in Burp's HTTP history — this proves the whole chain is connected</li>
+        <li style="margin-bottom:6px;">Log into bWAPP with <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span>, set security level to <strong>low</strong></li>
+        <li style="margin-bottom:6px;">Select <strong>HTML Injection – Reflected (GET)</strong> from the bug menu, click <strong>Hack</strong></li>
+        <li style="margin-bottom:6px;">Enter a first/last name, submit, then try editing the values directly in the URL bar (e.g. <span class="mono" style="font-size:12px;">?firstname=I+CHANGE&amp;lastname=THE+NAME</span>) and observe the welcome message updates to match — this demonstrates the app trusts and reflects URL input without sanitizing it</li>
+        <li style="margin-bottom:6px;">Try injecting actual HTML tags as the name values (e.g. a fake link or styled text) to see the page render your injected HTML rather than treating it as plain text — this is the actual vulnerability</li>
+        <li style="margin-bottom:6px;">Repeat with <strong>HTML Injection – Reflected (POST)</strong> — note the values can no longer be changed via the URL bar (POST data isn't in the URL), but injection through the input box itself still works</li>
+        <li style="margin-bottom:6px;">Try <strong>HTML Injection – Reflected (Current URL)</strong> — this time turn Burp's Intercept <strong>on</strong> so it pauses the request, edit the raw <span class="mono" style="font-size:12px;">Host:</span> header directly inside Burp before forwarding it, then observe how the page reacts</li>
+        <li><strong>Close-up (do this every session, non-optional):</strong> power off both VMs, then right-click each → Remove → "Delete all files." Skipping this can break the VMs for later weeks.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">The nine short-answer questions (for orientation — answer using lecture material, not copied text)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>What is the CIA Triad? Explain each element.</li>
+        <li>Give 3 computer security challenges, why they're challenging, and how to tackle them.</li>
+        <li>What's the difference between "threat" and "attack"?</li>
+        <li>Disadvantages of connectionless integrity service vs. connection-oriented — should you worry about them?</li>
+        <li>Give 5 fundamental security design principles, explained in your own words.</li>
+        <li>Explain "drive-by download" — how do attackers perform it?</li>
+        <li>What is SQL injection?</li>
+        <li>What is a session token, and what's it used for?</li>
+        <li>What is Session Hijacking, and why would an attacker want to do it?</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Warm-up task — don't skip this, it's assigned before the bWAPP work</div>
+      <p style="font-size:13.8px; margin:0;">Register at <span class="mono" style="font-size:12px;">hackthissite.org/register</span> (do NOT use a Microsoft/Outlook email — it's known not to work with this site) and spend 20-25 minutes exploring/hacking the site before moving to the BeeBox setup. This is a live external practice site, unrelated to the BeeBox VM — just a warm-up exercise.</p>
     </div>
   </section>
 

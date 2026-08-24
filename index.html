@@ -348,8 +348,9 @@
         <li>The command must run <strong>inside the BeeBox VM window itself</strong> — not in a PowerShell/Command Prompt window on the host laptop. Both look like black terminal windows and are easy to mix up mid-session.</li>
         <li>Inside BeeBox: right-click the desktop → <strong>Open Terminal</strong> (or Applications → Accessories → Terminal)</li>
         <li>The command is <span class="mono" style="font-size:12px;">ifconfig</span> — <strong>not</strong> <span class="mono" style="font-size:12px;">ipconfig</span> (that's the Windows-only spelling, will error with "command not found" on Linux)</li>
-        <li>Look for the <span class="mono" style="font-size:12px;">eth0</span> block → <span class="mono" style="font-size:12px;">inet addr:</span> — that's the IP</li>
+        <li>Look for the <span class="mono" style="font-size:12px;">eth0</span> block → <span class="mono" style="font-size:12px;">inet addr:</span> — that's the IP. Confirmed working output looks like: <span class="mono" style="font-size:12px;">inet addr:192.168.1.108  Bcast:192.168.1.255  Mask:255.255.255.0</span></li>
       </ul>
+      <div class="note warn"><strong>Don't use <span class="mono" style="font-size:12px;">hostname -I</span> on this VM</strong> — BeeBox ships an old <span class="mono" style="font-size:12px;">hostname</span> package that doesn't support the <span class="mono" style="font-size:12px;">-I</span> flag, and produces garbled output instead of a clean error. <span class="mono" style="font-size:12px;">ifconfig</span> above is the only command confirmed to work on this specific VM.</div>
       <p style="font-size:13.8px; margin:0;">Verify from the <strong>host</strong> laptop's normal browser (Chrome/Firefox/Edge — not typed into PowerShell): <span class="mono" style="font-size:12px;">http://&lt;that-ip&gt;/bWAPP/login.php</span> should load the login page.</p>
     </div>
 

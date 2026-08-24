@@ -367,8 +367,21 @@
     <div class="crib">
       <div class="crib-title">Step 6 — Burp Suite: proxy setup and connecting to bWAPP</div>
       <div class="crib-sub">Once BeeBox is booted and its IP is known (Step 5), this is what gets Burp actually seeing traffic.</div>
+      <div class="note fix">
+        <strong>The one rule that prevents 90% of confusion here: Burp must be fully running BEFORE the browser is touched. Always this order — never reversed:</strong>
+        <ol style="font-size:13.5px; padding-left:18px; margin:8px 0 0;">
+          <li>Start Burp completely (past the welcome screen, main window open)</li>
+          <li>Confirm the 8080 listener shows <strong>Running</strong></li>
+          <li>Turn Burp's <strong>Intercept</strong> to <strong>off</strong> (see below — it's on by default and will look "frozen" otherwise)</li>
+          <li>THEN set the browser's proxy</li>
+          <li>THEN load bWAPP</li>
+        </ol>
+      </div>
       <div class="note warn">
-        <strong>Why order matters here:</strong> Burp's proxy engine does NOT start the moment you open the app. The welcome screen ("Temporary project in memory" / "New project on disk" / "Open existing project") is only a setup gate — nothing is listening on port 8080 until you click through it. If you configure your browser's proxy and try to load a page <em>before</em> clicking past this screen, one of two things happens: either the page fails to load outright (connection refused, if the proxy setting actually took), or — more confusingly — it loads fine because the browser's proxy setting silently didn't apply. Either way, Burp's HTTP history will stay empty, and it looks like "nothing is working" when actually the proxy was never running yet. <strong>Always confirm Burp shows a Running listener on 127.0.0.1:8080 (next step) before troubleshooting anything else.</strong>
+        <strong>Why order matters:</strong> the welcome screen ("Temporary project in memory" / "New project on disk" / "Open existing project") is only a setup gate — nothing is listening on port 8080 until you click through it. If the browser's proxy is configured before Burp is fully started, the page either fails to load outright, or the browser silently bypasses the proxy and loads the site directly — both look confusing, and Burp's HTTP history stays empty either way.
+      </div>
+      <div class="note warn">
+        <strong>"Burp is just sitting there waiting" — this is Intercept, a real feature, not a bug:</strong> Burp's <strong>Proxy → Intercept</strong> tab is ON by default. While on, Burp pauses EVERY request and holds it until you manually click "Forward" — useful later for editing requests by hand, but confusing right now since it looks frozen. Click the <strong>Intercept is on / Intercept is off</strong> toggle button so it reads <strong>"Intercept is off"</strong> before doing anything else. With it off, traffic flows through automatically and lands in <strong>HTTP history</strong> without you touching anything.
       </div>
       <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
         <li>Open <strong>Burp Suite Community Edition</strong> → on the welcome screen leave <strong>"Temporary project in memory"</strong> selected → click <strong>Next</strong> → on the following screen keep default config → click <strong>Start Burp</strong>. This is the actual moment the proxy engine starts — not before.</li>

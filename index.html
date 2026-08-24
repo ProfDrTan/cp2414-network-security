@@ -1505,18 +1505,22 @@
       restoreOriginalHTML();
       ttsActiveBtn = null;
     };
-    utter.onerror = () => {
+    utter.onerror = (event) => {
       if(ttsActiveBtn === btn) resetTTSButton(btn);
       restoreOriginalHTML();
       ttsActiveBtn = null;
+      if(event && event.error && event.error !== 'canceled' && event.error !== 'interrupted'){
+        alert('Read-aloud failed: ' + event.error + '. Please screenshot this and report it.');
+      }
     };
 
     btn.classList.add('tts-active');
     btn.textContent = 'Stop';
     ttsActiveBtn = btn;
 
-    // Small delay helps some browsers (esp. Chrome) reliably start after a cancel()
-    setTimeout(() => synth.speak(utter), 50);
+    // Called synchronously (not via setTimeout) — Chrome can silently reject
+    // speech requests that aren't tied directly to the click that triggered them.
+    synth.speak(utter);
   }
 
   document.addEventListener('visibilitychange', () => {

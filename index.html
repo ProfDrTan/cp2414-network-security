@@ -247,7 +247,7 @@
     <a href="#daily">Daily</a>
     <a href="#cheatsheet">Cheat Sheet</a>
     <a href="#playbook">Playbook</a>
-    <a href="#prac1">Prac 1 Guide</a>
+    <a href="#pracguides">Practical Guides</a>
     <a href="#weeks">Weeks</a>
     <a href="#explained">Explained Simply</a>
     <a href="#crib">Crib Sheets</a>
@@ -401,7 +401,31 @@
     </div>
   </section>
 
-  <section id="prac1">
+  <section id="pracguides">
+    <p class="section-eyebrow">What every menu item is for, and what order to do things in — one guide per practical</p>
+    <div class="section-title-row"><h2 class="section-title">Practical Guides</h2></div>
+    <p class="section-desc">Ten practicals run across the trimester. Click a tab below to jump to that practical's orientation guide — what it covers, the hands-on steps condensed to what actually matters, and every short-answer question listed for your own reference. Each tab has its own "Listen" button.</p>
+
+    <div class="prac-tabs" style="display:flex; flex-wrap:wrap; gap:6px; margin:14px 0;">
+      <button class="prac-tab-btn active" data-prac="prac1" onclick="showPrac('prac1', this)">Prac 1</button>
+      <button class="prac-tab-btn" data-prac="prac2" onclick="showPrac('prac2', this)">Prac 2</button>
+      <button class="prac-tab-btn" data-prac="prac3" onclick="showPrac('prac3', this)">Prac 3</button>
+      <button class="prac-tab-btn" data-prac="prac4" onclick="showPrac('prac4', this)">Prac 4</button>
+      <button class="prac-tab-btn" data-prac="prac5" onclick="showPrac('prac5', this)">Prac 5</button>
+      <button class="prac-tab-btn" data-prac="prac6" onclick="showPrac('prac6', this)">Prac 6</button>
+      <button class="prac-tab-btn" data-prac="prac7" onclick="showPrac('prac7', this)">Prac 7</button>
+      <button class="prac-tab-btn" data-prac="prac8" onclick="showPrac('prac8', this)">Prac 8</button>
+      <button class="prac-tab-btn" data-prac="prac9" onclick="showPrac('prac9', this)">Prac 9</button>
+      <button class="prac-tab-btn" data-prac="prac10" onclick="showPrac('prac10', this)">Prac 10</button>
+    </div>
+
+    <style>
+      .prac-tab-btn{padding:7px 14px; border-radius:8px; border:1px solid var(--border,#333); background:transparent; cursor:pointer; font-size:13px;}
+      .prac-tab-btn.active{background:var(--accent,#3a7); color:#fff; font-weight:600;}
+      .prac-pane{display:none;}
+      .prac-pane.active{display:block;}
+    </style>
+  <div id="prac1" class="prac-pane active">
     <p class="section-eyebrow">What every menu item is for, and what order to do things in</p>
     <div class="section-title-row"><h2 class="section-title">Practical 1 — Full Orientation Guide</h2><button class="tts-btn" onclick="toggleReadAloud('prac1', this)">Listen</button></div>
     <p class="section-desc">Week 1's Blackboard folder has seven items sitting next to each other with no explanation of what each one is for or what order to touch them in. This section exists to remove that confusion entirely — what the prac is actually about, what every single link is, and a step-by-step path for both "using the lab's computer" and "using your own laptop," since those two paths genuinely diverge.</p>
@@ -474,8 +498,249 @@
       <div class="crib-title">Warm-up task — don't skip this, it's assigned before the bWAPP work</div>
       <p style="font-size:13.8px; margin:0;">Register at <span class="mono" style="font-size:12px;">hackthissite.org/register</span> (do NOT use a Microsoft/Outlook email — it's known not to work with this site) and spend 20-25 minutes exploring/hacking the site before moving to the BeeBox setup. This is a live external practice site, unrelated to the BeeBox VM — just a warm-up exercise.</p>
     </div>
-  </section>
+  </div>
 
+  <div id="prac2" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 2 — Administering Secure Network</h2><button class="tts-btn" onclick="toggleReadAloud('prac2', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;"><strong>SQL Injection (GET/Search):</strong> BeeBox + Burp running, open bWAPP, pick "SQL Injection (GET/Search)". Search "test" first (baseline — no results). Then search <span class="mono">blah' or 1=1#</span> — this returns every movie in the DB. That's the injection working: the crafted input turns the query's WHERE clause into something always-true.</li>
+        <li style="margin-bottom:6px;"><strong>Directory Traversal:</strong> Pick "Directory Traversal - Directories". Note the URL's <span class="mono">?directory=documents</span> param. Try appending <span class="mono">../</span>, <span class="mono">../../</span>, <span class="mono">../../../</span> etc to that param directly in the address bar — each one walks one folder further up the server's filesystem, eventually exposing root-level directories.</li>
+        <li style="margin-bottom:6px;"><strong>DNS Poisoning:</strong> Outside any VM, use nslookup.io to find the real IPs of google.com.au and github.com. Inside BurpSuite VM (or your own machine), edit <span class="mono">C:\Windows\System32\drivers\etc\hosts</span> as Administrator, add a line mapping github.com's IP to "www.google.com.au", save. Visit google.com.au in that browser — it now resolves to GitHub's IP instead, demonstrating how a poisoned hosts file redirects trusted domain names. <strong style="color:var(--danger,#c33);">Delete that line again afterward</strong> — don't leave it in.</li>
+        <li style="margin-bottom:6px;"><strong>NAT & PAT (with a partner):</strong> Compare your local IP (<span class="mono">ipconfig</span>) against your public IP (search "my IP address" on Google) — they differ, demonstrating NAT. Then join a shared mobile hotspot with two other people and confirm you all show the same public IP — demonstrating PAT (many devices sharing one public address via different ports).</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>How can you prevent an SMTP server from sending unable to deliver the message back to spammers (draw a diagram/picture if you'd like and explain)? Why is it important to do so?</li>
+        <li>Is it recommended to install a spam filter on a POP3 server? Why or why not?</li>
+        <li>What is a Virtual Private Network (VPN)? And what are VPN concentrators?</li>
+        <li>What is a Demilitarised zone (DMZ)? Why would you want to employ it to a network?</li>
+        <li>What is "port security"? What are the techniques can you use to protect the ports?</li>
+        <li>Explain the term "Network Separation".</li>
+        <li>What is flood guard? What kind of attacks associate with it?</li>
+        <li>A company has asked for your opinion on their network infrastructure: (a) its employees need access to their computing devices over the internet — how would NAT technologies be used for that? (b) employees' desktops/devices aren't tied to fixed department areas, as staff move between departments/floors — what solution would you recommend, and why, from a network security standpoint?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac3" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 3 — Intruders and Firewalls</h2><button class="tts-btn" onclick="toggleReadAloud('prac3', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;"><strong>Wireshark:</strong> Open Wireshark, start capturing on your active interface (Ethernet/Wi-Fi). In cmd/terminal run <span class="mono">ping www.google.com.au</span>. Back in Wireshark, filter by <span class="mono">icmp</span>, open a ping request, drill into Internet Control Message Protocol → Data, and observe what's visible in the raw payload.</li>
+        <li style="margin-bottom:6px;"><strong>Firewall (BeeBox + BurpSuite VMs, bridged adapter, same subnet):</strong> Confirm bWAPP loads normally first. Go to Windows Defender Firewall on the BurpSuite VM → turn it on for Private + Public, tick "Block all incoming connections" under Public. Then go to Advanced Settings → Outbound Rules → New Rule → Port → TCP → remote port 80 → Block the connection → apply to all profiles → name it "Blocking_Port_80". With Burp Intercept off, try loading bWAPP again — it should now fail. Go back and click "Restore Default Policy" to undo the rule, confirm bWAPP loads again. Turn off and delete both VMs when done.</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>Who are misfeasors? Give some examples of their intrusion.</li>
+        <li>There are two ways to protect a password file. What are they? Explain.</li>
+        <li>With regards to intrusion detection, explain: (a) True positive (b) False positive (c) True negative (d) False negative.</li>
+        <li>What is statistical anomaly detection?</li>
+        <li>What is rule-based Intrusion detection?</li>
+        <li>What are honeypots? (a) What are the uses of them? (b) Give three possible locations to deploy them and explain the advantages/disadvantages of each location.</li>
+        <li>What is the difference between "reactive" and "proactive" password checking?</li>
+        <li>What is the purpose of using "salt" in the context of UNIX password management?</li>
+        <li>What is the difference between a packet filtering firewall and stateful inspection packet firewall?</li>
+        <li>Explain the personal firewall in a home environment.</li>
+        <li>Explain distributed firewalls. Where can the firewalls be placed? Why are they placed there?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac4" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 4 — Symmetric Encryption</h2><button class="tts-btn" onclick="toggleReadAloud('prac4', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Download/install <strong>CrypTool 1.4.42</strong> (own computer) from cryptool.org/en/ct1/downloads, or open it on the BurpSuite VM if using the lab. Create a new file, type "hello world".</li>
+        <li style="margin-bottom:6px;"><strong>Caesar/ROT-13:</strong> Encrypt/Decrypt → Symmetric (classic) → Caesar/Rot-13. Try a numeric shift (e.g. 3) and observe the substitution alphabet + output. Decrypt back using the same key.</li>
+        <li style="margin-bottom:6px;"><strong>Substitution/Atbash:</strong> Same menu → Substitution/Atbash, key "XYZ", observe the mapped alphabet, encrypt, then decrypt.</li>
+        <li style="margin-bottom:6px;"><strong>Permutation/Transposition:</strong> Try keys "ABCD" then "TEST", observe how the permutation numbers change, encrypt, display ciphertext, decrypt.</li>
+        <li style="margin-bottom:6px;"><strong>Ciphertext-only analysis:</strong> Re-encrypt "hello world" with Caesar, then use Analysis → Symmetric Encryption (Classic) → Ciphertext-Only → Caesar to auto-crack it. Note whether it recovers the correct plaintext and think about why/why not — this matters for the short-answer reflection built into the steps.</li>
+        <li style="margin-bottom:6px;"><strong>Fun Bits:</strong> Decrypt "GDKKN" using the substitution table given in the PDF, and work out which key (0–4) produced the sample ciphertext blocks shown.</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>What are the 5 elements of a symmetric encryption scheme? Explain.</li>
+        <li>Explain the difference between a block cipher and a stream cipher in plaintext processing.</li>
+        <li>In cryptanalysis, explain what is known to a cryptanalyst for each: (a) Ciphertext only (b) Known plaintext (c) Chosen plaintext.</li>
+        <li>An encryption scheme is computationally secure if the ciphertext generated meets one or both of what criteria?</li>
+        <li>Explain brute-force attack.</li>
+        <li>Briefly explain: DES, Triple DES (3DES), AES.</li>
+        <li>What is the difference between random and pseudorandom numbers?</li>
+        <li>With regards to a sequence of random numbers, explain: (a) Randomness (b) Unpredictability.</li>
+        <li>What are the advantages/disadvantages of triple DES?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac5" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 5 — Symmetric &amp; Asymmetric Encryption</h2><button class="tts-btn" onclick="toggleReadAloud('prac5', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;"><strong>AES (CBC):</strong> In CrypTool, Encrypt/Decrypt → Symmetric (modern) → AES (CBC). Enter key <span class="mono">00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</span> (128-bit), Encrypt, inspect the hex/ASCII output. Then run Analysis → Symmetric Encryption (modern) → AES (CBC) → Start — watch the brute-force estimate (it'll be astronomically large, e.g. 10^25 years), then Cancel. Repeat the whole thing with a near-zero key (<span class="mono">00 01</span>) and compare.</li>
+        <li style="margin-bottom:6px;"><strong>Key from a hash:</strong> New file "Don't panic", new file "Bazinga". On the "Bazinga" window: Indiv.Procedures → Hash → MD4, copy the resulting hex value. Use that hex as your AES key against the "Don't panic" text, encrypt then decrypt.</li>
+        <li style="margin-bottom:6px;"><strong>Asymmetric (RSA):</strong> Reopen CrypTool fresh. Encrypt/Decrypt → Asymmetric → RSA Encryption, pick the default recipient, Encrypt. Then Asymmetric → RSA Decryption, enter the PIN, Decrypt, compare to the original.</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>What are the differences between symmetric and asymmetric cryptography?</li>
+        <li>Is it possible to perform authentication solely by using symmetric encryption? Explain.</li>
+        <li>What is the problem with message authentication approaches that do not rely on encryption?</li>
+        <li>Explain how to produce Message Authentication Code (MAC)?</li>
+        <li>Explain one-way hash function/secure hash function.</li>
+        <li>What is a message digest?</li>
+        <li>What is SHA?</li>
+        <li>What is the difference between MAC and HMAC?</li>
+        <li>What are the 6 elements of public-key encryption? Explain.</li>
+        <li>What are the uses of public-key cryptosystems?</li>
+        <li>What is RSA? What are the possible attack approaches that can be done on RSA? Explain.</li>
+        <li>Briefly explain how Diffie-Hellman key exchange works.</li>
+        <li>Can key exchange protocol prevent a man-in-the-middle attack? Explain.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac6" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 6 — Digital Signature</h2><button class="tts-btn" onclick="toggleReadAloud('prac6', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Install Adobe Acrobat Reader if needed. Download the "REQUEST FOR REPLACEMENT JCU AWARD" fillable PDF form from JCU's site, open it in Acrobat, sign in with your JCU email when prompted.</li>
+        <li style="margin-bottom:6px;">Create a self-signed digital ID: Edit → Preferences → Signatures → More (Identities & Trusted Certificates) → Digital IDs → Add ID → "A new digital ID I want to create now" → "New PKCS#12 digital ID file" (do <strong>not</strong> use Windows Certificate Store — it's flagged unsafe in the instructions). Fill in name/email, pick 2048-bit RSA, set a password, Finish.</li>
+        <li style="margin-bottom:6px;">Back in the PDF, click the Signature field, select your new Digital ID, Continue, click "Create" at the Appearance dropdown to design how your signature looks, save it, enter your password, Sign, save the signed file.</li>
+        <li style="margin-bottom:6px;">Click your signature → Signature Properties → Validity Summary → "Show Signer's Certificate" → click through every tab in the Certificate Viewer and observe what's shown (Summary, Details, Revocation, Trust, Policies, Legal Notice).</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>Can message authentication and user authentication be used interchangeably? Why or why not? Explain.</li>
+        <li>What are the four general means of authenticating a user's identity? Explain.</li>
+        <li>In Symmetric key distribution, how is the permanent key used for distributing session keys?</li>
+        <li>With regards to Kerberos, what are timestamp and lifetime of a ticket (issued by the TGS)? Why are they important?</li>
+        <li>What is a nonce in Version 5 Kerberos and what is the use of it?</li>
+        <li>What is the main problem with publishing a public-key? How has the problem been tackled?</li>
+        <li>What is public-key infrastructure?</li>
+        <li>Explain Identity federation.</li>
+        <li>What is single sign-on (SSO)?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac7" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 7 — Network Access Control &amp; Cloud Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac7', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;"><strong>Remote access:</strong> Download/install TeamViewer on your personal computer and phone, create an account, and practice connecting one device to the other remotely following TeamViewer's own how-to guides.</li>
+        <li style="margin-bottom:6px;"><strong>Cloud computing tour:</strong> Explore one example of each category and, where free, register and click around: SaaS (Dropbox, Google Docs), PaaS (Azure App Service), IaaS (Azure), SecaaS (Azure Sentinel). <span style="color:var(--danger,#c33);">Watch for services asking for a card for a "free trial"</span> — you don't need to actually subscribe to anything.</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>What is Network Access Control (NAC)? Why is it needed?</li>
+        <li>What is the quarantine network, and what is the purpose of having it?</li>
+        <li>Explain the following NAC enforcement methods: (a) IEEE 802.1X (b) VLANs.</li>
+        <li>What is an Extensible Authentication Protocol (EAP) method? What do we use it for?</li>
+        <li>What is cloud computing?</li>
+        <li>Explain the initialisms: (a) SaaS (b) PaaS (c) IaaS (d) SecaaS.</li>
+        <li>Give three cloud security threats and their countermeasures.</li>
+        <li>Explain the database environments: (a) Multi-instance model (b) Multi-tenant model.</li>
+        <li>How can you protect data in the cloud?</li>
+        <li>Give five examples of cloud security as a service (SecaaS) and explain each.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac8" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 8 — Transport Layer Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac8', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Start your BeeBox VM (bridged adapter), find its IPv4 via <span class="mono">ifconfig</span> in its terminal.</li>
+        <li style="margin-bottom:6px;">From your host machine's cmd/terminal, run <span class="mono">ssh bee@ip_address</span> (password: <span class="mono">bug</span>), accept the fingerprint prompt.</li>
+        <li style="margin-bottom:6px;">Once logged in, practice basic Ubuntu commands (ls, cd, etc.) — <span style="color:var(--danger,#c33);">be careful with <span class="mono">rm</span></span>, it doesn't ask for confirmation and doesn't have an undo. Type <span class="mono">logout</span> when done, then turn off the BeeBox VM.</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>What are the characteristics of the World Wide Web that make it vulnerable to a variety of security attacks?</li>
+        <li>Threats on the Web can be categorised into 4 categories. What are they? Give 2 examples of each and how to prevent/tackle them.</li>
+        <li>What is Transport Layer Security (TLS)? What is it used for?</li>
+        <li>Explain how TLS Record Protocol provides confidentiality and message integrity services.</li>
+        <li>What is the use of a heartbeat protocol?</li>
+        <li>SSL/TLS attacks can be divided into four groups; what are they? Explain.</li>
+        <li>Explain HTTPS.</li>
+        <li>What is Secure Shell (SSH) protocol? Is it an important protocol? Why or why not?</li>
+        <li>What are the authentication methods used in SSH? Explain.</li>
+        <li>One of the most useful features of SSH is port forwarding. Explain what it is and how it works.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac9" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 9 — Wireless Network Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac9', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">Hands-on steps (condensed)</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Get a QR reader on your phone if you don't have one. Go to qrstuff.com, create a "Website URL" QR code pointing at <span class="mono">https://www.jcu.edu.au</span>, download it, scan it with your phone. Think about what it revealed and how an attacker could weaponise a QR code the same way (e.g. swapping it for a malicious link).</li>
+        <li style="margin-bottom:6px;">Repeat on qrstuff.com but choose "Location" under File QR Codes, enter a real address, download, scan it. Same reflection: what did it reveal, and how could an attacker misuse a location QR code?</li>
+      </ol>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>Give four key factors contributing to the higher security risk of wireless networks compared to wired networks. Explain each.</li>
+        <li>How can a wireless access point be protected?</li>
+        <li>Explain each of the seven mobile device security concerns: (a) Lack of physical security controls (b) Use of untrusted mobile devices (c) Use of untrusted networks (d) Use of applications created by unknown parties (e) Interaction with other systems (f) Use of untrusted content (g) Use of location services.</li>
+        <li>Explain: (a) Wi-Fi Protected Access (WPA) (b) Wired Equivalent Privacy (WEP) (c) Robust Security Network (RSN).</li>
+        <li>Explain Extended Service Set (ESS).</li>
+        <li>Explain the services: (a) Association (b) Reassociation (c) Disassociation.</li>
+        <li>What are the five phases of a Robust Security Network (RSN)? Explain.</li>
+        <li>What is the use of pairwise keys?</li>
+        <li>What is the importance of Temporal Key (in pairwise keys)?</li>
+        <li>Explain the relationship between Group Master Key (GMK) and Group Temporal key (GTK).</li>
+      </ol>
+    </div>
+  </div>
+
+  <div id="prac10" class="prac-pane">
+    <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 10 — IP Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac10', this)">Listen</button></div>
+    <div class="crib">
+      <div class="crib-title">What this practical covers</div>
+      <p style="font-size:13.8px; margin:0;">Prac 10 is short-answer only — no hands-on VM component. It's the final practical, covering IPsec conceptually.</p>
+    </div>
+    <div class="crib">
+      <div class="crib-title">Short Answer Questions</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li>What are the three functional areas the IP-level security encompasses? Briefly explain their functionality.</li>
+        <li>List some benefits of IPsec.</li>
+        <li>List and briefly define different categories of IPsec documents.</li>
+        <li>Explain the transport mode and tunnel mode for Authentication Header and Encapsulating Security Payload (ESP) protocol.</li>
+        <li>What is an Association in both the authentication and confidentiality mechanisms for IP? What are the parameters of the association?</li>
+        <li>Briefly explain Encapsulating Security Payload (ESP).</li>
+        <li>What are two ways in which security associations may be combined into bundles? Briefly explain them.</li>
+        <li>Briefly explain the key management of IPsec.</li>
+        <li>What are the roles of the Oakley key determination protocol and ISAKMP in IPsec?</li>
+      </ol>
+    </div>
+  </div>
+
+  </section>
   <section id="cheatsheet">
     <p class="section-eyebrow">Real slide content, tap to reveal</p>
     <div class="section-title-row"><h2 class="section-title">Cheat Sheet</h2><button class="tts-btn" onclick="toggleReadAloud('cheatsheet', this)">Listen</button></div>
@@ -1453,6 +1718,14 @@
     if(ttsActiveBtn) resetTTSButton(ttsActiveBtn);
     restoreOriginalHTML();
     ttsActiveBtn = null;
+  }
+
+  function showPrac(pracId, btn){
+    document.querySelectorAll('.prac-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.prac-tab-btn').forEach(b => b.classList.remove('active'));
+    const pane = document.getElementById(pracId);
+    if(pane) pane.classList.add('active');
+    if(btn) btn.classList.add('active');
   }
 
   function toggleReadAloud(sectionId, btn){

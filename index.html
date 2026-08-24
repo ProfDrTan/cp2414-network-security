@@ -233,6 +233,8 @@
   .tts-btn-sm{padding:4px 11px; font-size:10px;}
 
   [id^="explained-"]{scroll-margin-top:76px;}
+  .tts-word{ transition: background .08s ease, color .08s ease; border-radius:3px; }
+  .tts-highlight{ background:var(--accent); color:#171208; padding:0 1px; margin:0 -1px; }
 </style>
 </head>
 <body>
@@ -1254,18 +1256,91 @@
   });
 
 
-  // --- Read-aloud (Web Speech API) ---
+  // --- Read-aloud with live word highlighting (Web Speech API) ---
   let ttsActiveBtn = null;
-
-  function getReadableText(el){
-    const clone = el.cloneNode(true);
-    clone.querySelectorAll('.tts-btn, .reset-btn, button, script, style').forEach(n => n.remove());
-    return (clone.innerText || clone.textContent || '').replace(/\s+/g, ' ').trim();
-  }
+  let ttsTargetEl = null;
+  let ttsOriginalHTML = null;
+  let ttsHighlightSpan = null;
 
   function resetTTSButton(btn){
     btn.classList.remove('tts-active');
     btn.textContent = 'Listen';
+  }
+
+  // Wraps every word in the given element in <span class="tts-word"> so it can be
+  // individually highlighted as speech reaches it. Skips buttons, SVG diagrams, and style/script blocks.
+  function wrapWordsForHighlight(root){
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node){
+        if(!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const parent = node.parentElement;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        if(parent.closest('.tts-btn, script, style, svg')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const textNodes = [];
+    let n;
+    while(n = walker.nextNode()) textNodes.push(n);
+
+    textNodes.forEach(node => {
+      const text = node.nodeValue;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(\s+)/);
+      parts.forEach(part => {
+        if(part === '') return;
+        if(/^\s+$/.test(part)){
+          frag.appendChild(document.createTextNode(part));
+        } else {
+          const span = document.createElement('span');
+          span.className = 'tts-word';
+          span.textContent = part;
+          frag.appendChild(span);
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  // Builds the exact string sent to the speech engine, plus a map from character
+  // offset in that string to the DOM span for that word — this is what lets us line up
+  // the browser's onboundary charIndex with the right word on screen.
+  function buildSpeechMap(root){
+    const spans = Array.from(root.querySelectorAll('.tts-word'));
+    let text = '';
+    const map = [];
+    spans.forEach((span, i) => {
+      const start = text.length;
+      text += span.textContent;
+      map.push({ start, end: text.length, span });
+      if(i < spans.length - 1) text += ' ';
+    });
+    return { text, map };
+  }
+
+  function ensureVisible(el){
+    const rect = el.getBoundingClientRect();
+    const buffer = 90;
+    if(rect.top < buffer || rect.bottom > window.innerHeight - buffer){
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+
+  function restoreOriginalHTML(){
+    if(ttsTargetEl && ttsOriginalHTML !== null){
+      ttsTargetEl.innerHTML = ttsOriginalHTML;
+    }
+    ttsTargetEl = null;
+    ttsOriginalHTML = null;
+    ttsHighlightSpan = null;
+  }
+
+  function stopReadAloud(){
+    const synth = window.speechSynthesis;
+    if(synth && (synth.speaking || synth.pending)) synth.cancel();
+    if(ttsActiveBtn) resetTTSButton(ttsActiveBtn);
+    restoreOriginalHTML();
+    ttsActiveBtn = null;
   }
 
   function toggleReadAloud(sectionId, btn){
@@ -1275,26 +1350,54 @@
       return;
     }
 
-    if(ttsActiveBtn === btn && synth.speaking){
-      synth.cancel();
-      resetTTSButton(btn);
-      ttsActiveBtn = null;
+    // Clicking the button that's already reading stops it.
+    if(ttsActiveBtn === btn && (synth.speaking || synth.pending)){
+      stopReadAloud();
       return;
     }
 
-    if(synth.speaking || synth.pending){ synth.cancel(); }
-    if(ttsActiveBtn){ resetTTSButton(ttsActiveBtn); ttsActiveBtn = null; }
+    // Starting a new read cancels whatever was playing (and un-highlights it) first.
+    stopReadAloud();
 
     const section = document.getElementById(sectionId);
     if(!section) return;
-    const text = getReadableText(section);
-    if(!text) return;
+
+    ttsTargetEl = section;
+    ttsOriginalHTML = section.innerHTML;
+
+    wrapWordsForHighlight(section);
+    const { text, map } = buildSpeechMap(section);
+
+    if(!text.trim()){
+      restoreOriginalHTML();
+      return;
+    }
 
     const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 0.98;
+    utter.rate = 0.95;
     utter.pitch = 1;
-    utter.onend = () => { if(ttsActiveBtn === btn){ resetTTSButton(btn); ttsActiveBtn = null; } };
-    utter.onerror = () => { if(ttsActiveBtn === btn){ resetTTSButton(btn); ttsActiveBtn = null; } };
+
+    utter.onboundary = (event) => {
+      if(event.name && event.name === 'sentence') return;
+      const idx = event.charIndex;
+      let entry = map.find(m => idx >= m.start && idx < m.end);
+      if(!entry) return;
+      if(ttsHighlightSpan) ttsHighlightSpan.classList.remove('tts-highlight');
+      entry.span.classList.add('tts-highlight');
+      ttsHighlightSpan = entry.span;
+      ensureVisible(entry.span);
+    };
+
+    utter.onend = () => {
+      if(ttsActiveBtn === btn) resetTTSButton(btn);
+      restoreOriginalHTML();
+      ttsActiveBtn = null;
+    };
+    utter.onerror = () => {
+      if(ttsActiveBtn === btn) resetTTSButton(btn);
+      restoreOriginalHTML();
+      ttsActiveBtn = null;
+    };
 
     btn.classList.add('tts-active');
     btn.textContent = 'Stop';
@@ -1306,8 +1409,7 @@
 
   document.addEventListener('visibilitychange', () => {
     if(document.hidden && window.speechSynthesis && window.speechSynthesis.speaking){
-      window.speechSynthesis.cancel();
-      if(ttsActiveBtn){ resetTTSButton(ttsActiveBtn); ttsActiveBtn = null; }
+      stopReadAloud();
     }
   });
 

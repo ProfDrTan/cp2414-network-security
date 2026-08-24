@@ -362,6 +362,22 @@
         <li><strong>MySQL root:</strong> <span class="mono" style="font-size:12px;">root</span> / <span class="mono" style="font-size:12px;">bug</span></li>
       </ul>
     </div>
+
+    <div class="crib">
+      <div class="crib-title">Step 6 — Burp Suite: proxy setup and connecting to bWAPP</div>
+      <div class="crib-sub">Once BeeBox is booted and its IP is known (Step 5), this is what gets Burp actually seeing traffic.</div>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
+        <li>Open <strong>Burp Suite Community Edition</strong> → on the welcome screen leave <strong>"Temporary project in memory"</strong> selected → <strong>Next</strong> → keep default config → <strong>Start Burp</strong></li>
+        <li>Go to <strong>Proxy</strong> tab → <strong>Options</strong> (some versions label this <strong>Settings</strong>, still under Proxy) → confirm a listener shows <span class="mono" style="font-size:12px;">127.0.0.1 : 8080</span> with <strong>Running</strong> checked. If it's missing, click <strong>Add</strong>, set port <span class="mono" style="font-size:12px;">8080</span>, bind to <span class="mono" style="font-size:12px;">127.0.0.1</span></li>
+      </ul>
+      <div class="note fix">
+        <strong>Point the browser through Burp — Firefox is the easiest to isolate:</strong> Settings → Network Settings → Settings... → <strong>Manual proxy configuration</strong> → HTTP Proxy <span class="mono" style="font-size:12px;">127.0.0.1</span> Port <span class="mono" style="font-size:12px;">8080</span> → check <strong>"Also use this proxy for HTTPS."</strong> Chrome/Edge use the Windows system proxy instead (Settings → Network & Internet → Proxy) — Firefox is cleaner since it won't affect the whole machine.
+      </div>
+      <div class="note">
+        <strong>CA certificate — skip unless testing HTTPS:</strong> bWAPP runs on plain HTTP, so this step isn't needed for the standard exercises. If it ever is: with the browser already proxied, visit <span class="mono" style="font-size:12px;">http://burp</span>, download the CA cert, import it into the browser's certificate store.
+      </div>
+      <p style="font-size:13.8px; margin:0;"><strong>Confirm it's working:</strong> load <span class="mono" style="font-size:12px;">http://&lt;beebox-ip&gt;/bWAPP/login.php</span> in the proxied browser, log in with <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span>, then check Burp's <strong>Proxy → HTTP history</strong> tab — requests like <span class="mono" style="font-size:12px;">GET /bWAPP/login.php</span> should appear as you click around. If history stays empty, the browser proxy setting (previous step) is almost always the culprit.</p>
+    </div>
   </section>
 
   <section id="cheatsheet">

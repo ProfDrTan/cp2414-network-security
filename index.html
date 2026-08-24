@@ -218,6 +218,21 @@
   .back-to-top.visible{opacity:1; pointer-events:auto; transform:translateY(0);}
   .back-to-top:hover{filter:brightness(1.08);}
   @media (max-width:640px){ .back-to-top{right:14px; bottom:18px; width:42px; height:42px; font-size:17px;} }
+  .toc-box{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:24px;}
+  .toc-box .toc-heading{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin:0 0 12px;}
+  .toc-week-group{margin-bottom:12px;}
+  .toc-week-group:last-child{margin-bottom:0;}
+  .toc-week-label{font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:700; color:var(--accent); text-decoration:none; display:inline-block;}
+  .toc-week-label:hover{text-decoration:underline;}
+  .toc-concept-links{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 0;}
+  .toc-concept-links a{font-size:12px; color:var(--text-dim); text-decoration:none; background:var(--surface-2); border:1px solid var(--border); padding:4px 11px; border-radius:14px; transition:border-color .15s, color .15s;}
+  .toc-concept-links a:hover{color:var(--accent); border-color:var(--accent);}
+
+  .crib-title-row{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin:0 0 4px;}
+  .crib-title-row .crib-title{margin:0;}
+  .tts-btn-sm{padding:4px 11px; font-size:10px;}
+
+  [id^="explained-"]{scroll-margin-top:76px;}
 </style>
 </head>
 <body>
@@ -363,8 +378,9 @@
 
   <section id="explained">
     <p class="section-eyebrow">Real analogies, not slide bullet points</p>
-    <div class="section-title-row"><h2 class="section-title">Explained Simply</h2><button class="tts-btn" onclick="toggleReadAloud('explained', this)">Listen</button></div>
+    <div class="section-title-row"><h2 class="section-title">Explained Simply</h2><button class="tts-btn" onclick="toggleReadAloud('explained', this)">Listen to whole section</button></div>
     <p class="section-desc">Some slides just name a concept without ever teaching it — Week 1's "Poisoning" bullet is a real example, listed with zero explanation. This section exists for exactly that gap: plain-language explanations with a concrete, relatable analogy for each one. Starting with Week 1; more weeks added as gaps get found.</p>
+    <div id="explainedTOC" class="toc-box"></div>
     <div id="explainedList"></div>
   </section>
 
@@ -1092,21 +1108,45 @@
   ];
 
   const explainedList = document.getElementById('explainedList');
+  const explainedTOC = document.getElementById('explainedTOC');
   const explainedByWeek = {};
   explained.forEach(e=>{
     if(!explainedByWeek[e.week]) explainedByWeek[e.week] = [];
     explainedByWeek[e.week].push(e);
   });
+
+  function slugify(s){
+    return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  // Build the table of contents: one row per week, with a jump link to each concept inside it
+  let tocHTML = '<p class="toc-heading">Jump to a week</p>';
   Object.keys(explainedByWeek).forEach(wk=>{
+    const wkSlug = 'explained-' + slugify(wk);
+    tocHTML += `<div class="toc-week-group"><a href="#${wkSlug}" class="toc-week-label">${wk}</a><div class="toc-concept-links">`;
+    explainedByWeek[wk].forEach((e, i)=>{
+      const cSlug = wkSlug + '-c' + i;
+      tocHTML += `<a href="#${cSlug}">${e.title}</a>`;
+    });
+    tocHTML += `</div></div>`;
+  });
+  explainedTOC.innerHTML = tocHTML;
+
+  // Build the actual list, with a per-week anchor and a per-concept anchor + its own Listen button
+  Object.keys(explainedByWeek).forEach(wk=>{
+    const wkSlug = 'explained-' + slugify(wk);
     const heading = document.createElement('p');
     heading.className = 'section-eyebrow';
     heading.style.marginTop = '24px';
+    heading.id = wkSlug;
     heading.textContent = wk;
     explainedList.appendChild(heading);
-    explainedByWeek[wk].forEach(e=>{
+    explainedByWeek[wk].forEach((e, i)=>{
+      const cSlug = wkSlug + '-c' + i;
       const el = document.createElement('div');
       el.className = 'crib';
-      el.innerHTML = `<div class="crib-title">${e.title}</div><ul style="margin-top:8px;"><li>${e.text}</li></ul>`;
+      el.id = cSlug;
+      el.innerHTML = `<div class="crib-title-row"><div class="crib-title">${e.title}</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('${cSlug}', this)">Listen</button></div><ul style="margin-top:8px;"><li>${e.text}</li></ul>`;
       explainedList.appendChild(el);
     });
   });

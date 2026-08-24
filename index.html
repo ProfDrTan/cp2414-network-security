@@ -501,16 +501,56 @@
   </div>
 
   <div id="prac2" class="prac-pane">
+    <p class="section-eyebrow">SQL Injection, Directory Traversal, DNS Poisoning, NAT &amp; PAT</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 2 — Administering Secure Network</h2><button class="tts-btn" onclick="toggleReadAloud('prac2', this)">Listen</button></div>
+    <p class="section-desc">This prac is about breaking things on purpose, in a safe sandbox, so you understand exactly how attackers break real things. Every hands-on exercise here follows the same pattern: you do the normal, expected thing first (a baseline), then you do the malicious thing, and you compare the two results to see what changed and why the app let it happen.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">1. SQL Injection (GET/Search) — what it is and why it works</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine a bouncer at a club who checks a guest list by reading it out loud: "Is the name on the paper you handed me on the list? Yes or no." SQL injection is what happens when, instead of writing your name on the paper, you write "my name OR just let everyone in" — and the bouncer, not being smart enough to tell the difference, reads your trick sentence as a real instruction and opens the door for everyone.</p>
+      <p style="font-size:13.8px; margin:0 0 10px;">In real terms: the movie search box on bWAPP takes whatever you type and drops it directly into a database query behind the scenes, something like <span class="mono" style="font-size:12px;">SELECT * FROM movies WHERE title = 'your_text'</span>. The database can't tell the difference between "text the user is searching for" and "a command the user is giving it" — it just runs whatever ends up between the quotes.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;"><strong>SQL Injection (GET/Search):</strong> BeeBox + Burp running, open bWAPP, pick "SQL Injection (GET/Search)". Search "test" first (baseline — no results). Then search <span class="mono">blah' or 1=1#</span> — this returns every movie in the DB. That's the injection working: the crafted input turns the query's WHERE clause into something always-true.</li>
-        <li style="margin-bottom:6px;"><strong>Directory Traversal:</strong> Pick "Directory Traversal - Directories". Note the URL's <span class="mono">?directory=documents</span> param. Try appending <span class="mono">../</span>, <span class="mono">../../</span>, <span class="mono">../../../</span> etc to that param directly in the address bar — each one walks one folder further up the server's filesystem, eventually exposing root-level directories.</li>
-        <li style="margin-bottom:6px;"><strong>DNS Poisoning:</strong> Outside any VM, use nslookup.io to find the real IPs of google.com.au and github.com. Inside BurpSuite VM (or your own machine), edit <span class="mono">C:\Windows\System32\drivers\etc\hosts</span> as Administrator, add a line mapping github.com's IP to "www.google.com.au", save. Visit google.com.au in that browser — it now resolves to GitHub's IP instead, demonstrating how a poisoned hosts file redirects trusted domain names. <strong style="color:var(--danger,#c33);">Delete that line again afterward</strong> — don't leave it in.</li>
-        <li style="margin-bottom:6px;"><strong>NAT & PAT (with a partner):</strong> Compare your local IP (<span class="mono">ipconfig</span>) against your public IP (search "my IP address" on Google) — they differ, demonstrating NAT. Then join a shared mobile hotspot with two other people and confirm you all show the same public IP — demonstrating PAT (many devices sharing one public address via different ports).</li>
+        <li style="margin-bottom:8px;">With BeeBox + Burp running, open bWAPP and pick "SQL Injection (GET/Search)" from the bug menu.</li>
+        <li style="margin-bottom:8px;"><strong>Baseline first:</strong> search "test". This is a normal, honest search — it should return nothing (or whatever genuinely matches), proving the search box works as intended before you try to break it.</li>
+        <li style="margin-bottom:8px;"><strong>Now the injection:</strong> search <span class="mono">blah' or 1=1#</span> instead. Here's what that does character by character: the <span class="mono">'</span> closes off the quote the database was expecting your search text to sit inside — you've escaped the "box" you were meant to stay in. <span class="mono">or 1=1</span> is a condition that is ALWAYS true (1 does always equal 1), so instead of "title = the movie I typed", the query effectively becomes "title = blah, OR just always match everything." The <span class="mono">#</span> at the end comments out anything the app was going to add after your input, so it doesn't accidentally break the syntax.</li>
+        <li>Observe: the search now returns every single movie in the database, even though you never typed a real movie name. That's the vulnerability proven — you turned a search box into a command.</li>
       </ol>
     </div>
+
+    <div class="crib">
+      <div class="crib-title">2. Directory Traversal — walking up out of the folder you're allowed in</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> think of a filing cabinet with a locked drawer you're allowed to open — the "documents" drawer — but the whole cabinet, all the other drawers, sit in the same room. Directory traversal is the equivalent of the drawer having a false back: if you know to write "go back one drawer" (<span class="mono">../</span>) enough times, you climb out of the drawer you were given access to and start rifling through drawers you were never supposed to see.</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:8px;">Pick "Directory Traversal - Directories" from the bug menu and hit Hack.</li>
+        <li style="margin-bottom:8px;">Look at the URL — it ends in <span class="mono">?directory=documents</span>. That parameter is literally telling the web server which folder to list the files of. This alone is the red flag: the server is trusting whatever folder name you put there.</li>
+        <li style="margin-bottom:8px;">Try replacing <span class="mono">documents</span> with <span class="mono">../</span>, then <span class="mono">../../</span>, then <span class="mono">../../../</span>, and so on — each <span class="mono">../</span> means "go up one level in the folder structure" (this is a standard operating-system instruction, not a hack in itself — the vulnerability is that the server obeys it blindly instead of restricting you to the one folder it meant to share).</li>
+        <li>As you add more <span class="mono">../</span>, you'll see the file listing change to reveal deeper and more sensitive system folders — eventually you can reach root-level directories of the entire server, folders that have nothing to do with the website at all.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">3. DNS Poisoning — tampering with the internet's phonebook</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> DNS is the internet's phonebook — you tell it a name ("www.google.com.au") and it tells you the actual "phone number" (IP address) to call. DNS poisoning is like sneaking into someone's phone contacts and secretly renaming a stranger's number to say "Mum" — the phone still dials correctly, the name just now lies about who you're really reaching.</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:8px;">Outside any VM, on your real browser, go to nslookup.io and look up the real IP addresses for both <span class="mono">www.google.com.au</span> and <span class="mono">www.github.com</span>. Write both down — you need github's IP for the next step.</li>
+        <li style="margin-bottom:8px;">Open Notepad <strong>as Administrator</strong> (this matters — the hosts file is a protected system file, a normal Notepad window won't have permission to save changes to it) and open <span class="mono">C:\Windows\System32\drivers\etc\hosts</span>.</li>
+        <li style="margin-bottom:8px;">This file is your computer's own private, personal phonebook that it checks BEFORE ever asking the real internet-wide phonebook. Add a new line at the end: GitHub's IP address, a space, then <span class="mono">www.google.com.au</span>. Save the file.</li>
+        <li style="margin-bottom:8px;">Now visit www.google.com.au in your browser. Because your computer checked its own (now poisoned) private phonebook first, it sends you to GitHub's servers instead — while the address bar still calmly says "google.com.au". This is exactly the trick behind real DNS poisoning/spoofing attacks: the URL you trust visually is no longer telling the truth about where your traffic is actually going.</li>
+        <li><strong style="color:var(--danger,#c33);">Very important — delete that line and save again</strong> once you're done observing this, so your computer's real browsing isn't broken afterward.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">4. NAT &amp; PAT — one street address, many apartments (do this part with a partner)</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine an apartment building. The building has ONE street address that the outside world (the postal service) knows about. But inside, there are dozens of individual apartments, each with their own door. NAT (Network Address Translation) is the building's front desk: it takes mail addressed to "the building" and works out which specific apartment (device) it's actually meant for. PAT (Port Address Translation) is what happens when many apartments share that same single street address at once — the front desk tracks which apartment is expecting which delivery, all under one shared public identity.</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:8px;">On your own computer, open cmd/terminal and run <span class="mono">ipconfig</span> (or <span class="mono">ifconfig</span> on Linux/Mac). This shows your <strong>local/private</strong> IP address — your specific "apartment number" inside your home or campus network.</li>
+        <li style="margin-bottom:8px;">Now search "my IP address" on Google. This shows your <strong>public</strong> IP address — the "street address" the wider internet sees you as. Compare it to your local one from step 1 — they're almost certainly different. That difference IS NAT at work: your router quietly translates between "the one address the internet knows" and "the many private addresses your home devices actually use."</li>
+        <li style="margin-bottom:8px;">Compare your public IP to your partner's, sitting next to you. If you're on the same home/campus network, you'll likely share the exact same public IP, even though your private IPs differ — proving that one shared "street address" is fronting for multiple separate devices.</li>
+        <li>As a group, have one person start a mobile hotspot and have two others join it. All three of you check "my IP address" again — you should all show the identical public IP despite being three separate physical phones/laptops. This is PAT in action: your hotspot's single public IP is being shared across every connected device simultaneously, with the hotspot internally tracking who gets which return traffic based on the port numbers involved (hence "Port" Address Translation).</li>
+      </ol>
+    </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -527,14 +567,32 @@
   </div>
 
   <div id="prac3" class="prac-pane">
+    <p class="section-eyebrow">Wireshark packet sniffing, and Windows Firewall rules</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 3 — Intruders and Firewalls</h2><button class="tts-btn" onclick="toggleReadAloud('prac3', this)">Listen</button></div>
+    <p class="section-desc">Two separate skills this week: first, "listening in" on your own network traffic (Wireshark), so you understand what data actually looks like as it travels — nothing is hidden by default. Second, controlling what's allowed in and out of a machine (the Windows Firewall) — the difference between a network you can eavesdrop on and one you can actually lock down.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">1. Wireshark — a wiretap for your own network cable</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine every piece of data your computer sends or receives is a postcard, not a sealed letter — anyone standing at the right point on the delivery route can read every word on it as it passes by. Wireshark is a tool that stands at that point (your own network interface) and copies down every postcard going past, so you can read them afterward. It doesn't create any new traffic — it just watches what's already happening.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;"><strong>Wireshark:</strong> Open Wireshark, start capturing on your active interface (Ethernet/Wi-Fi). In cmd/terminal run <span class="mono">ping www.google.com.au</span>. Back in Wireshark, filter by <span class="mono">icmp</span>, open a ping request, drill into Internet Control Message Protocol → Data, and observe what's visible in the raw payload.</li>
-        <li style="margin-bottom:6px;"><strong>Firewall (BeeBox + BurpSuite VMs, bridged adapter, same subnet):</strong> Confirm bWAPP loads normally first. Go to Windows Defender Firewall on the BurpSuite VM → turn it on for Private + Public, tick "Block all incoming connections" under Public. Then go to Advanced Settings → Outbound Rules → New Rule → Port → TCP → remote port 80 → Block the connection → apply to all profiles → name it "Blocking_Port_80". With Burp Intercept off, try loading bWAPP again — it should now fail. Go back and click "Restore Default Policy" to undo the rule, confirm bWAPP loads again. Turn off and delete both VMs when done.</li>
+        <li style="margin-bottom:8px;">Open Wireshark, select your active interface (Ethernet or Wi-Fi — whichever one you're actually online through) and click Start. It immediately starts logging every packet flowing in or out.</li>
+        <li style="margin-bottom:8px;">Open cmd/terminal and run <span class="mono">ping www.google.com.au</span>. A ping is a deliberately simple "are you there?" message sent to a remote server, followed by that server's "yes, still here" reply — it's the smallest, easiest kind of network traffic to recognise, which is exactly why it's used here as a clean example to spot in the noise.</li>
+        <li>Back in Wireshark, type <span class="mono">icmp</span> into the filter bar (ICMP is the specific protocol ping traffic uses) and hit Enter — this hides everything else and shows you only your ping packets. Click one, expand "Internet Control Message Protocol" then "Data", and look at the raw bytes shown. Notice there's nothing hidden or encrypted about it — this is genuinely everything that traveled across the wire, in plain view, which is the whole point of the exercise: unencrypted traffic really is that exposed to anyone positioned to watch it.</li>
       </ol>
     </div>
+
+    <div class="crib">
+      <div class="crib-title">2. Firewall rules — a bouncer for your network connections, not just people</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> a firewall is a bouncer standing at your computer's front door, checking every single thing trying to come in OR go out, against a rulebook. By default the bouncer lets most things through. In this exercise you write your own explicit rule — "block anything trying to leave through door number 80" — and then prove it works by testing that the thing you blocked genuinely stops functioning.</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:8px;">With BeeBox + BurpSuite VMs running (both set to Bridged network so they can talk to each other, and Burp's Intercept switched off for now), confirm bWAPP loads normally in the browser first — this is your "before" baseline, so you can actually tell later whether your firewall rule changed anything.</li>
+        <li style="margin-bottom:8px;">Go to Windows Defender Firewall (on the BurpSuite VM) → turn it on for both Private and Public networks, and tick "Block all incoming connections" under Public settings. This step alone doesn't block bWAPP — it's general hardening, worth understanding on its own: it means if you were ever on an untrusted public Wi-Fi, nothing could reach IN to your machine uninvited.</li>
+        <li style="margin-bottom:8px;">Now the specific part: Advanced Settings → Outbound Rules → New Rule → Port → TCP → Specific remote port <span class="mono">80</span> → Block the connection → apply to all three profiles (Domain/Private/Public) → name it "Blocking_Port_80" → Finish. Port 80 is the standard port ordinary (non-secure) web traffic uses, so this rule specifically says "refuse to let this machine make any outgoing web requests on the normal web port."</li>
+        <li style="margin-bottom:8px;">With Burp's Intercept still off, try loading bWAPP again in the browser. It should now fail to load — proof the rule is genuinely blocking outbound web traffic, not just sitting there unused.</li>
+        <li>Go back into Outbound Rules and click "Restore Default Policy" to remove the custom rule, then confirm bWAPP loads normally again — showing the block was entirely caused by your rule and nothing else. Finish by turning off and deleting both VMs, as always at the end of a prac.</li>
+      </ol>
+    </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -554,18 +612,59 @@
   </div>
 
   <div id="prac4" class="prac-pane">
+    <p class="section-eyebrow">Classic symmetric ciphers — Caesar, substitution, permutation — and why weak ones break</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 4 — Symmetric Encryption</h2><button class="tts-btn" onclick="toggleReadAloud('prac4', this)">Listen</button></div>
+    <p class="section-desc">This prac uses CrypTool, a free program built for exactly this kind of playing-around. The theme running through all of it: these are "classic," old-fashioned ciphers — the point is not that they're secure (they're not, and you'll prove that yourself at the end), but that seeing simple encryption with your own eyes builds the intuition you need before tackling modern ciphers like AES next week.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">Setup</div>
+      <p style="font-size:13.8px; margin:0;">Install CrypTool 1.4.42 on your own computer (or open it on the BurpSuite VM if you're using the lab). Create a new file and type "hello world" — this is your plaintext for every exercise below.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">1. Caesar / ROT-13 — the decoder-ring cipher</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine a decoder ring toy — two circles of the alphabet, one fixed and one you can spin. Spin it by 3 letters and every "A" you write becomes "D", every "B" becomes "E", and so on. That's a Caesar cipher: shift the whole alphabet by a fixed number of positions. ROT-13 is just a Caesar cipher fixed at exactly half the alphabet's length, which has the neat (and insecure) property that encrypting twice gets you back to the original text.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;">Download/install <strong>CrypTool 1.4.42</strong> (own computer) from cryptool.org/en/ct1/downloads, or open it on the BurpSuite VM if using the lab. Create a new file, type "hello world".</li>
-        <li style="margin-bottom:6px;"><strong>Caesar/ROT-13:</strong> Encrypt/Decrypt → Symmetric (classic) → Caesar/Rot-13. Try a numeric shift (e.g. 3) and observe the substitution alphabet + output. Decrypt back using the same key.</li>
-        <li style="margin-bottom:6px;"><strong>Substitution/Atbash:</strong> Same menu → Substitution/Atbash, key "XYZ", observe the mapped alphabet, encrypt, then decrypt.</li>
-        <li style="margin-bottom:6px;"><strong>Permutation/Transposition:</strong> Try keys "ABCD" then "TEST", observe how the permutation numbers change, encrypt, display ciphertext, decrypt.</li>
-        <li style="margin-bottom:6px;"><strong>Ciphertext-only analysis:</strong> Re-encrypt "hello world" with Caesar, then use Analysis → Symmetric Encryption (Classic) → Ciphertext-Only → Caesar to auto-crack it. Note whether it recovers the correct plaintext and think about why/why not — this matters for the short-answer reflection built into the steps.</li>
-        <li style="margin-bottom:6px;"><strong>Fun Bits:</strong> Decrypt "GDKKN" using the substitution table given in the PDF, and work out which key (0–4) produced the sample ciphertext blocks shown.</li>
+        <li style="margin-bottom:6px;">Encrypt/Decrypt → Symmetric (classic) → Caesar/Rot-13. Choose "Number value", enter 3 as your key, and watch "Properties of the chosen encryption" show you the resulting shifted alphabet (A→D, B→E, etc.) — this makes the mechanism completely visible before you even click Encrypt.</li>
+        <li style="margin-bottom:6px;">Click Encrypt and observe "hello world" becomes "khoor zruog" — every letter shifted exactly 3 places forward. Decrypt it back using the same key (3) to confirm the process reverses cleanly.</li>
       </ol>
     </div>
+
+    <div class="crib">
+      <div class="crib-title">2. Substitution/Atbash — scrambling the whole alphabet, not just shifting it</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> where Caesar just slides the alphabet along like a ruler, substitution throws the alphabet in a bag and pulls letters out in a completely different order — A might map to X, B to M, C to Q, with no predictable pattern connecting them. Atbash is one famous fixed version of this: it simply reverses the alphabet (A↔Z, B↔Y, and so on).</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Encrypt/Decrypt → Substitution/Atbash. Enter key "XYZ" in the Key box and look at "Information on the substitution encryption" — it shows exactly how the 26-letter alphabet gets remapped starting from those three letters.</li>
+        <li style="margin-bottom:6px;">Encrypt "hello world" and observe the scrambled result, then decrypt it back to confirm it reverses.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">3. Permutation/Transposition — same letters, different order</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> Caesar and substitution both change WHAT each letter becomes. Permutation instead keeps every original letter exactly as it was, but shuffles their ORDER — like taking the letter tiles of a word and rearranging them into a different sequence, following a specific shuffle pattern (the key).</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Encrypt/Decrypt → Symmetric (classic) → Permutation/Transposition. Type key "ABCD" and watch it convert into the numeric permutation pattern <span class="mono">1,2,3,4</span>. Then replace it with "TEST" and watch the pattern change to <span class="mono">3,1,2,4</span> — the letters of your key word, sorted alphabetically, tell the tool which position each column should move to.</li>
+        <li style="margin-bottom:6px;">With "TEST" as the key, click Encrypt then "Display ciphertext" to see the shuffled result. Decrypt it back to confirm.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">4. Cracking your own Caesar cipher — why "classic" ciphers are considered broken</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>Why this matters:</strong> a Caesar cipher only has 25 possible shift values (1 through 25) — small enough that a computer, or even a patient human, can just try every single one and see which produces readable English. This is the whole point of the exercise: watching an automated tool crack your own "secret" message in seconds is what makes the danger of weak encryption feel real, rather than just something you're told about in a lecture.</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Re-encrypt "hello world" with Caesar (any shift). On the resulting ciphertext window, go to Analysis → Symmetric Encryption (Classic) → Ciphertext-Only → Caesar, click through the OK prompts, then Decrypt.</li>
+        <li>Observe whether it recovers your original message correctly, and think about why (or why not) — this connects directly to two of the short-answer questions below about brute-force attacks and ciphertext-only attacks.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Fun Bits</div>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Decrypt ciphertext "GDKKN" using the substitution table given in the prac PDF (Plaintext A–N mapped to Ciphertext N,A,B,C...M) — work backwards from each ciphertext letter to its plaintext letter.</li>
+        <li>Given plaintext "IJKL ABCD WXYZ GHIJ" becomes ciphertext "LMNO DEFG ZABC JKLM", and the key is one of 0,1,2,3,4 — work out which shift value produces that exact transformation (compare how far each letter moved).</li>
+      </ol>
+    </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -583,15 +682,40 @@
   </div>
 
   <div id="prac5" class="prac-pane">
+    <p class="section-eyebrow">Modern symmetric encryption (AES), password hashing, and asymmetric encryption (RSA)</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 5 — Symmetric &amp; Asymmetric Encryption</h2><button class="tts-btn" onclick="toggleReadAloud('prac5', this)">Listen</button></div>
+    <p class="section-desc">Last week's ciphers were toys — easy to crack, mostly historical. This week is the real thing: AES, the encryption standard actually protecting your banking apps and Wi-Fi today, plus your first look at asymmetric (public-key) encryption, which solves a completely different problem than everything you've done so far.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">1. AES (CBC) — a lock so strong that guessing the key is pointless</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> think of AES as a combination padlock with an astronomically large number of possible combinations — not "spin the dial 0 to 99" but a number so large that even a computer trying billions of combinations a second would still need longer than the age of the universe to try them all. That's the whole security model: not that the lock is unpickable in theory, just that brute-forcing it is completely impractical.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;"><strong>AES (CBC):</strong> In CrypTool, Encrypt/Decrypt → Symmetric (modern) → AES (CBC). Enter key <span class="mono">00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</span> (128-bit), Encrypt, inspect the hex/ASCII output. Then run Analysis → Symmetric Encryption (modern) → AES (CBC) → Start — watch the brute-force estimate (it'll be astronomically large, e.g. 10^25 years), then Cancel. Repeat the whole thing with a near-zero key (<span class="mono">00 01</span>) and compare.</li>
-        <li style="margin-bottom:6px;"><strong>Key from a hash:</strong> New file "Don't panic", new file "Bazinga". On the "Bazinga" window: Indiv.Procedures → Hash → MD4, copy the resulting hex value. Use that hex as your AES key against the "Don't panic" text, encrypt then decrypt.</li>
-        <li style="margin-bottom:6px;"><strong>Asymmetric (RSA):</strong> Reopen CrypTool fresh. Encrypt/Decrypt → Asymmetric → RSA Encryption, pick the default recipient, Encrypt. Then Asymmetric → RSA Decryption, enter the PIN, Decrypt, compare to the original.</li>
+        <li style="margin-bottom:6px;">Encrypt/Decrypt → Symmetric (modern) → AES (CBC). Enter the key <span class="mono">00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</span> (this is 128 bits — 16 bytes, written in hex) and click Encrypt. Inspect the hex/ASCII output on the right — notice it looks like complete noise, nothing recognisable, even though your key here is about as simple and orderly as a 128-bit key could be.</li>
+        <li style="margin-bottom:6px;">Now run Analysis → Symmetric Encryption (modern) → AES (CBC) → Start. Watch the "Remaining time" estimate the tool gives you for brute-forcing this — it'll show something like 1.1×10²⁵ years. For context, the universe itself is roughly 1.4×10¹⁰ years old. Cancel out of it once you've seen the number; this is the point of the exercise, not something you're meant to wait out.</li>
+        <li>Repeat the whole sequence with a near-zero key (<span class="mono">00 01</span>) instead, and compare the outputs. Even a "simple-looking" key produces output that's just as scrambled — good encryption doesn't get weaker just because the key looks like an easy pattern to a human eye.</li>
       </ol>
     </div>
+
+    <div class="crib">
+      <div class="crib-title">2. Generating a key from a hash — turning a memorable password into a real key</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> a hash function is like a fingerprint machine for text — feed it any input, of any length, and it spits out a fixed-length "fingerprint" that's unique to that exact input, but you can never work backwards from the fingerprint to reconstruct the original text. This exercise shows a real, practical use of that: turning a human-memorable password ("Bazinga") into a proper fixed-length encryption key.</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Create two files: one with "Don't panic" (your plaintext) and one with "Bazinga" (your password).</li>
+        <li style="margin-bottom:6px;">On the "Bazinga" window: Indiv.Procedures → Hash → MD4. Copy the resulting hex value shown — this is your password's fingerprint, and it's exactly the right length to use as an AES key.</li>
+        <li>Use that hex fingerprint as your AES key against the "Don't panic" text — encrypt it, then decrypt it back using the same fingerprint, confirming the round trip works.</li>
+      </ol>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">3. Asymmetric encryption (RSA) — two different keys, one problem AES can't solve</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> everything so far (Caesar, substitution, AES) is "symmetric" — the SAME key locks and unlocks the message, meaning both sides need to already share that secret key somehow, safely, beforehand. Asymmetric encryption solves the problem of "how do two strangers who've never met safely agree on a shared secret?" with a mailbox analogy: anyone can drop a letter into your mailbox slot (your <strong>public</strong> key — safe to hand out to literally anyone), but only you hold the physical key that opens the box and reads what's inside (your <strong>private</strong> key — never shared with anyone).</p>
+      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;">Close CrypTool and reopen it fresh (a clean starting text window).</li>
+        <li style="margin-bottom:6px;">Encrypt/Decrypt → Asymmetric → RSA Encryption. Select the one available recipient (the only person here who holds a matching private key) and click Encrypt — notice you didn't need to share any secret with them beforehand, you just used their public key.</li>
+        <li>Encrypt/Decrypt → Asymmetric → RSA Decryption, enter the PIN, click Decrypt, and confirm the message matches your original — proving only the holder of the matching private key could ever read what was encrypted to their public key.</li>
+      </ol>
+    </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -613,16 +737,28 @@
   </div>
 
   <div id="prac6" class="prac-pane">
+    <p class="section-eyebrow">Creating and verifying a self-signed digital signature in Adobe Acrobat</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 6 — Digital Signature</h2><button class="tts-btn" onclick="toggleReadAloud('prac6', this)">Listen</button></div>
+    <p class="section-desc">A digital signature answers two questions at once: "did this really come from the person it claims to?" and "has it been tampered with since they signed it?" This week you'll create your own signing identity and actually sign a real PDF form with it, then inspect the certificate that makes the whole thing verifiable.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">The analogy: a wax seal that also proves nothing was altered</div>
+      <p style="font-size:13.8px; margin:0;">Imagine sealing a letter with a wax stamp bearing your unique family crest. Two things follow from that seal: (1) anyone who knows your crest can be reasonably confident the letter genuinely came from you, and (2) if the seal is broken when the letter arrives, the recipient knows someone tampered with it after you sent it. A digital signature does both jobs mathematically — it's tied to a private key only you hold (proving authorship), and it's also mathematically linked to the exact content of the document, so even a single changed character breaks the "seal" and shows up as invalid.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Steps</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;">Install Adobe Acrobat Reader if needed. Download the "REQUEST FOR REPLACEMENT JCU AWARD" fillable PDF form from JCU's site, open it in Acrobat, sign in with your JCU email when prompted.</li>
-        <li style="margin-bottom:6px;">Create a self-signed digital ID: Edit → Preferences → Signatures → More (Identities & Trusted Certificates) → Digital IDs → Add ID → "A new digital ID I want to create now" → "New PKCS#12 digital ID file" (do <strong>not</strong> use Windows Certificate Store — it's flagged unsafe in the instructions). Fill in name/email, pick 2048-bit RSA, set a password, Finish.</li>
-        <li style="margin-bottom:6px;">Back in the PDF, click the Signature field, select your new Digital ID, Continue, click "Create" at the Appearance dropdown to design how your signature looks, save it, enter your password, Sign, save the signed file.</li>
-        <li style="margin-bottom:6px;">Click your signature → Signature Properties → Validity Summary → "Show Signer's Certificate" → click through every tab in the Certificate Viewer and observe what's shown (Summary, Details, Revocation, Trust, Policies, Legal Notice).</li>
+        <li style="margin-bottom:8px;">Install Adobe Acrobat Reader if you don't already have it. Download the "REQUEST FOR REPLACEMENT JCU AWARD" fillable PDF form from JCU's site, open it in Acrobat, and sign in with your JCU email when prompted.</li>
+        <li style="margin-bottom:8px;"><strong>Create your self-signed digital ID</strong> (this is you personally acting as your own trusted authority, rather than a certificate bought from a company — the practical explicitly notes real sensitive business transactions would normally use a certificate authority instead, but for learning purposes self-signing is fine): Edit → Preferences → Signatures → More (next to Identities & Trusted Certificates) → Digital IDs → click the Add ID button → choose "A new digital ID I want to create now" → Next.</li>
+        <li style="margin-bottom:8px;">Choose "New PKCS#12 digital ID file" (NOT the Windows Certificate Store option — the practical flags this specifically as unsafe, because it stores your ID somewhere every other Windows application on the machine can also reach it). Click Next.</li>
+        <li style="margin-bottom:8px;">Fill in your name and email — this is the identity information that will be baked into the certificate and shown whenever anyone inspects your signature later. Choose 2048-bit RSA (stronger than 1024-bit, at the small cost of slightly less universal compatibility — the tradeoff between security strength and compatibility comes up again in the short-answer questions).</li>
+        <li style="margin-bottom:8px;">Set a password for the ID file — this password is what protects your PRIVATE key specifically (not the certificate itself, which is meant to be shared). Anyone with this password and file could sign documents claiming to be you, so treat it like any other important password. Click Finish.</li>
+        <li style="margin-bottom:8px;">Back in the PDF: click the Signature field, select your new Digital ID, click Continue. At the Appearance dropdown, click "Create" to design how your visible signature looks on the page (this visual part is cosmetic — the real cryptographic proof happens underneath it regardless of how it looks). Save the appearance, enter your password, click Sign, and save the signed file.</li>
+        <li>Now verify it: click your signature on the page → Signature Properties → look at "Validity Summary" (this is where Acrobat tells you whether the document has been modified since signing, and confirms the signing time came from the signer's own computer clock) → click "Show Signer's Certificate" → click through every tab in the Certificate Viewer (Summary, Details, Revocation, Trust, Policies, Legal Notice) and observe what information is stored in each. This is the same certificate-inspection process browsers do automatically, invisibly, every time you visit an HTTPS website.</li>
       </ol>
     </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -640,14 +776,27 @@
   </div>
 
   <div id="prac7" class="prac-pane">
+    <p class="section-eyebrow">Remote access with TeamViewer, and touring the four cloud service models</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 7 — Network Access Control &amp; Cloud Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac7', this)">Listen</button></div>
+    <p class="section-desc">Two threads this week that connect to the same idea — controlling exactly who/what is allowed to reach a resource, and how much of the underlying infrastructure you're trusting someone else to manage on your behalf.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
-      <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;"><strong>Remote access:</strong> Download/install TeamViewer on your personal computer and phone, create an account, and practice connecting one device to the other remotely following TeamViewer's own how-to guides.</li>
-        <li style="margin-bottom:6px;"><strong>Cloud computing tour:</strong> Explore one example of each category and, where free, register and click around: SaaS (Dropbox, Google Docs), PaaS (Azure App Service), IaaS (Azure), SecaaS (Azure Sentinel). <span style="color:var(--danger,#c33);">Watch for services asking for a card for a "free trial"</span> — you don't need to actually subscribe to anything.</li>
-      </ol>
+      <div class="crib-title">1. Remote access control — TeamViewer</div>
+      <p style="font-size:13.8px; margin:0;">Download and install TeamViewer on your personal computer AND your mobile phone (not the lab machines — this needs to be devices you actually control end to end). Create a TeamViewer account following their own official guide, log in, then follow their guide again to practice connecting from one of your devices into the other. The point of doing this yourself is feeling how remote-access software works from both the "controller" and "controlled" side — this is the exact category of tool NAC (Network Access Control, the short-answer topic this week) exists to gate and monitor, since remote-access tools are a favourite target for attackers to abuse if they're not properly controlled.</p>
     </div>
+
+    <div class="crib">
+      <div class="crib-title">2. Cloud computing tour — four different ways to rent someone else's infrastructure</div>
+      <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> think of these four categories as four different levels of renting a place to cook. <strong>SaaS</strong> is like eating at a restaurant — the meal (finished app) is fully prepared for you, you just consume it (e.g. Dropbox, Google Docs). <strong>PaaS</strong> is like renting a fully-equipped commercial kitchen — you bring your own recipe (your code) but the ovens, benches, and utilities (the platform) are already provided and managed for you (e.g. Azure App Service). <strong>IaaS</strong> is like renting an empty warehouse shell — you're given raw space, power, and a foundation, but YOU have to install and manage everything else yourself (e.g. Azure's raw virtual machines). <strong>SecaaS</strong> is a security specialist you hire to watch over any of the above, rather than a place to cook at all — a monitoring/protection service layered on top (e.g. Azure Sentinel).</p>
+      <p style="font-size:13.8px; margin:0 0 10px; color:var(--danger,#c33);"><strong>Watch out:</strong> some of these services ask for a bank card to start a "free trial." You don't need to actually subscribe to anything to complete this exercise — just explore what each service offers and, where genuinely free, register and click around.</p>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li style="margin-bottom:6px;"><strong>SaaS</strong> — Dropbox, Google Docs.</li>
+        <li style="margin-bottom:6px;"><strong>PaaS</strong> — Microsoft Azure App Service.</li>
+        <li style="margin-bottom:6px;"><strong>IaaS</strong> — Microsoft Azure (core virtual infrastructure).</li>
+        <li><strong>SecaaS</strong> — Microsoft Azure Sentinel.</li>
+      </ul>
+    </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -666,15 +815,26 @@
   </div>
 
   <div id="prac8" class="prac-pane">
+    <p class="section-eyebrow">Connecting to BeeBox securely over SSH, instead of plain unencrypted access</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 8 — Transport Layer Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac8', this)">Listen</button></div>
+    <p class="section-desc">Remember Prac 3, where Wireshark showed you that unencrypted traffic is just readable postcards to anyone watching? This week's hands-on is the fix for that problem, applied to remote logins specifically: SSH wraps your connection in an encrypted tunnel so nobody watching the wire can read your password or commands as they pass by.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">The analogy: a private, soundproofed phone line instead of shouting across a room</div>
+      <p style="font-size:13.8px; margin:0;">Logging into a remote machine the old, insecure way (Telnet) is like shouting your password across a crowded room to the person you're talking to — anyone nearby can just listen in. SSH is like being handed a private, soundproofed phone line to that same person instead — the conversation still reaches them, but nobody standing nearby can make out a single word of it.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Steps</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;">Start your BeeBox VM (bridged adapter), find its IPv4 via <span class="mono">ifconfig</span> in its terminal.</li>
-        <li style="margin-bottom:6px;">From your host machine's cmd/terminal, run <span class="mono">ssh bee@ip_address</span> (password: <span class="mono">bug</span>), accept the fingerprint prompt.</li>
-        <li style="margin-bottom:6px;">Once logged in, practice basic Ubuntu commands (ls, cd, etc.) — <span style="color:var(--danger,#c33);">be careful with <span class="mono">rm</span></span>, it doesn't ask for confirmation and doesn't have an undo. Type <span class="mono">logout</span> when done, then turn off the BeeBox VM.</li>
+        <li style="margin-bottom:8px;">Turn on your BeeBox VM (network adapter set to Bridged, same as always). Open its terminal and find its IPv4 address (via <span class="mono">ifconfig</span>), and note it down.</li>
+        <li style="margin-bottom:8px;">On your HOST machine (not inside any VM), open cmd or terminal and run <span class="mono">ssh bee@ip_address</span>, swapping in the real IP from step 1. The password is <span class="mono">bug</span>.</li>
+        <li style="margin-bottom:8px;">The first time you connect, you'll be asked to accept a "fingerprint" — this is SSH showing you a unique identifier for the server you're connecting to, and asking you to confirm you trust it. In a real-world scenario this matters a lot: it's your one chance to notice if you're accidentally connecting to an impostor server instead of the real one. Accept it to continue.</li>
+        <li style="margin-bottom:8px;">Once logged in, you're inside a genuine encrypted remote session on the BeeBox Linux machine. Practice a few basic Ubuntu commands (like <span class="mono">ls</span> to list files, <span class="mono">cd</span> to change directory) to get a feel for it — but <strong style="color:var(--danger,#c33);">be careful with the <span class="mono">rm</span> command</strong> specifically: unlike deleting a file on Windows, Linux's <span class="mono">rm</span> does not ask "are you sure?" and there's no Recycle Bin to recover from afterward — it's genuinely instant and permanent.</li>
+        <li>Type <span class="mono">logout</span> to cleanly end your SSH session, then turn off the BeeBox VM.</li>
       </ol>
     </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -693,14 +853,26 @@
   </div>
 
   <div id="prac9" class="prac-pane">
+    <p class="section-eyebrow">QR codes as an attack delivery method — trusting a shortcut you can't actually read</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 9 — Wireless Network Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac9', this)">Listen</button></div>
+    <p class="section-desc">A QR code is just a compressed, unreadable-to-humans way of encoding a normal piece of text (usually a URL or address) into a pattern your camera can decode instantly. That "instantly, without you reading it first" property is exactly what makes it useful — and exactly what makes it dangerous.</p>
+
     <div class="crib">
-      <div class="crib-title">Hands-on steps (condensed)</div>
+      <div class="crib-title">The analogy: a shortcut sign you follow blindly, trusting whoever put it up</div>
+      <p style="font-size:13.8px; margin:0;">Imagine a hiking trail with a sign pointing down a side path saying "shortcut to the summit." You follow it without question, because that's the whole point of a shortcut sign — you're not meant to double-check the terrain yourself. A QR code works the same way: you scan it and your phone instantly goes wherever it points, without you ever reading the actual destination first (unlike a normal typed-out link, which you can at least glance at before clicking). If an attacker swaps a legitimate sign for their own fake one — say, sticking a malicious QR sticker over a real one on a parking meter or restaurant menu — you'd have no way to tell the difference just by looking at it.</p>
+    </div>
+
+    <div class="crib">
+      <div class="crib-title">Steps</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
-        <li style="margin-bottom:6px;">Get a QR reader on your phone if you don't have one. Go to qrstuff.com, create a "Website URL" QR code pointing at <span class="mono">https://www.jcu.edu.au</span>, download it, scan it with your phone. Think about what it revealed and how an attacker could weaponise a QR code the same way (e.g. swapping it for a malicious link).</li>
-        <li style="margin-bottom:6px;">Repeat on qrstuff.com but choose "Location" under File QR Codes, enter a real address, download, scan it. Same reflection: what did it reveal, and how could an attacker misuse a location QR code?</li>
+        <li style="margin-bottom:8px;">Get a QR reader app on your phone if you don't already have one built into your camera.</li>
+        <li style="margin-bottom:8px;">Go to qrstuff.com, choose "Website URL" as the data type, enter <span class="mono">https://www.jcu.edu.au</span> as the content, pick a look you like, and download the generated QR code image.</li>
+        <li style="margin-bottom:8px;">Scan your own downloaded QR code with your phone. Think about what it displayed and — this is the actual point of the exercise — how an attacker could misuse this exact mechanic: printing a malicious QR sticker over a legitimate one in a public place, where victims scan and get sent to a phishing site or a page that silently triggers a malicious download, all while believing they followed a trustworthy shortcut.</li>
+        <li style="margin-bottom:8px;">Go back to qrstuff.com. This time, under "File QR Codes," choose "Location," enter a real address, generate and download that QR code.</li>
+        <li>Scan it with your app. Notice this kind of code can reveal or auto-fill precise geographic coordinates the moment it's scanned — again, think about the attacker angle: a location QR code could be used to quietly track who scanned it and where they were standing when they did, or lure someone to a physical location under false pretences.</li>
       </ol>
     </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -719,11 +891,15 @@
   </div>
 
   <div id="prac10" class="prac-pane">
+    <p class="section-eyebrow">IPsec — wrapping ordinary network packets in their own armored envelope</p>
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 10 — IP Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac10', this)">Listen</button></div>
+    <p class="section-desc">This is the final practical, and it's short-answer only — no hands-on VM component this week. It's worth still reading through carefully rather than skipping straight to the questions, since IPsec ties together several ideas from earlier pracs (encryption, authentication, key exchange) applied at the network layer specifically.</p>
+
     <div class="crib">
-      <div class="crib-title">What this practical covers</div>
-      <p style="font-size:13.8px; margin:0;">Prac 10 is short-answer only — no hands-on VM component. It's the final practical, covering IPsec conceptually.</p>
+      <div class="crib-title">The analogy: an armored security escort wrapped around ordinary mail</div>
+      <p style="font-size:13.8px; margin:0;">Every practical so far protected something ABOVE the network layer — a web form, a login session, a file. IPsec instead protects the IP packets themselves, the actual envelopes every other kind of internet traffic travels inside. Think of it as wrapping an armored, tamper-evident security escort around ordinary mail vans as they drive between two trusted depots — it doesn't matter what's inside each individual van (web traffic, email, anything), the entire route between the two depots is protected as one continuous secured channel, transparently, without the individual pieces of mail needing to know anything special happened to them.</p>
     </div>
+
     <div class="crib">
       <div class="crib-title">Short Answer Questions</div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">

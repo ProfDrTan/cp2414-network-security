@@ -158,6 +158,8 @@
   .week-panel li{margin-bottom:4px;}
   .week-panel p{font-size:13.8px; margin:0 0 6px;}
   .note{background:var(--surface-2); border-left:3px solid var(--accent); padding:10px 12px; border-radius:0 6px 6px 0; font-size:13.5px; color:var(--text-dim); margin-top:8px;}
+  .shot{display:block; width:100%; max-width:640px; height:auto; border:1px solid var(--border,#e5e7eb); border-radius:8px; margin:10px 0; box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+  .shot-cap{font-size:12px; color:var(--text-dim); margin:-4px 0 10px; font-style:italic;}
   .note.warn{border-left-color:var(--danger); color:var(--text);}
   .note.fix{border-left-color:var(--blue); color:var(--text);}
   .tool-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
@@ -386,9 +388,13 @@
       </div>
       <div class="note">
         <strong>Newer Burp versions may open straight to a "Dashboard" screen</strong> instead of the classic welcome screen — title bar reading something like "Burp Suite Community Edition — Temporary Project", with a task already listed called "Live passive crawl" and a Capturing toggle switched on. <strong>If you see this, you're already fully started — that IS the main window, treat it exactly like Step 1 above being done.</strong> The "Live passive crawl" task is a default background task, not something you need to touch. From here, click the <strong>Proxy</strong> tab in the top menu bar to continue to the listener check below. <strong>Confirmed on v2026.7.3:</strong> inside Proxy, the sub-tabs read Intercept / HTTP history / WebSockets history / Match and replace, then a small gear icon labelled <strong>Proxy settings</strong> — that gear icon is where the listener lives, not under Intercept (Intercept only shows a big "Intercept is off" panel with no listener info at all — if that's all you see, you're on the wrong sub-tab, click the gear icon instead).
+        <img src="assets/screenshots/step6-dashboard.png" alt="Burp Suite Dashboard screen on first launch, showing a Live passive crawl task already running" class="shot">
+        <div class="shot-cap">What you'll actually see: the Dashboard, with "Live passive crawl" already running. This means Burp is fully started — leave that task alone and click Proxy at the top.</div>
       </div>
       <div class="note warn">
         <strong>"Burp is just sitting there waiting" — this is Intercept, a real feature, not a bug:</strong> Burp's <strong>Proxy → Intercept</strong> tab is ON by default. While on, Burp pauses EVERY request and holds it until you manually click "Forward" — useful later for editing requests by hand, but confusing right now since it looks frozen. Click the <strong>Intercept is on / Intercept is off</strong> toggle button so it reads <strong>"Intercept is off"</strong> before doing anything else. With it off, traffic flows through automatically and lands in <strong>HTTP history</strong> without you touching anything.
+        <img src="assets/screenshots/step6-intercept-tab.png" alt="Burp Proxy Intercept tab, showing Intercept is off and no listener information on this screen" class="shot">
+        <div class="shot-cap">This is the Intercept tab — the "Intercept is off" you see here is correct, but this screen never shows the listener. That's a different tab (see below).</div>
       </div>
       <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
         <li>Open <strong>Burp Suite Community Edition</strong> → on the welcome screen leave <strong>"Temporary project in memory"</strong> selected → click <strong>Next</strong> → on the following screen keep default config → click <strong>Start Burp</strong>. This is the actual moment the proxy engine starts — not before.</li>
@@ -396,6 +402,8 @@
       </ul>
       <div class="note fix">
         <strong>WHAT you're looking at:</strong> a table with columns Running / Interface / Invisible / Redirect / Certificate / TLS Protocols. Each row is one "listener" — a listening socket, the same idea as a phone left off the hook waiting for a call. Burp creates one automatically. You should see exactly one row with Interface reading <span class="mono" style="font-size:12px;">127.0.0.1:8080</span>.
+        <img src="assets/screenshots/step6-proxy-listeners.png" alt="Burp Proxy settings screen showing the Proxy listeners table with 127.0.0.1:8080 ticked as Running" class="shot">
+        <div class="shot-cap">This is the correct screen and the correct state: one listener, 127.0.0.1:8080, Running ticked. If yours looks like this, this step is done.</div>
         <br><br>
         <strong>HOW to confirm it:</strong> look at the <strong>Running</strong> column for that row — there should be a ticked checkbox. That tick is the entire check. Nothing to click, type, or configure if it's already ticked — you're done with this step.
         <br><br>

@@ -585,6 +585,23 @@
         <li style="margin-bottom:8px;"><strong>Now the injection:</strong> search <span class="mono">blah' or 1=1#</span> instead. Here's what that does character by character: the <span class="mono">'</span> closes off the quote the database was expecting your search text to sit inside — you've escaped the "box" you were meant to stay in. <span class="mono">or 1=1</span> is a condition that is ALWAYS true (1 does always equal 1), so instead of "title = the movie I typed", the query effectively becomes "title = blah, OR just always match everything." The <span class="mono">#</span> at the end comments out anything the app was going to add after your input, so it doesn't accidentally break the syntax.</li>
         <li>Observe: the search now returns every single movie in the database, even though you never typed a real movie name. That's the vulnerability proven — you turned a search box into a command.</li>
       </ol>
+      <div class="diagram-box">
+        <div style="font-weight:600; margin-bottom:8px; font-size:13px;">Same search box, two very different questions to the database</div>
+        <svg viewBox="0 0 560 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:inherit;">
+          <style>.sq{font-size:12px;} .sqm{font-family:monospace;font-size:11px;}</style>
+          <text x="10" y="18" class="sq" font-weight="bold" fill="#15803d">Baseline — you search "test"</text>
+          <rect x="10" y="26" width="540" height="30" rx="4" fill="#f0fdf4" stroke="#15803d"/>
+          <text x="20" y="46" class="sqm" fill="#14532d">SELECT * FROM movies WHERE title = 'test'</text>
+          <text x="560" y="46" text-anchor="end" class="sq" fill="#15803d">→ 0-1 honest matches</text>
+          <text x="10" y="80" class="sq" font-weight="bold" fill="#b91c1c">Injection — you search blah' or 1=1#</text>
+          <rect x="10" y="88" width="540" height="30" rx="4" fill="#fef2f2" stroke="#b91c1c"/>
+          <text x="20" y="108" class="sqm" fill="#7f1d1d">SELECT * FROM movies WHERE title = 'blah' or 1=1#'</text>
+          <rect x="10" y="128" width="540" height="66" rx="6" fill="#fff7ed" stroke="#c2410c"/>
+          <text x="280" y="148" text-anchor="middle" class="sq" fill="#7c2d12">Your text closed the quote early. "or 1=1" is glued onto the</text>
+          <text x="280" y="164" text-anchor="middle" class="sq" fill="#7c2d12">WHERE clause as an always-true condition, and "#" silences the</text>
+          <text x="280" y="180" text-anchor="middle" class="sq" fill="#7c2d12">rest — so the database matches every row, not one movie.</text>
+        </svg>
+      </div>
     </div>
 
     <div class="crib" id="crib-2-directory-traversal-walking-up-out-of">
@@ -596,6 +613,28 @@
         <li style="margin-bottom:8px;">Try replacing <span class="mono">documents</span> with <span class="mono">../</span>, then <span class="mono">../../</span>, then <span class="mono">../../../</span>, and so on — each <span class="mono">../</span> means "go up one level in the folder structure" (this is a standard operating-system instruction, not a hack in itself — the vulnerability is that the server obeys it blindly instead of restricting you to the one folder it meant to share).</li>
         <li>As you add more <span class="mono">../</span>, you'll see the file listing change to reveal deeper and more sensitive system folders — eventually you can reach root-level directories of the entire server, folders that have nothing to do with the website at all.</li>
       </ol>
+      <div class="diagram-box">
+        <div style="font-weight:600; margin-bottom:8px; font-size:13px;">Climbing out of the one folder you were given</div>
+        <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:inherit;">
+          <style>.dt{font-size:12px;} .dtm{font-family:monospace;font-size:11px;}</style>
+          <rect x="10" y="10" width="540" height="34" rx="5" fill="#f0fdf4" stroke="#15803d"/>
+          <text x="20" y="31" class="dtm" fill="#14532d">?directory=documents</text>
+          <text x="440" y="31" class="dt" fill="#15803d">you're meant to stay here</text>
+          <line x1="60" y1="44" x2="60" y2="60" stroke="#94a3b8" stroke-width="2" marker-end="url(#dt1)"/>
+          <rect x="10" y="60" width="540" height="30" rx="5" fill="#fef9c3" stroke="#b45309"/>
+          <text x="20" y="80" class="dtm" fill="#78350f">?directory=../</text>
+          <text x="480" y="80" class="dt" fill="#78350f">one level up</text>
+          <line x1="60" y1="90" x2="60" y2="106" stroke="#94a3b8" stroke-width="2" marker-end="url(#dt1)"/>
+          <rect x="10" y="106" width="540" height="30" rx="5" fill="#fed7aa" stroke="#c2410c"/>
+          <text x="20" y="126" class="dtm" fill="#7c2d12">?directory=../../../</text>
+          <text x="480" y="126" class="dt" fill="#7c2d12">several levels up</text>
+          <line x1="60" y1="136" x2="60" y2="152" stroke="#94a3b8" stroke-width="2" marker-end="url(#dt1)"/>
+          <rect x="10" y="152" width="540" height="30" rx="5" fill="#fecaca" stroke="#b91c1c"/>
+          <text x="20" y="172" class="dtm" fill="#7f1d1d">?directory=../../../../../</text>
+          <text x="490" y="172" class="dt" fill="#7f1d1d">server root</text>
+          <defs><marker id="dt1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+        </svg>
+      </div>
     </div>
 
     <div class="crib" id="crib-3-dns-poisoning-tampering-with-the-inter">
@@ -608,6 +647,31 @@
         <li style="margin-bottom:8px;">Now visit www.google.com.au in your browser. Because your computer checked its own (now poisoned) private phonebook first, it sends you to GitHub's servers instead — while the address bar still calmly says "google.com.au". This is exactly the trick behind real DNS poisoning/spoofing attacks: the URL you trust visually is no longer telling the truth about where your traffic is actually going.</li>
         <li><strong style="color:var(--danger,#c33);">Very important — delete that line and save again</strong> once you're done observing this, so your computer's real browsing isn't broken afterward.</li>
       </ol>
+      <div class="diagram-box">
+        <div style="font-weight:600; margin-bottom:8px; font-size:13px;">Your computer checks its own private phonebook before ever asking the internet's</div>
+        <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:inherit;">
+          <style>.dp{font-size:12px;} .dpm{font-family:monospace;font-size:11px;}</style>
+          <rect x="10" y="70" width="130" height="50" rx="6" fill="#e0f2fe" stroke="#0369a1"/>
+          <text x="75" y="99" text-anchor="middle" class="dp">You type</text>
+          <text x="75" y="112" text-anchor="middle" class="dpm">google.com.au</text>
+          <line x1="140" y1="95" x2="205" y2="95" stroke="#374151" stroke-width="2" marker-end="url(#dp1)"/>
+          <rect x="205" y="20" width="180" height="150" rx="6" fill="#fecaca" stroke="#b91c1c"/>
+          <text x="295" y="42" text-anchor="middle" class="dp" font-weight="bold">hosts file</text>
+          <text x="295" y="58" text-anchor="middle" class="dp" fill="#7f1d1d">(checked first,</text>
+          <text x="295" y="72" text-anchor="middle" class="dp" fill="#7f1d1d">always trusted)</text>
+          <rect x="220" y="82" width="150" height="30" rx="4" fill="#fff" stroke="#b91c1c"/>
+          <text x="295" y="101" text-anchor="middle" class="dpm" fill="#7f1d1d">google.com.au → GitHub IP</text>
+          <text x="295" y="128" text-anchor="middle" class="dp" fill="#7f1d1d">poisoned line you</text>
+          <text x="295" y="142" text-anchor="middle" class="dp" fill="#7f1d1d">added — wins over</text>
+          <text x="295" y="156" text-anchor="middle" class="dp" fill="#7f1d1d">the real internet DNS</text>
+          <line x1="385" y1="95" x2="450" y2="95" stroke="#374151" stroke-width="2" marker-end="url(#dp1)"/>
+          <rect x="450" y="70" width="100" height="50" rx="6" fill="#fde68a" stroke="#b45309"/>
+          <text x="500" y="92" text-anchor="middle" class="dp">GitHub's</text>
+          <text x="500" y="106" text-anchor="middle" class="dp">servers</text>
+          <text x="295" y="15" text-anchor="middle" class="dp" fill="#475569">address bar still says "google.com.au" the whole time</text>
+          <defs><marker id="dp1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#374151"/></marker></defs>
+        </svg>
+      </div>
     </div>
 
     <div class="crib" id="crib-4-nat-and-pat-one-street-address-many-ap">
@@ -619,6 +683,33 @@
         <li style="margin-bottom:8px;">Compare your public IP to your partner's, sitting next to you. If you're on the same home/campus network, you'll likely share the exact same public IP, even though your private IPs differ — proving that one shared "street address" is fronting for multiple separate devices.</li>
         <li>As a group, have one person start a mobile hotspot and have two others join it. All three of you check "my IP address" again — you should all show the identical public IP despite being three separate physical phones/laptops. This is PAT in action: your hotspot's single public IP is being shared across every connected device simultaneously, with the hotspot internally tracking who gets which return traffic based on the port numbers involved (hence "Port" Address Translation).</li>
       </ol>
+      <div class="diagram-box">
+        <div style="font-weight:600; margin-bottom:8px; font-size:13px;">One street address, many apartments</div>
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:inherit;">
+          <style>.nt{font-size:12px;} .ntm{font-family:monospace;font-size:11px;}</style>
+          <rect x="10" y="15" width="140" height="40" rx="5" fill="#e0f2fe" stroke="#0369a1"/>
+          <text x="80" y="34" text-anchor="middle" class="nt">Laptop</text>
+          <text x="80" y="48" text-anchor="middle" class="ntm">192.168.1.10</text>
+          <rect x="10" y="80" width="140" height="40" rx="5" fill="#e0f2fe" stroke="#0369a1"/>
+          <text x="80" y="99" text-anchor="middle" class="nt">Phone</text>
+          <text x="80" y="113" text-anchor="middle" class="ntm">192.168.1.11</text>
+          <rect x="10" y="145" width="140" height="40" rx="5" fill="#e0f2fe" stroke="#0369a1"/>
+          <text x="80" y="164" text-anchor="middle" class="nt">Partner's PC</text>
+          <text x="80" y="178" text-anchor="middle" class="ntm">192.168.1.12</text>
+          <line x1="150" y1="35" x2="230" y2="90" stroke="#374151" stroke-width="1.5"/>
+          <line x1="150" y1="100" x2="230" y2="100" stroke="#374151" stroke-width="1.5"/>
+          <line x1="150" y1="165" x2="230" y2="110" stroke="#374151" stroke-width="1.5"/>
+          <rect x="230" y="60" width="140" height="80" rx="6" fill="#fde68a" stroke="#b45309"/>
+          <text x="300" y="90" text-anchor="middle" class="nt" font-weight="bold">Router</text>
+          <text x="300" y="106" text-anchor="middle" class="nt" fill="#78350f">NAT / PAT</text>
+          <text x="300" y="120" text-anchor="middle" class="nt" fill="#78350f">front desk</text>
+          <line x1="370" y1="100" x2="440" y2="100" stroke="#374151" stroke-width="2" marker-end="url(#nt1)"/>
+          <rect x="440" y="75" width="110" height="50" rx="6" fill="#fecaca" stroke="#b91c1c"/>
+          <text x="495" y="97" text-anchor="middle" class="nt" font-weight="bold">Internet sees</text>
+          <text x="495" y="112" text-anchor="middle" class="ntm" font-size="10">ONE public IP</text>
+          <defs><marker id="nt1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#374151"/></marker></defs>
+        </svg>
+      </div>
     </div>
 
     <div class="crib" id="crib-short-answer-questions">

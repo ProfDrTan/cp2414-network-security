@@ -301,26 +301,26 @@
     <div class="section-title-row"><h2 class="section-title">Setup Playbook: VirtualBox + BeeBox</h2><button class="tts-btn" onclick="toggleReadAloud('playbook', this)">Listen</button></div>
     <p class="section-desc">This exact setup took a full extra day to get right the first time — an ARM laptop dead end, a corrupted-looking snapshot chain that turned out to be a genuine VirtualBox limitation, and a wrong-window mix-up or two along the way. Everything below is what actually happened and what actually fixed it, so a future trimester doesn't have to rediscover any of it.</p>
 
-    <div class="crib">
-      <div class="crib-title">Step 0 — Check hardware BEFORE downloading anything</div>
+    <div class="crib" id="crib-step-0-check-hardware-before-downloading">
+      <div class="crib-title-row"><div class="crib-title">Step 0 — Check hardware BEFORE downloading anything</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-0-check-hardware-before-downloading', this)">Listen</button></div>
       <div class="crib-sub">This alone would have saved an entire afternoon the first time through.</div>
       <p style="font-size:13.8px; margin:0 0 10px;">On the machine you intend to use: <strong>Settings → System → About → System type.</strong> You need it to say <strong>"x64-based processor."</strong></p>
       <div class="note warn">If it says <strong>"ARM-based processor"</strong> (e.g. Surface Pro 11th-gen, any Snapdragon X Elite laptop) — stop here. As of VirtualBox 7.2.16 (Aug 2026), running this old x86 Linux VM on an ARM host is not reliably possible — not slow, genuinely non-functional in testing. Find a different, genuinely x64 machine before doing anything else. Don't spend time troubleshooting on ARM hardware; it's a hardware-language mismatch, not a settings problem.</div>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Step 1 — Where to actually download BeeBox from</div>
+    <div class="crib" id="crib-step-1-where-to-actually-download-beebox">
+      <div class="crib-title-row"><div class="crib-title">Step 1 — Where to actually download BeeBox from</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-1-where-to-actually-download-beebox', this)">Listen</button></div>
       <div class="note warn">The primary SourceForge listing (<span class="mono" style="font-size:12px;">sourceforge.net/projects/bwapp/files/bee-box/</span>) carries a persistent "Malware detected" warning on the exact <span class="mono" style="font-size:12px;">bee-box_v1.6.7z</span> file. This isn't a one-off flag — it's a known, standing issue with that file. Don't download it, even if it seems to be the "official" source.</div>
       <div class="note fix">Use the <strong>"Alternative (maybe faster) BeeBox download"</strong> link from the Blackboard Week 1 content instead — it's a Google Drive file (<span class="mono" style="font-size:12px;">bee-box_v1.6-new.zip</span>) hosted through the course itself, and is the trustworthy source.</div>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Step 2 — Extract to the internal C: drive, never a USB stick</div>
+    <div class="crib" id="crib-step-2-extract-to-the-internal-c-drive-n">
+      <div class="crib-title-row"><div class="crib-title">Step 2 — Extract to the internal C: drive, never a USB stick</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-2-extract-to-the-internal-c-drive-n', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">The extracted VM needs roughly <strong>5 GB free</strong>. A USB stick both often lacks the space and is genuinely unreliable for running a VM's disk files from directly. Extract straight to something like <span class="mono" style="font-size:12.5px;">C:\CP2414\bee-box</span>. If a laptop reboots mid-extraction (it happened once here), the safest move is to delete the extracted folder entirely and re-extract fresh rather than assume it's intact.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Step 3 — Building the VM (it's VMware format, not a VirtualBox .ova)</div>
+    <div class="crib" id="crib-step-3-building-the-vm-it-s-vmware-forma">
+      <div class="crib-title-row"><div class="crib-title">Step 3 — Building the VM (it's VMware format, not a VirtualBox .ova)</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-3-building-the-vm-it-s-vmware-forma', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;">BeeBox ships as VMware's own format (<span class="mono" style="font-size:12px;">.vmx</span> / <span class="mono" style="font-size:12px;">.vmdk</span> files), not a VirtualBox <span class="mono" style="font-size:12px;">.ova</span> — so <strong>File → Import Appliance won't work.</strong> Build it manually instead:</p>
       <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
         <li>VirtualBox → <strong>New</strong> → name it, leave ISO Image as <span class="mono" style="font-size:12px;">&lt;not selected&gt;</span></li>
@@ -341,13 +341,13 @@
       </div>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Step 4 — Network: Bridged Adapter, not NAT</div>
+    <div class="crib" id="crib-step-4-network-bridged-adapter-not-nat">
+      <div class="crib-title-row"><div class="crib-title">Step 4 — Network: Bridged Adapter, not NAT</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-4-network-bridged-adapter-not-nat', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">VM Settings → Network → Attached to: <strong>Bridged Adapter.</strong> This is what lets your laptop and BeeBox see each other as two separate devices on the same network — required for Wireshark captures, browser access to bWAPP, and the Week 8 SSH exercise. Confirmed working when BeeBox's IP and the host laptop's own Wi-Fi IP share the same subnet (e.g. both <span class="mono" style="font-size:12px;">192.168.1.x</span>) but different last numbers.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Step 5 — Finding BeeBox's IP address (easy to get wrong)</div>
+    <div class="crib" id="crib-step-5-finding-beebox-s-ip-address-easy">
+      <div class="crib-title-row"><div class="crib-title">Step 5 — Finding BeeBox's IP address (easy to get wrong)</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-5-finding-beebox-s-ip-address-easy', this)">Listen</button></div>
       <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
         <li>The command must run <strong>inside the BeeBox VM window itself</strong> — not in a PowerShell/Command Prompt window on the host laptop. Both look like black terminal windows and are easy to mix up mid-session.</li>
         <li>Inside BeeBox: right-click the desktop → <strong>Open Terminal</strong> (or Applications → Accessories → Terminal)</li>
@@ -358,8 +358,8 @@
       <p style="font-size:13.8px; margin:0;">Verify from the <strong>host</strong> laptop's normal browser (Chrome/Firefox/Edge — not typed into PowerShell): <span class="mono" style="font-size:12px;">http://&lt;that-ip&gt;/bWAPP/login.php</span> should load the login page.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Reference: credentials that keep coming up</div>
+    <div class="crib" id="crib-reference-credentials-that-keep-coming-u">
+      <div class="crib-title-row"><div class="crib-title">Reference: credentials that keep coming up</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-reference-credentials-that-keep-coming-u', this)">Listen</button></div>
       <ul style="font-size:13.5px; padding-left:18px; margin:0;">
         <li><strong>Linux login (auto-applied on boot):</strong> <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span></li>
         <li><strong>bWAPP web login:</strong> <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span> — same as Linux, and the same as Week 8's SSH exercise (<span class="mono" style="font-size:12px;">ssh bee@&lt;ip&gt;</span>)</li>
@@ -368,8 +368,8 @@
       </ul>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Step 6 — Burp Suite: proxy setup and connecting to bWAPP</div>
+    <div class="crib" id="crib-step-6-burp-suite-proxy-setup-and-connec">
+      <div class="crib-title-row"><div class="crib-title">Step 6 — Burp Suite: proxy setup and connecting to bWAPP</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-6-burp-suite-proxy-setup-and-connec', this)">Listen</button></div>
       <div class="crib-sub">Once BeeBox is booted and its IP is known (Step 5), this is what gets Burp actually seeing traffic.</div>
       <div class="note fix">
         <strong>The one rule that prevents 90% of confusion here: Burp must be fully running BEFORE the browser is touched. Always this order — never reversed:</strong>
@@ -436,13 +436,13 @@
     <div class="section-title-row"><h2 class="section-title">Practical 1 — Full Orientation Guide</h2><button class="tts-btn" onclick="toggleReadAloud('prac1', this)">Listen</button></div>
     <p class="section-desc">Week 1's Blackboard folder has seven items sitting next to each other with no explanation of what each one is for or what order to touch them in. This section exists to remove that confusion entirely — what the prac is actually about, what every single link is, and a step-by-step path for both "using the lab's computer" and "using your own laptop," since those two paths genuinely diverge.</p>
 
-    <div class="crib">
-      <div class="crib-title">What Practical 1 actually is, in one paragraph</div>
+    <div class="crib" id="crib-what-practical-1-actually-is-in-one-para">
+      <div class="crib-title-row"><div class="crib-title">What Practical 1 actually is, in one paragraph</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-what-practical-1-actually-is-in-one-para', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Prac 1 has two halves. <strong>Half 1</strong> is nine short-answer written questions covering core security concepts (CIA Triad, threats vs attacks, security design principles, SQL injection, session hijacking, etc.) — no VM needed, answer these from the lecture material and your own understanding. <strong>Half 2</strong> is hands-on: a 20-25 minute warm-up on a live hacking practice site, then a guided walkthrough of HTML Injection attacks against a deliberately vulnerable local web app (bWAPP), using Burp Suite to intercept and manipulate your own web traffic. The hands-on half needs the VM/software setup — that's what the rest of this section walks through.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Decoding the Week 1 menu: what each item is and the order to use them in</div>
+    <div class="crib" id="crib-decoding-the-week-1-menu-what-each-item">
+      <div class="crib-title-row"><div class="crib-title">Decoding the Week 1 menu: what each item is and the order to use them in</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-decoding-the-week-1-menu-what-each-item', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;">These items are listed alphabetically/by-type on Blackboard, NOT in the order you're meant to use them. Here's the actual order and purpose of each:</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;"><strong>Prac Instruction</strong> — the master document (the PDF this guide is built from). Read this first, top to bottom, before opening anything else. Everything below is referenced from inside it.</li>
@@ -455,8 +455,8 @@
       <div class="note warn" style="margin-top:10px;"><strong>Trust warning on BeeBox specifically:</strong> the original SourceForge listing for <span class="mono" style="font-size:12px;">bee-box_v1.6.7z</span> carries a persistent "Malware detected" flag — a known, standing issue with that exact file, not a one-off. Use the course's own "Alternative (maybe faster) BeeBox download" link instead (a Google Drive-hosted copy), which is the trustworthy source.</div>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Which path applies to you: lab computer vs your own laptop</div>
+    <div class="crib" id="crib-which-path-applies-to-you-lab-computer-v">
+      <div class="crib-title-row"><div class="crib-title">Which path applies to you: lab computer vs your own laptop</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-which-path-applies-to-you-lab-computer-v', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;">The official instructions genuinely branch here — don't mix steps from both paths.</p>
       <ul style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;"><strong>Lab computer:</strong> VirtualBox, BeeBox, AND Burp Suite ALL run as separate virtual machines (three VMs total, or two if BeeBox/Burp images are pre-installed). Both VMs need their network adapter set to Bridged, both need their own IP addresses on the same subnet, and you manually type BeeBox's IP into the Burp VM's browser.</li>
@@ -464,8 +464,8 @@
       </ul>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">The full hands-on sequence, start to finish (own-laptop path)</div>
+    <div class="crib" id="crib-the-full-hands-on-sequence-start-to-fini">
+      <div class="crib-title-row"><div class="crib-title">The full hands-on sequence, start to finish (own-laptop path)</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-the-full-hands-on-sequence-start-to-fini', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Install VirtualBox on your laptop</li>
         <li style="margin-bottom:6px;">Download BeeBox (via the Alternative link), extract it, build a VM around the existing <span class="mono" style="font-size:12px;">bee-box.vmdk</span> disk (see Playbook Steps 0-3 above for the exact gotchas)</li>
@@ -485,8 +485,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">The nine short-answer questions (for orientation — answer using lecture material, not copied text)</div>
+    <div class="crib" id="crib-the-nine-short-answer-questions-for-orie">
+      <div class="crib-title-row"><div class="crib-title">The nine short-answer questions (for orientation — answer using lecture material, not copied text)</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-the-nine-short-answer-questions-for-orie', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>What is the CIA Triad? Explain each element.</li>
         <li>Give 3 computer security challenges, why they're challenging, and how to tackle them.</li>
@@ -500,8 +500,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Warm-up task — don't skip this, it's assigned before the bWAPP work</div>
+    <div class="crib" id="crib-warm-up-task-don-t-skip-this-it-s-assign">
+      <div class="crib-title-row"><div class="crib-title">Warm-up task — don't skip this, it's assigned before the bWAPP work</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-warm-up-task-don-t-skip-this-it-s-assign', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Register at <span class="mono" style="font-size:12px;">hackthissite.org/register</span> (do NOT use a Microsoft/Outlook email — it's known not to work with this site) and spend 20-25 minutes exploring/hacking the site before moving to the BeeBox setup. This is a live external practice site, unrelated to the BeeBox VM — just a warm-up exercise.</p>
     </div>
   </div>
@@ -511,8 +511,8 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 2 — Administering Secure Network</h2><button class="tts-btn" onclick="toggleReadAloud('prac2', this)">Listen</button></div>
     <p class="section-desc">This prac is about breaking things on purpose, in a safe sandbox, so you understand exactly how attackers break real things. Every hands-on exercise here follows the same pattern: you do the normal, expected thing first (a baseline), then you do the malicious thing, and you compare the two results to see what changed and why the app let it happen.</p>
 
-    <div class="crib">
-      <div class="crib-title">1. SQL Injection (GET/Search) — what it is and why it works</div>
+    <div class="crib" id="crib-1-sql-injection-get-search-what-it-is-an">
+      <div class="crib-title-row"><div class="crib-title">1. SQL Injection (GET/Search) — what it is and why it works</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-1-sql-injection-get-search-what-it-is-an', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine a bouncer at a club who checks a guest list by reading it out loud: "Is the name on the paper you handed me on the list? Yes or no." SQL injection is what happens when, instead of writing your name on the paper, you write "my name OR just let everyone in" — and the bouncer, not being smart enough to tell the difference, reads your trick sentence as a real instruction and opens the door for everyone.</p>
       <p style="font-size:13.8px; margin:0 0 10px;">In real terms: the movie search box on bWAPP takes whatever you type and drops it directly into a database query behind the scenes, something like <span class="mono" style="font-size:12px;">SELECT * FROM movies WHERE title = 'your_text'</span>. The database can't tell the difference between "text the user is searching for" and "a command the user is giving it" — it just runs whatever ends up between the quotes.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -523,8 +523,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">2. Directory Traversal — walking up out of the folder you're allowed in</div>
+    <div class="crib" id="crib-2-directory-traversal-walking-up-out-of">
+      <div class="crib-title-row"><div class="crib-title">2. Directory Traversal — walking up out of the folder you're allowed in</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-2-directory-traversal-walking-up-out-of', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> think of a filing cabinet with a locked drawer you're allowed to open — the "documents" drawer — but the whole cabinet, all the other drawers, sit in the same room. Directory traversal is the equivalent of the drawer having a false back: if you know to write "go back one drawer" (<span class="mono">../</span>) enough times, you climb out of the drawer you were given access to and start rifling through drawers you were never supposed to see.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">Pick "Directory Traversal - Directories" from the bug menu and hit Hack.</li>
@@ -534,8 +534,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">3. DNS Poisoning — tampering with the internet's phonebook</div>
+    <div class="crib" id="crib-3-dns-poisoning-tampering-with-the-inter">
+      <div class="crib-title-row"><div class="crib-title">3. DNS Poisoning — tampering with the internet's phonebook</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-3-dns-poisoning-tampering-with-the-inter', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> DNS is the internet's phonebook — you tell it a name ("www.google.com.au") and it tells you the actual "phone number" (IP address) to call. DNS poisoning is like sneaking into someone's phone contacts and secretly renaming a stranger's number to say "Mum" — the phone still dials correctly, the name just now lies about who you're really reaching.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">Outside any VM, on your real browser, go to nslookup.io and look up the real IP addresses for both <span class="mono">www.google.com.au</span> and <span class="mono">www.github.com</span>. Write both down — you need github's IP for the next step.</li>
@@ -546,8 +546,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">4. NAT &amp; PAT — one street address, many apartments (do this part with a partner)</div>
+    <div class="crib" id="crib-4-nat-and-pat-one-street-address-many-ap">
+      <div class="crib-title-row"><div class="crib-title">4. NAT &amp; PAT — one street address, many apartments (do this part with a partner)</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-4-nat-and-pat-one-street-address-many-ap', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine an apartment building. The building has ONE street address that the outside world (the postal service) knows about. But inside, there are dozens of individual apartments, each with their own door. NAT (Network Address Translation) is the building's front desk: it takes mail addressed to "the building" and works out which specific apartment (device) it's actually meant for. PAT (Port Address Translation) is what happens when many apartments share that same single street address at once — the front desk tracks which apartment is expecting which delivery, all under one shared public identity.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">On your own computer, open cmd/terminal and run <span class="mono">ipconfig</span> (or <span class="mono">ifconfig</span> on Linux/Mac). This shows your <strong>local/private</strong> IP address — your specific "apartment number" inside your home or campus network.</li>
@@ -557,8 +557,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>How can you prevent an SMTP server from sending unable to deliver the message back to spammers (draw a diagram/picture if you'd like and explain)? Why is it important to do so?</li>
         <li>Is it recommended to install a spam filter on a POP3 server? Why or why not?</li>
@@ -577,8 +577,8 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 3 — Intruders and Firewalls</h2><button class="tts-btn" onclick="toggleReadAloud('prac3', this)">Listen</button></div>
     <p class="section-desc">Two separate skills this week: first, "listening in" on your own network traffic (Wireshark), so you understand what data actually looks like as it travels — nothing is hidden by default. Second, controlling what's allowed in and out of a machine (the Windows Firewall) — the difference between a network you can eavesdrop on and one you can actually lock down.</p>
 
-    <div class="crib">
-      <div class="crib-title">1. Wireshark — a wiretap for your own network cable</div>
+    <div class="crib" id="crib-1-wireshark-a-wiretap-for-your-own-netwo">
+      <div class="crib-title-row"><div class="crib-title">1. Wireshark — a wiretap for your own network cable</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-1-wireshark-a-wiretap-for-your-own-netwo', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine every piece of data your computer sends or receives is a postcard, not a sealed letter — anyone standing at the right point on the delivery route can read every word on it as it passes by. Wireshark is a tool that stands at that point (your own network interface) and copies down every postcard going past, so you can read them afterward. It doesn't create any new traffic — it just watches what's already happening.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">Open Wireshark, select your active interface (Ethernet or Wi-Fi — whichever one you're actually online through) and click Start. It immediately starts logging every packet flowing in or out.</li>
@@ -587,8 +587,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">2. Firewall rules — a bouncer for your network connections, not just people</div>
+    <div class="crib" id="crib-2-firewall-rules-a-bouncer-for-your-netw">
+      <div class="crib-title-row"><div class="crib-title">2. Firewall rules — a bouncer for your network connections, not just people</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-2-firewall-rules-a-bouncer-for-your-netw', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> a firewall is a bouncer standing at your computer's front door, checking every single thing trying to come in OR go out, against a rulebook. By default the bouncer lets most things through. In this exercise you write your own explicit rule — "block anything trying to leave through door number 80" — and then prove it works by testing that the thing you blocked genuinely stops functioning.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">With BeeBox + BurpSuite VMs running (both set to Bridged network so they can talk to each other, and Burp's Intercept switched off for now), confirm bWAPP loads normally in the browser first — this is your "before" baseline, so you can actually tell later whether your firewall rule changed anything.</li>
@@ -599,8 +599,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-2">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-2', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>Who are misfeasors? Give some examples of their intrusion.</li>
         <li>There are two ways to protect a password file. What are they? Explain.</li>
@@ -622,13 +622,13 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 4 — Symmetric Encryption</h2><button class="tts-btn" onclick="toggleReadAloud('prac4', this)">Listen</button></div>
     <p class="section-desc">This prac uses CrypTool, a free program built for exactly this kind of playing-around. The theme running through all of it: these are "classic," old-fashioned ciphers — the point is not that they're secure (they're not, and you'll prove that yourself at the end), but that seeing simple encryption with your own eyes builds the intuition you need before tackling modern ciphers like AES next week.</p>
 
-    <div class="crib">
-      <div class="crib-title">Setup</div>
+    <div class="crib" id="crib-setup">
+      <div class="crib-title-row"><div class="crib-title">Setup</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-setup', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Install CrypTool 1.4.42 on your own computer (or open it on the BurpSuite VM if you're using the lab). Create a new file and type "hello world" — this is your plaintext for every exercise below.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">1. Caesar / ROT-13 — the decoder-ring cipher</div>
+    <div class="crib" id="crib-1-caesar-rot-13-the-decoder-ring-cipher">
+      <div class="crib-title-row"><div class="crib-title">1. Caesar / ROT-13 — the decoder-ring cipher</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-1-caesar-rot-13-the-decoder-ring-cipher', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> imagine a decoder ring toy — two circles of the alphabet, one fixed and one you can spin. Spin it by 3 letters and every "A" you write becomes "D", every "B" becomes "E", and so on. That's a Caesar cipher: shift the whole alphabet by a fixed number of positions. ROT-13 is just a Caesar cipher fixed at exactly half the alphabet's length, which has the neat (and insecure) property that encrypting twice gets you back to the original text.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Encrypt/Decrypt → Symmetric (classic) → Caesar/Rot-13. Choose "Number value", enter 3 as your key, and watch "Properties of the chosen encryption" show you the resulting shifted alphabet (A→D, B→E, etc.) — this makes the mechanism completely visible before you even click Encrypt.</li>
@@ -636,8 +636,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">2. Substitution/Atbash — scrambling the whole alphabet, not just shifting it</div>
+    <div class="crib" id="crib-2-substitution-atbash-scrambling-the-who">
+      <div class="crib-title-row"><div class="crib-title">2. Substitution/Atbash — scrambling the whole alphabet, not just shifting it</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-2-substitution-atbash-scrambling-the-who', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> where Caesar just slides the alphabet along like a ruler, substitution throws the alphabet in a bag and pulls letters out in a completely different order — A might map to X, B to M, C to Q, with no predictable pattern connecting them. Atbash is one famous fixed version of this: it simply reverses the alphabet (A↔Z, B↔Y, and so on).</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Encrypt/Decrypt → Substitution/Atbash. Enter key "XYZ" in the Key box and look at "Information on the substitution encryption" — it shows exactly how the 26-letter alphabet gets remapped starting from those three letters.</li>
@@ -645,8 +645,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">3. Permutation/Transposition — same letters, different order</div>
+    <div class="crib" id="crib-3-permutation-transposition-same-letters">
+      <div class="crib-title-row"><div class="crib-title">3. Permutation/Transposition — same letters, different order</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-3-permutation-transposition-same-letters', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> Caesar and substitution both change WHAT each letter becomes. Permutation instead keeps every original letter exactly as it was, but shuffles their ORDER — like taking the letter tiles of a word and rearranging them into a different sequence, following a specific shuffle pattern (the key).</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Encrypt/Decrypt → Symmetric (classic) → Permutation/Transposition. Type key "ABCD" and watch it convert into the numeric permutation pattern <span class="mono">1,2,3,4</span>. Then replace it with "TEST" and watch the pattern change to <span class="mono">3,1,2,4</span> — the letters of your key word, sorted alphabetically, tell the tool which position each column should move to.</li>
@@ -654,8 +654,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">4. Cracking your own Caesar cipher — why "classic" ciphers are considered broken</div>
+    <div class="crib" id="crib-4-cracking-your-own-caesar-cipher-why-cl">
+      <div class="crib-title-row"><div class="crib-title">4. Cracking your own Caesar cipher — why "classic" ciphers are considered broken</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-4-cracking-your-own-caesar-cipher-why-cl', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>Why this matters:</strong> a Caesar cipher only has 25 possible shift values (1 through 25) — small enough that a computer, or even a patient human, can just try every single one and see which produces readable English. This is the whole point of the exercise: watching an automated tool crack your own "secret" message in seconds is what makes the danger of weak encryption feel real, rather than just something you're told about in a lecture.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Re-encrypt "hello world" with Caesar (any shift). On the resulting ciphertext window, go to Analysis → Symmetric Encryption (Classic) → Ciphertext-Only → Caesar, click through the OK prompts, then Decrypt.</li>
@@ -663,16 +663,16 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Fun Bits</div>
+    <div class="crib" id="crib-fun-bits">
+      <div class="crib-title-row"><div class="crib-title">Fun Bits</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-fun-bits', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Decrypt ciphertext "GDKKN" using the substitution table given in the prac PDF (Plaintext A–N mapped to Ciphertext N,A,B,C...M) — work backwards from each ciphertext letter to its plaintext letter.</li>
         <li>Given plaintext "IJKL ABCD WXYZ GHIJ" becomes ciphertext "LMNO DEFG ZABC JKLM", and the key is one of 0,1,2,3,4 — work out which shift value produces that exact transformation (compare how far each letter moved).</li>
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-3">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-3', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>What are the 5 elements of a symmetric encryption scheme? Explain.</li>
         <li>Explain the difference between a block cipher and a stream cipher in plaintext processing.</li>
@@ -692,8 +692,8 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 5 — Symmetric &amp; Asymmetric Encryption</h2><button class="tts-btn" onclick="toggleReadAloud('prac5', this)">Listen</button></div>
     <p class="section-desc">Last week's ciphers were toys — easy to crack, mostly historical. This week is the real thing: AES, the encryption standard actually protecting your banking apps and Wi-Fi today, plus your first look at asymmetric (public-key) encryption, which solves a completely different problem than everything you've done so far.</p>
 
-    <div class="crib">
-      <div class="crib-title">1. AES (CBC) — a lock so strong that guessing the key is pointless</div>
+    <div class="crib" id="crib-1-aes-cbc-a-lock-so-strong-that-guessing">
+      <div class="crib-title-row"><div class="crib-title">1. AES (CBC) — a lock so strong that guessing the key is pointless</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-1-aes-cbc-a-lock-so-strong-that-guessing', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> think of AES as a combination padlock with an astronomically large number of possible combinations — not "spin the dial 0 to 99" but a number so large that even a computer trying billions of combinations a second would still need longer than the age of the universe to try them all. That's the whole security model: not that the lock is unpickable in theory, just that brute-forcing it is completely impractical.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Encrypt/Decrypt → Symmetric (modern) → AES (CBC). Enter the key <span class="mono">00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</span> (this is 128 bits — 16 bytes, written in hex) and click Encrypt. Inspect the hex/ASCII output on the right — notice it looks like complete noise, nothing recognisable, even though your key here is about as simple and orderly as a 128-bit key could be.</li>
@@ -702,8 +702,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">2. Generating a key from a hash — turning a memorable password into a real key</div>
+    <div class="crib" id="crib-2-generating-a-key-from-a-hash-turning-a">
+      <div class="crib-title-row"><div class="crib-title">2. Generating a key from a hash — turning a memorable password into a real key</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-2-generating-a-key-from-a-hash-turning-a', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> a hash function is like a fingerprint machine for text — feed it any input, of any length, and it spits out a fixed-length "fingerprint" that's unique to that exact input, but you can never work backwards from the fingerprint to reconstruct the original text. This exercise shows a real, practical use of that: turning a human-memorable password ("Bazinga") into a proper fixed-length encryption key.</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Create two files: one with "Don't panic" (your plaintext) and one with "Bazinga" (your password).</li>
@@ -712,8 +712,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">3. Asymmetric encryption (RSA) — two different keys, one problem AES can't solve</div>
+    <div class="crib" id="crib-3-asymmetric-encryption-rsa-two-differen">
+      <div class="crib-title-row"><div class="crib-title">3. Asymmetric encryption (RSA) — two different keys, one problem AES can't solve</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-3-asymmetric-encryption-rsa-two-differen', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> everything so far (Caesar, substitution, AES) is "symmetric" — the SAME key locks and unlocks the message, meaning both sides need to already share that secret key somehow, safely, beforehand. Asymmetric encryption solves the problem of "how do two strangers who've never met safely agree on a shared secret?" with a mailbox analogy: anyone can drop a letter into your mailbox slot (your <strong>public</strong> key — safe to hand out to literally anyone), but only you hold the physical key that opens the box and reads what's inside (your <strong>private</strong> key — never shared with anyone).</p>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:6px;">Close CrypTool and reopen it fresh (a clean starting text window).</li>
@@ -722,8 +722,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-4">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-4', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>What are the differences between symmetric and asymmetric cryptography?</li>
         <li>Is it possible to perform authentication solely by using symmetric encryption? Explain.</li>
@@ -747,13 +747,13 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 6 — Digital Signature</h2><button class="tts-btn" onclick="toggleReadAloud('prac6', this)">Listen</button></div>
     <p class="section-desc">A digital signature answers two questions at once: "did this really come from the person it claims to?" and "has it been tampered with since they signed it?" This week you'll create your own signing identity and actually sign a real PDF form with it, then inspect the certificate that makes the whole thing verifiable.</p>
 
-    <div class="crib">
-      <div class="crib-title">The analogy: a wax seal that also proves nothing was altered</div>
+    <div class="crib" id="crib-the-analogy-a-wax-seal-that-also-proves">
+      <div class="crib-title-row"><div class="crib-title">The analogy: a wax seal that also proves nothing was altered</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-the-analogy-a-wax-seal-that-also-proves', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Imagine sealing a letter with a wax stamp bearing your unique family crest. Two things follow from that seal: (1) anyone who knows your crest can be reasonably confident the letter genuinely came from you, and (2) if the seal is broken when the letter arrives, the recipient knows someone tampered with it after you sent it. A digital signature does both jobs mathematically — it's tied to a private key only you hold (proving authorship), and it's also mathematically linked to the exact content of the document, so even a single changed character breaks the "seal" and shows up as invalid.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Steps</div>
+    <div class="crib" id="crib-steps">
+      <div class="crib-title-row"><div class="crib-title">Steps</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-steps', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">Install Adobe Acrobat Reader if you don't already have it. Download the "REQUEST FOR REPLACEMENT JCU AWARD" fillable PDF form from JCU's site, open it in Acrobat, and sign in with your JCU email when prompted.</li>
         <li style="margin-bottom:8px;"><strong>Create your self-signed digital ID</strong> (this is you personally acting as your own trusted authority, rather than a certificate bought from a company — the practical explicitly notes real sensitive business transactions would normally use a certificate authority instead, but for learning purposes self-signing is fine): Edit → Preferences → Signatures → More (next to Identities & Trusted Certificates) → Digital IDs → click the Add ID button → choose "A new digital ID I want to create now" → Next.</li>
@@ -765,8 +765,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-5">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-5', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>Can message authentication and user authentication be used interchangeably? Why or why not? Explain.</li>
         <li>What are the four general means of authenticating a user's identity? Explain.</li>
@@ -786,13 +786,13 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 7 — Network Access Control &amp; Cloud Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac7', this)">Listen</button></div>
     <p class="section-desc">Two threads this week that connect to the same idea — controlling exactly who/what is allowed to reach a resource, and how much of the underlying infrastructure you're trusting someone else to manage on your behalf.</p>
 
-    <div class="crib">
-      <div class="crib-title">1. Remote access control — TeamViewer</div>
+    <div class="crib" id="crib-1-remote-access-control-teamviewer">
+      <div class="crib-title-row"><div class="crib-title">1. Remote access control — TeamViewer</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-1-remote-access-control-teamviewer', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Download and install TeamViewer on your personal computer AND your mobile phone (not the lab machines — this needs to be devices you actually control end to end). Create a TeamViewer account following their own official guide, log in, then follow their guide again to practice connecting from one of your devices into the other. The point of doing this yourself is feeling how remote-access software works from both the "controller" and "controlled" side — this is the exact category of tool NAC (Network Access Control, the short-answer topic this week) exists to gate and monitor, since remote-access tools are a favourite target for attackers to abuse if they're not properly controlled.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">2. Cloud computing tour — four different ways to rent someone else's infrastructure</div>
+    <div class="crib" id="crib-2-cloud-computing-tour-four-different-wa">
+      <div class="crib-title-row"><div class="crib-title">2. Cloud computing tour — four different ways to rent someone else's infrastructure</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-2-cloud-computing-tour-four-different-wa', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0 0 10px;"><strong>The analogy:</strong> think of these four categories as four different levels of renting a place to cook. <strong>SaaS</strong> is like eating at a restaurant — the meal (finished app) is fully prepared for you, you just consume it (e.g. Dropbox, Google Docs). <strong>PaaS</strong> is like renting a fully-equipped commercial kitchen — you bring your own recipe (your code) but the ovens, benches, and utilities (the platform) are already provided and managed for you (e.g. Azure App Service). <strong>IaaS</strong> is like renting an empty warehouse shell — you're given raw space, power, and a foundation, but YOU have to install and manage everything else yourself (e.g. Azure's raw virtual machines). <strong>SecaaS</strong> is a security specialist you hire to watch over any of the above, rather than a place to cook at all — a monitoring/protection service layered on top (e.g. Azure Sentinel).</p>
       <p style="font-size:13.8px; margin:0 0 10px; color:var(--danger,#c33);"><strong>Watch out:</strong> some of these services ask for a bank card to start a "free trial." You don't need to actually subscribe to anything to complete this exercise — just explore what each service offers and, where genuinely free, register and click around.</p>
       <ul style="font-size:13.5px; padding-left:18px; margin:0;">
@@ -803,8 +803,8 @@
       </ul>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-6">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-6', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>What is Network Access Control (NAC)? Why is it needed?</li>
         <li>What is the quarantine network, and what is the purpose of having it?</li>
@@ -825,13 +825,13 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 8 — Transport Layer Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac8', this)">Listen</button></div>
     <p class="section-desc">Remember Prac 3, where Wireshark showed you that unencrypted traffic is just readable postcards to anyone watching? This week's hands-on is the fix for that problem, applied to remote logins specifically: SSH wraps your connection in an encrypted tunnel so nobody watching the wire can read your password or commands as they pass by.</p>
 
-    <div class="crib">
-      <div class="crib-title">The analogy: a private, soundproofed phone line instead of shouting across a room</div>
+    <div class="crib" id="crib-the-analogy-a-private-soundproofed-phone">
+      <div class="crib-title-row"><div class="crib-title">The analogy: a private, soundproofed phone line instead of shouting across a room</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-the-analogy-a-private-soundproofed-phone', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Logging into a remote machine the old, insecure way (Telnet) is like shouting your password across a crowded room to the person you're talking to — anyone nearby can just listen in. SSH is like being handed a private, soundproofed phone line to that same person instead — the conversation still reaches them, but nobody standing nearby can make out a single word of it.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Steps</div>
+    <div class="crib" id="crib-steps-2">
+      <div class="crib-title-row"><div class="crib-title">Steps</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-steps-2', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">Turn on your BeeBox VM (network adapter set to Bridged, same as always). Open its terminal and find its IPv4 address (via <span class="mono">ifconfig</span>), and note it down.</li>
         <li style="margin-bottom:8px;">On your HOST machine (not inside any VM), open cmd or terminal and run <span class="mono">ssh bee@ip_address</span>, swapping in the real IP from step 1. The password is <span class="mono">bug</span>.</li>
@@ -841,8 +841,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-7">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-7', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>What are the characteristics of the World Wide Web that make it vulnerable to a variety of security attacks?</li>
         <li>Threats on the Web can be categorised into 4 categories. What are they? Give 2 examples of each and how to prevent/tackle them.</li>
@@ -863,13 +863,13 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 9 — Wireless Network Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac9', this)">Listen</button></div>
     <p class="section-desc">A QR code is just a compressed, unreadable-to-humans way of encoding a normal piece of text (usually a URL or address) into a pattern your camera can decode instantly. That "instantly, without you reading it first" property is exactly what makes it useful — and exactly what makes it dangerous.</p>
 
-    <div class="crib">
-      <div class="crib-title">The analogy: a shortcut sign you follow blindly, trusting whoever put it up</div>
+    <div class="crib" id="crib-the-analogy-a-shortcut-sign-you-follow-b">
+      <div class="crib-title-row"><div class="crib-title">The analogy: a shortcut sign you follow blindly, trusting whoever put it up</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-the-analogy-a-shortcut-sign-you-follow-b', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Imagine a hiking trail with a sign pointing down a side path saying "shortcut to the summit." You follow it without question, because that's the whole point of a shortcut sign — you're not meant to double-check the terrain yourself. A QR code works the same way: you scan it and your phone instantly goes wherever it points, without you ever reading the actual destination first (unlike a normal typed-out link, which you can at least glance at before clicking). If an attacker swaps a legitimate sign for their own fake one — say, sticking a malicious QR sticker over a real one on a parking meter or restaurant menu — you'd have no way to tell the difference just by looking at it.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Steps</div>
+    <div class="crib" id="crib-steps-3">
+      <div class="crib-title-row"><div class="crib-title">Steps</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-steps-3', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li style="margin-bottom:8px;">Get a QR reader app on your phone if you don't already have one built into your camera.</li>
         <li style="margin-bottom:8px;">Go to qrstuff.com, choose "Website URL" as the data type, enter <span class="mono">https://www.jcu.edu.au</span> as the content, pick a look you like, and download the generated QR code image.</li>
@@ -879,8 +879,8 @@
       </ol>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-8">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-8', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>Give four key factors contributing to the higher security risk of wireless networks compared to wired networks. Explain each.</li>
         <li>How can a wireless access point be protected?</li>
@@ -901,13 +901,13 @@
     <div class="section-title-row"><h2 class="section-title" style="font-size:1.1em;">Practical 10 — IP Security</h2><button class="tts-btn" onclick="toggleReadAloud('prac10', this)">Listen</button></div>
     <p class="section-desc">This is the final practical, and it's short-answer only — no hands-on VM component this week. It's worth still reading through carefully rather than skipping straight to the questions, since IPsec ties together several ideas from earlier pracs (encryption, authentication, key exchange) applied at the network layer specifically.</p>
 
-    <div class="crib">
-      <div class="crib-title">The analogy: an armored security escort wrapped around ordinary mail</div>
+    <div class="crib" id="crib-the-analogy-an-armored-security-escort-w">
+      <div class="crib-title-row"><div class="crib-title">The analogy: an armored security escort wrapped around ordinary mail</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-the-analogy-an-armored-security-escort-w', this)">Listen</button></div>
       <p style="font-size:13.8px; margin:0;">Every practical so far protected something ABOVE the network layer — a web form, a login session, a file. IPsec instead protects the IP packets themselves, the actual envelopes every other kind of internet traffic travels inside. Think of it as wrapping an armored, tamper-evident security escort around ordinary mail vans as they drive between two trusted depots — it doesn't matter what's inside each individual van (web traffic, email, anything), the entire route between the two depots is protected as one continuous secured channel, transparently, without the individual pieces of mail needing to know anything special happened to them.</p>
     </div>
 
-    <div class="crib">
-      <div class="crib-title">Short Answer Questions</div>
+    <div class="crib" id="crib-short-answer-questions-9">
+      <div class="crib-title-row"><div class="crib-title">Short Answer Questions</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-short-answer-questions-9', this)">Listen</button></div>
       <ol style="font-size:13.5px; padding-left:18px; margin:0;">
         <li>What are the three functional areas the IP-level security encompasses? Briefly explain their functionality.</li>
         <li>List some benefits of IPsec.</li>

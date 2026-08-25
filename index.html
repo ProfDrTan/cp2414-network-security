@@ -220,6 +220,18 @@
   .back-to-top.visible{opacity:1; pointer-events:auto; transform:translateY(0);}
   .back-to-top:hover{filter:brightness(1.08);}
   @media (max-width:640px){ .back-to-top{right:14px; bottom:18px; width:42px; height:42px; font-size:17px;} }
+  .tts-speed-btn{
+    position:fixed; right:20px; bottom:78px; z-index:60;
+    min-width:44px; height:34px; padding:0 10px; border-radius:18px;
+    background:var(--surface-2); color:var(--text); border:1px solid var(--border);
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.3);
+    transition:border-color .15s, color .15s;
+  }
+  .tts-speed-btn:hover{border-color:var(--accent); color:var(--accent);}
+  @media (max-width:640px){ .tts-speed-btn{right:14px; bottom:64px; height:32px; font-size:11px;} }
+
   .toc-box{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:24px;}
   .toc-box .toc-heading{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin:0 0 12px;}
   .toc-week-group{margin-bottom:12px;}
@@ -1937,6 +1949,25 @@
     btn.textContent = 'Listen';
   }
 
+  // --- Adjustable reading speed, remembered across visits ---
+  const TTS_RATES = [0.7, 0.8, 0.9, 1.0, 1.15, 1.3];
+  let ttsRate = parseFloat(localStorage.getItem('ttsRate'));
+  if(!TTS_RATES.includes(ttsRate)) ttsRate = 0.85;
+
+  function updateTTSSpeedLabel(){
+    const btn = document.getElementById('ttsSpeedBtn');
+    if(btn) btn.textContent = ttsRate + 'x';
+  }
+
+  function cycleTTSRate(){
+    let idx = TTS_RATES.indexOf(ttsRate);
+    idx = (idx + 1) % TTS_RATES.length;
+    ttsRate = TTS_RATES[idx];
+    try { localStorage.setItem('ttsRate', ttsRate); } catch(e){}
+    updateTTSSpeedLabel();
+  }
+  updateTTSSpeedLabel();
+
   // Wraps every word in the given element in <span class="tts-word"> so it can be
   // individually highlighted as speech reaches it. Skips buttons, SVG diagrams, and style/script blocks.
   function wrapWordsForHighlight(root){
@@ -1972,18 +2003,46 @@
     });
   }
 
-  // Builds the exact string sent to the speech engine, plus a map from character
-  // offset in that string to the DOM span for that word — this is what lets us line up
-  // the browser's onboundary charIndex with the right word on screen.
-  function buildSpeechMap(root){
-    const spans = Array.from(root.querySelectorAll('.tts-word'));
+  // Groups the wrapped words into speakable "chunks" that follow the actual structure of
+  // the content: each list item / paragraph is a "point", and each point is further split
+  // into sentences. This is what lets playback pause naturally — a short beat between
+  // sentences within a point, a longer beat once a whole point finishes — instead of
+  // reading everything as one flat, breathless stream.
+  function splitIntoChunks(root){
+    let blocks = Array.from(root.querySelectorAll('li, p'));
+    if(blocks.length === 0){ blocks = [root]; }
+
+    const chunks = [];
+    blocks.forEach(block => {
+      const spans = Array.from(block.querySelectorAll('.tts-word'));
+      if(spans.length === 0) return;
+      let current = [];
+      spans.forEach(span => {
+        current.push(span);
+        if(/[.!?]["')\]]?$/.test(span.textContent)){
+          chunks.push({ spans: current, blockEnd: false });
+          current = [];
+        }
+      });
+      if(current.length){
+        chunks.push({ spans: current, blockEnd: false });
+      }
+      if(chunks.length){
+        chunks[chunks.length - 1].blockEnd = true;
+      }
+    });
+    return chunks;
+  }
+
+  // Same idea as the old buildSpeechMap, but scoped to just one chunk's words.
+  function chunkSpeechData(chunk){
     let text = '';
     const map = [];
-    spans.forEach((span, i) => {
+    chunk.spans.forEach((span, i) => {
       const start = text.length;
       text += span.textContent;
       map.push({ start, end: text.length, span });
-      if(i < spans.length - 1) text += ' ';
+      if(i < chunk.spans.length - 1) text += ' ';
     });
     return { text, map };
   }
@@ -2005,12 +2064,19 @@
     ttsHighlightSpan = null;
   }
 
+  let ttsChunks = [];
+  let ttsChunkIndex = 0;
+  let ttsCancelled = false;
+
   function stopReadAloud(){
     const synth = window.speechSynthesis;
+    ttsCancelled = true;
     if(synth && (synth.speaking || synth.pending)) synth.cancel();
     if(ttsActiveBtn) resetTTSButton(ttsActiveBtn);
     restoreOriginalHTML();
     ttsActiveBtn = null;
+    ttsChunks = [];
+    ttsChunkIndex = 0;
   }
 
   function showPrac(pracId, btn){
@@ -2021,38 +2087,20 @@
     if(btn) btn.classList.add('active');
   }
 
-  function toggleReadAloud(sectionId, btn){
-    const synth = window.speechSynthesis;
-    if(!synth){
-      alert('Read-aloud is not supported in this browser.');
-      return;
-    }
-
-    // Clicking the button that's already reading stops it.
-    if(ttsActiveBtn === btn && (synth.speaking || synth.pending)){
-      stopReadAloud();
-      return;
-    }
-
-    // Starting a new read cancels whatever was playing (and un-highlights it) first.
-    stopReadAloud();
-
-    const section = document.getElementById(sectionId);
-    if(!section) return;
-
-    ttsTargetEl = section;
-    ttsOriginalHTML = section.innerHTML;
-
-    wrapWordsForHighlight(section);
-    const { text, map } = buildSpeechMap(section);
-
-    if(!text.trim()){
+  function speakChunk(btn){
+    if(ttsCancelled || ttsChunkIndex >= ttsChunks.length){
+      if(ttsActiveBtn === btn) resetTTSButton(btn);
       restoreOriginalHTML();
+      ttsActiveBtn = null;
+      ttsChunks = [];
       return;
     }
 
+    const chunk = ttsChunks[ttsChunkIndex];
+    const { text, map } = chunkSpeechData(chunk);
+    const synth = window.speechSynthesis;
     const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 0.95;
+    utter.rate = ttsRate;
     utter.pitch = 1;
 
     utter.onboundary = (event) => {
@@ -2067,18 +2115,61 @@
     };
 
     utter.onend = () => {
-      if(ttsActiveBtn === btn) resetTTSButton(btn);
-      restoreOriginalHTML();
-      ttsActiveBtn = null;
+      if(ttsCancelled) return;
+      ttsChunkIndex++;
+      // Short beat between sentences within the same point; a longer beat once
+      // a whole point (list item / paragraph) has finished.
+      const pause = chunk.blockEnd ? 620 : 260;
+      setTimeout(() => speakChunk(btn), pause);
     };
     utter.onerror = (event) => {
-      if(ttsActiveBtn === btn) resetTTSButton(btn);
-      restoreOriginalHTML();
-      ttsActiveBtn = null;
+      if(ttsCancelled) return;
       if(event && event.error && event.error !== 'canceled' && event.error !== 'interrupted'){
+        if(ttsActiveBtn === btn) resetTTSButton(btn);
+        restoreOriginalHTML();
+        ttsActiveBtn = null;
+        ttsChunks = [];
         alert('Read-aloud failed: ' + event.error + '. Please screenshot this and report it.');
+        return;
       }
+      ttsChunkIndex++;
+      setTimeout(() => speakChunk(btn), 200);
     };
+
+    synth.speak(utter);
+  }
+
+  function toggleReadAloud(sectionId, btn){
+    const synth = window.speechSynthesis;
+    if(!synth){
+      alert('Read-aloud is not supported in this browser.');
+      return;
+    }
+
+    // Clicking the button that's already reading stops it.
+    if(ttsActiveBtn === btn && (synth.speaking || synth.pending || ttsChunkIndex < ttsChunks.length)){
+      stopReadAloud();
+      return;
+    }
+
+    // Starting a new read cancels whatever was playing (and un-highlights it) first.
+    stopReadAloud();
+
+    const section = document.getElementById(sectionId);
+    if(!section) return;
+
+    ttsTargetEl = section;
+    ttsOriginalHTML = section.innerHTML;
+
+    wrapWordsForHighlight(section);
+    ttsChunks = splitIntoChunks(section);
+    ttsChunkIndex = 0;
+    ttsCancelled = false;
+
+    if(!ttsChunks.length){
+      restoreOriginalHTML();
+      return;
+    }
 
     btn.classList.add('tts-active');
     btn.textContent = 'Stop';
@@ -2086,7 +2177,7 @@
 
     // Called synchronously (not via setTimeout) — Chrome can silently reject
     // speech requests that aren't tied directly to the click that triggered them.
-    synth.speak(utter);
+    speakChunk(btn);
   }
 
   document.addEventListener('visibilitychange', () => {
@@ -2107,6 +2198,7 @@
 </script>
 
 
+<button id="ttsSpeedBtn" class="tts-speed-btn" onclick="cycleTTSRate()" title="Reading speed — click to change">1x</button>
 <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top" title="Back to top">&uarr;</button>
 </body>
 </html>

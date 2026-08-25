@@ -258,6 +258,7 @@
     <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
     <a href="#journal">Journal</a>
+    <a href="#sop">Working SOP</a>
   </div>
 </nav>
 
@@ -986,6 +987,42 @@
     <div class="section-title-row"><h2 class="section-title">Teaching journal</h2><button class="tts-btn" onclick="toggleReadAloud('journal', this)">Listen</button></div>
     <p class="section-desc">Edit the <span class="mono">journalEntries</span> array in this file to add more.</p>
     <div id="journalList"></div>
+  </section>
+
+  <section id="sop">
+    <p class="section-eyebrow">How this site gets built and maintained, session to session</p>
+    <div class="section-title-row"><h2 class="section-title">Working SOP</h2><button class="tts-btn" onclick="toggleReadAloud('sop', this)">Listen</button></div>
+    <p class="section-desc">Standing rules for whichever AI assistant is working on this site, so the same corrections don't have to be repeated every session.</p>
+
+    <div class="crib" id="sop-explicit">
+      <div class="crib-title-row"><div class="crib-title">1. Every instructional step: What, How, Why, Pitfalls</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('sop-explicit', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">No bare commands. A step that just says "click X" is incomplete. <strong>What</strong> — name the screen/concept in plain terms, as if the reader has never seen it. <strong>How</strong> — the exact click path, exact labels, exact values. <strong>Why</strong> — what this step actually accomplishes and what breaks later if skipped. <strong>Pitfalls</strong> — the specific ways this goes wrong, and what a wrong-looking-but-actually-fine state looks like, so a student doesn't panic over something harmless.</p>
+    </div>
+
+    <div class="crib" id="sop-screenshot">
+      <div class="crib-title-row"><div class="crib-title">2. A screenshot is ground truth — never guess UI when one is available</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('sop-screenshot', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">If a screenshot of the real software is shared, the guide must match exactly what's in it — exact labels, exact tab names, exact layout, no paraphrasing. If no screenshot exists yet for a newer software version, say so plainly rather than presenting a guess as fact, and update it the moment a screenshot arrives — in the same turn it's provided, not later.</p>
+    </div>
+
+    <div class="crib" id="sop-pushed">
+      <div class="crib-title-row"><div class="crib-title">3. "Fixed" means pushed live — not explained in chat</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('sop-pushed', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">Chat text describing what should change does not count as done. The task is only complete once the actual repo file is edited, committed, and pushed, and it can be verified live. If a screenshot is provided as documentation material, embed the actual image file in the repo next to the matching text — don't only describe what it shows. After pushing, state what changed and the live location, briefly — no extended narration of the process.</p>
+    </div>
+
+    <div class="crib" id="sop-credentials">
+      <div class="crib-title-row"><div class="crib-title">4. Credentials pasted in chat</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('sop-credentials', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">Use it immediately for the requested action, then strip it back out of any stored remote URL/config in the same turn. State the security reminder (revoke/rotate) at most once — if told not to repeat it, don't, permanently. Never write the token itself into memory, files, or commit content.</p>
+    </div>
+
+    <div class="crib" id="sop-efficiency">
+      <div class="crib-title-row"><div class="crib-title">5. Efficiency on multi-instance edits</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('sop-efficiency', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">When the same fix needs to apply to many repeated blocks, script it rather than repeating the same manual edit dozens of times — verify the result programmatically (counts, uniqueness) before pushing. Check first whether a reported problem is isolated or systemic before deciding how much of the file needs touching.</p>
+    </div>
+
+    <div class="crib" id="sop-tone">
+      <div class="crib-title-row"><div class="crib-title">6. Tone</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('sop-tone', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">Act, don't lecture. No repeated caveats once addressed. No asking permission to do the obviously-requested task. When corrected, fix it and move forward without over-apologizing.</p>
+    </div>
   </section>
 
 </main>

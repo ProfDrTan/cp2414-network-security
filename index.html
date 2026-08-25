@@ -392,8 +392,23 @@
       </div>
       <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
         <li>Open <strong>Burp Suite Community Edition</strong> → on the welcome screen leave <strong>"Temporary project in memory"</strong> selected → click <strong>Next</strong> → on the following screen keep default config → click <strong>Start Burp</strong>. This is the actual moment the proxy engine starts — not before.</li>
-        <li>Go to <strong>Proxy</strong> tab → click the small <strong>gear icon</strong> labelled <strong>Proxy settings</strong> (to the right of "Match and replace" — NOT the Intercept sub-tab, which shows no listener info) → confirm a listener shows <span class="mono" style="font-size:12px;">127.0.0.1 : 8080</span> with <strong>Running</strong> checked. If it's missing, click <strong>Add</strong>, set port <span class="mono" style="font-size:12px;">8080</span>, bind to <span class="mono" style="font-size:12px;">127.0.0.1</span>. This checkmark is the actual proof the proxy exists — don't skip checking it.</li>
+        <li>Go to <strong>Proxy</strong> tab → click the small <strong>gear icon</strong> labelled <strong>Proxy settings</strong> (to the right of "Match and replace" — NOT the Intercept sub-tab, which shows no listener info) → this opens the <strong>Settings</strong> window on a page called <strong>"Proxy listeners."</strong> Read the box below before moving on — it explains what you're actually looking at.</li>
       </ul>
+      <div class="note fix">
+        <strong>WHAT you're looking at:</strong> a table with columns Running / Interface / Invisible / Redirect / Certificate / TLS Protocols. Each row is one "listener" — a listening socket, the same idea as a phone left off the hook waiting for a call. Burp creates one automatically. You should see exactly one row with Interface reading <span class="mono" style="font-size:12px;">127.0.0.1:8080</span>.
+        <br><br>
+        <strong>HOW to confirm it:</strong> look at the <strong>Running</strong> column for that row — there should be a ticked checkbox. That tick is the entire check. Nothing to click, type, or configure if it's already ticked — you're done with this step.
+        <br><br>
+        <strong>WHY this matters:</strong> "127.0.0.1" means "this same computer" and "8080" is a port number — think of the computer as an office building and ports as numbered doors. Until this listener exists and is ticked Running, door 8080 is locked and nobody can hand Burp anything. Every later step (pointing your browser at Burp, seeing traffic in HTTP history, doing the actual bWAPP attacks) depends on this one door being open FIRST. If you skip this check and something later doesn't work, this is the first thing to come back and re-check.
+        <br><br>
+        <strong>Pitfalls to avoid:</strong>
+        <ul style="margin:6px 0 0; padding-left:18px;">
+          <li>If the <strong>Running</strong> box is unticked, click <strong>Edit</strong>, tick it, and click OK — don't add a second listener, edit the existing row.</li>
+          <li>If there's no row at all, click <strong>Add</strong>, set the port to <span class="mono" style="font-size:12px;">8080</span>, bind to <span class="mono" style="font-size:12px;">127.0.0.1</span>, and save.</li>
+          <li>Ignore the separate red text further down the same Settings page reading <strong>"Master interception is turned off"</strong> — that belongs to a different feature (Request interception rules, covered in the box below) and has nothing to do with whether the listener itself is working. Seeing that red text is not a problem.</li>
+          <li>Don't confuse <strong>Interface</strong> (127.0.0.1:8080 — Burp's own address) with <strong>BeeBox's IP</strong> from Step 5 — they're two completely different addresses for two completely different machines, and mixing them up is the single most common setup mistake at this stage.</li>
+        </ul>
+      </div>
       <div class="note fix">
         <strong>Point the browser through Burp — Firefox is the easiest to isolate:</strong> Settings → Network Settings → Settings... → <strong>Manual proxy configuration</strong> → HTTP Proxy <span class="mono" style="font-size:12px;">127.0.0.1</span> Port <span class="mono" style="font-size:12px;">8080</span> → check <strong>"Also use this proxy for HTTPS."</strong>
       </div>

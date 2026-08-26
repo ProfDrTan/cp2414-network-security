@@ -387,6 +387,31 @@
       <div class="crib-title-row"><div class="crib-title">Step 6 — Burp Suite: proxy setup and connecting to bWAPP</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-step-6-burp-suite-proxy-setup-and-connec', this)">Listen</button></div>
       <div class="crib-sub">Once BeeBox is booted and its IP is known (Step 5), this is what gets Burp actually seeing traffic.</div>
       <div class="note fix">
+        <strong>The big picture first — read this before touching any settings:</strong>
+        <p style="font-size:13.8px; margin:8px 0;"><strong>Why does BeeBox even exist?</strong> BeeBox is a computer built on purpose to be broken — a safe, fake, throwaway target. Real websites will kick you off (or call the police) if you try SQL injection on them. BeeBox is a practice dummy that's legal and expected to be attacked, so you're never touching anything real.</p>
+        <p style="font-size:13.8px; margin:8px 0;"><strong>What is Burp actually doing?</strong> Normally, your browser talks straight to a website and you never see the raw conversation — you only see the finished page. Burp sits in the middle of that conversation and lets you freeze-frame it: see the exact request your browser sent, and edit it before it goes out. That's it. That's the whole job.</p>
+        <p style="font-size:13.8px; margin:8px 0;"><strong>If you took Burp out of the picture entirely</strong> — closed it, unplugged the proxy — bWAPP would still work. You could still open the login page, still click around, still even type <span class="mono" style="font-size:12px;">blah' or 1=1#</span> straight into bWAPP's own search box and it would still work, because that attack lives in what you type, not in Burp. What you'd lose is the ability to SEE the raw request underneath, and to edit fields your browser normally hides from you (like values sent as POST data, not visible in any address bar). Burp is a magnifying glass and an editor for traffic you could not otherwise see or touch — it doesn't create the vulnerability, it just lets you watch and tamper with it up close.</p>
+        <p style="font-size:13.8px; margin:8px 0;"><strong>The "another laptop" question — and why it matters:</strong> if a friend's laptop, on the same WiFi, typed <span class="mono" style="font-size:12px;">http://127.0.0.1:8080</span> into their own browser, they would NOT see your Burp. They'd get an error, or nothing at all. Here's why: <span class="mono" style="font-size:12px;">127.0.0.1</span> isn't a real address on the network — it's a special word that means "myself," and it always means the machine currently asking the question, never a specific laptop across the room. Your laptop asking for <span class="mono" style="font-size:12px;">127.0.0.1</span> means "me" (and finds Burp, because Burp is running on you). Their laptop asking for <span class="mono" style="font-size:12px;">127.0.0.1</span> means "me" too — but from THEIR laptop, where nothing is running on port 8080. This is exactly why BeeBox needed its own real network IP (Step 5) instead of also using 127.0.0.1: BeeBox has to be reachable BY your laptop, from across the network — "myself" wouldn't work for that.</p>
+        <div class="diagram-box" style="margin-top:8px;">
+          <div style="font-weight:600; margin-bottom:8px; font-size:13px;">"127.0.0.1" always means "me" — never a specific laptop across the room</div>
+          <svg viewBox="0 0 560 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;font-family:inherit;">
+            <style>.bp{font-size:12px;} .bpm{font-family:monospace;font-size:11px;}</style>
+            <rect x="10" y="15" width="255" height="80" rx="6" fill="#e0f2fe" stroke="#0369a1"/>
+            <text x="137" y="35" text-anchor="middle" class="bp" font-weight="bold">Your laptop asks for</text>
+            <text x="137" y="53" text-anchor="middle" class="bpm">127.0.0.1:8080</text>
+            <text x="137" y="72" text-anchor="middle" class="bp" fill="#0c4a6e">→ means "me" → finds YOUR</text>
+            <text x="137" y="87" text-anchor="middle" class="bp" fill="#0c4a6e">Burp. Works.</text>
+            <rect x="295" y="15" width="255" height="80" rx="6" fill="#fecaca" stroke="#b91c1c"/>
+            <text x="422" y="35" text-anchor="middle" class="bp" font-weight="bold">Friend's laptop asks for</text>
+            <text x="422" y="53" text-anchor="middle" class="bpm">127.0.0.1:8080</text>
+            <text x="422" y="72" text-anchor="middle" class="bp" fill="#7f1d1d">→ means "me" too → looks on</text>
+            <text x="422" y="87" text-anchor="middle" class="bp" fill="#7f1d1d">THEIR OWN laptop. Fails.</text>
+            <text x="280" y="120" text-anchor="middle" class="bp" fill="#475569">Same address, but "me" is different for every machine that asks it.</text>
+            <text x="280" y="138" text-anchor="middle" class="bp" fill="#475569">That's why BeeBox needed its own real, shared network address instead.</text>
+          </svg>
+        </div>
+      </div>
+      <div class="note fix">
         <strong>The one rule that prevents 90% of confusion here: Burp must be fully running BEFORE the browser is touched. Always this order — never reversed:</strong>
         <ol style="font-size:13.5px; padding-left:18px; margin:8px 0 0;">
           <li>Start Burp completely (past the welcome screen, main window open)</li>

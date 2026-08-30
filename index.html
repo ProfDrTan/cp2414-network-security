@@ -267,6 +267,7 @@
     <a href="#pracguides">Practical Guides</a>
     <a href="#weeks">Weeks</a>
     <a href="#coursemap">Course Map</a>
+    <a href="#equations">Equations</a>
     <a href="#explained">Explained Simply</a>
     <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
@@ -1205,6 +1206,95 @@
       </div>
     </div>
     <div class="cm-why"><strong>The one-sentence version to give students:</strong> Weeks 1-3 teach you what breaks and why. Weeks 4-6 teach you the mathematical tools that fix it. Weeks 7-10 show you those exact tools running inside things you already use every day — WiFi, HTTPS, SSH. Nothing in the second half makes sense without the first half; that's not accidental, it's the whole design of the course.</div>
+  </section>
+
+  <section id="equations">
+    <p class="section-eyebrow">One idea per week, distilled to a single line</p>
+    <div class="section-title-row"><h2 class="section-title">The Course as Ten Equations</h2><button class="tts-btn" onclick="toggleReadAloud('equations', this)">Listen</button></div>
+    <p class="section-desc">Not literal math to solve — a compression trick. Each week has exactly one idea doing all the real work; everything else is that idea's supporting detail. Give students the equation before the lecture, and the lecture becomes "let me unpack what this line means" instead of forty new facts arriving with no shape.</p>
+
+    <style>
+      .eq-card{border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;}
+      .eq-week-label{font-size:11px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; opacity:.8; margin-bottom:6px;}
+      .eq-line{font-family:monospace; font-size:15px; font-weight:600; margin-bottom:8px; line-height:1.5; word-break:break-word;}
+      .eq-intuit{font-size:13px; opacity:.9; line-height:1.5;}
+      .eq-master{background:linear-gradient(135deg, rgba(232,163,61,.15), rgba(59,130,246,.12)); border:1.5px solid var(--accent,#e8a33d); border-radius:12px; padding:22px 20px; margin-top:18px;}
+      .eq-master-title{font-size:13px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--accent,#e8a33d); margin-bottom:10px;}
+      .eq-master-line{font-family:monospace; font-size:14px; line-height:2.1; word-break:break-word;}
+    </style>
+
+    <div class="eq-card" style="background:rgba(59,130,246,.10); border:1px solid rgba(59,130,246,.3);">
+      <div class="eq-week-label" style="color:#93c5fd;">Week 1 — Introduction &amp; Attacks</div>
+      <div class="eq-line">Security = Confidentiality + Integrity + Availability</div>
+      <div class="eq-intuit">You never lose "security" in the abstract — you lose exactly one of these three, every single time. Teach students to ask "which term did this attack subtract from?" and they've classified every attack in the course before they even know the name of it.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(34,197,94,.10); border:1px solid rgba(34,197,94,.3);">
+      <div class="eq-week-label" style="color:#86efac;">Week 2 — Administering Secure Networks</div>
+      <div class="eq-line">Trust = Correct(Address ↔ Machine)</div>
+      <div class="eq-intuit">Every device on the network only works because everyone agrees which address belongs to which real machine. ARP poisoning and MAC spoofing are just lies told about that mapping. NAT/PAT is the legitimate version — reusing one public address for many private ones, by tagging each with a port number.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(34,197,94,.10); border:1px solid rgba(34,197,94,.3);">
+      <div class="eq-week-label" style="color:#86efac;">Week 3 — Intruders and Firewalls</div>
+      <div class="eq-line">Defense = Prevention + Detection</div>
+      <div class="eq-intuit">A firewall is Prevention — stop it before it happens. An IDS or honeypot is Detection — notice it while or after it happens. Prevention alone always eventually fails (someone picks a weak password), which is exactly why Detection has to exist as the safety net — and exactly why "just hide the password better" stops being good enough.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(168,85,247,.10); border:1px solid rgba(168,85,247,.3);">
+      <div class="eq-week-label" style="color:#d8b4fe;">Week 4 — Symmetric Cryptography</div>
+      <div class="eq-line">Ciphertext = Encrypt(Plaintext, Key) &nbsp;|&nbsp; Plaintext = Decrypt(Ciphertext, SAME Key)</div>
+      <div class="eq-intuit">One key locks it, and that exact same key unlocks it. Fast and simple — but now the key itself has to be shared secretly with the other side, over the very network attackers are watching. That unsolved problem is the entire reason Week 5 exists.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(168,85,247,.10); border:1px solid rgba(168,85,247,.3);">
+      <div class="eq-week-label" style="color:#d8b4fe;">Week 5 — Message Auth &amp; Public-Key Crypto</div>
+      <div class="eq-line">Ciphertext = Encrypt(Plaintext, PublicKey) &nbsp;|&nbsp; Plaintext = Decrypt(Ciphertext, PrivateKey)</div>
+      <div class="eq-intuit">Two different keys, not one. The public key can be shouted from the rooftops — only the matching private key, which never left your pocket, can undo it. This directly solves Week 4's unsolved problem: no secret ever has to travel over the wire at all.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(20,184,166,.10); border:1px solid rgba(20,184,166,.3);">
+      <div class="eq-week-label" style="color:#5eead4;">Week 6 — Key Distribution &amp; User Authentication</div>
+      <div class="eq-line">Proven Identity = (Week 4 + Week 5) applied to the question "who are you?"</div>
+      <div class="eq-intuit">Kerberos tickets run on symmetric keys (Week 4). Digital certificates are public-key crypto (Week 5) packaged as "a trusted third party vouches this key really belongs to this person." This week doesn't introduce new math — it's Weeks 4 and 5, redirected from protecting a message to proving a person.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(20,184,166,.10); border:1px solid rgba(20,184,166,.3);">
+      <div class="eq-week-label" style="color:#5eead4;">Week 7 — NAC &amp; Cloud Security</div>
+      <div class="eq-line">Access Granted = Proven Identity (Week 6) × Policy</div>
+      <div class="eq-intuit">Proving who you are isn't the same as being allowed to do something. NAC multiplies Week 6's identity check by a policy — this identity, on this port, at this time, is or isn't allowed in. Cloud security asks the identical question at a much bigger scale: whose data, whose keys, whose responsibility.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.3);">
+      <div class="eq-week-label" style="color:#fca5a5;">Week 8 — Transport Layer Security (TLS/SSH)</div>
+      <div class="eq-line">HTTPS = PublicKey Handshake (W5) + SymmetricKey Session (W4) + Certificate Trust (W6)</div>
+      <div class="eq-intuit">The payoff week. Every single time a browser shows a padlock, all three of the previous crypto weeks are running together, in this exact order, in under a second. There is nothing new to learn here — only the satisfaction of recognizing everything at once.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.3);">
+      <div class="eq-week-label" style="color:#fca5a5;">Week 9 — Wireless Network Security</div>
+      <div class="eq-line">WiFi Security = Encryption (W4/W5) applied to a medium anyone can listen to</div>
+      <div class="eq-intuit">WEP → WPA → WPA2 is the exact same "the old cipher broke, upgrade it" arms race from Weeks 4-5, replayed on radio waves. The only genuinely new variable is that the attacker no longer needs a cable — just proximity.</div>
+    </div>
+
+    <div class="eq-card" style="background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.3);">
+      <div class="eq-week-label" style="color:#fca5a5;">Week 10 — IP Security (IPsec)</div>
+      <div class="eq-line">IPsec = TLS (W8), moved one layer down, protecting every packet instead of one connection</div>
+      <div class="eq-intuit">Same ingredients — symmetric keys, public keys, key management from Week 6 — just applied at the raw network layer, invisibly, so every application on the machine gets protected without any of them having to know or care.</div>
+    </div>
+
+    <div class="eq-master">
+      <div class="eq-master-title">And all ten, combined into one</div>
+      <div class="eq-master-line">
+        (Confidentiality + Integrity + Availability)<br>
+        &nbsp;&nbsp;= [Trusted Network (W2) defended by Prevention + Detection (W3)]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;made mathematically real by [Symmetric Keys (W4) + Public Keys (W5)]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;which together prove [Identity (W6)]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;enforced as [Access Policy (W7)]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;and delivered live, every day, as {TLS/SSH (W8), WiFi Security (W9), IPsec (W10)}
+      </div>
+      <p style="font-size:13px; margin:14px 0 0; opacity:.9;">Read it right to left with a class: the padlock in their browser (right-hand side) is only there because of a chain that reaches all the way back to Week 1's three-word definition of security. That's the whole course, in one breath.</p>
+    </div>
   </section>
 
   <section id="explained">

@@ -268,6 +268,7 @@
     <a href="#weeks">Weeks</a>
     <a href="#coursemap">Course Map</a>
     <a href="#equations">Equations</a>
+    <a href="#examcoverage">Exam Coverage</a>
     <a href="#explained">Explained Simply</a>
     <a href="#crib">Crib Sheets</a>
     <a href="#assessments">Assessments</a>
@@ -1313,6 +1314,144 @@
       </div>
     </div>
     </section>
+
+  <section id="examcoverage">
+    <p class="section-eyebrow">Built directly from the 2024 and 2025 papers, question by question</p>
+    <div class="section-title-row"><h2 class="section-title">Exam Coverage Map</h2><button class="tts-btn" onclick="toggleReadAloud('examcoverage', this)">Listen</button></div>
+    <p class="section-desc">Every MCQ and short-answer question from both past papers, mapped to the week it belongs to. Bar length = total marks that question touches, so you can see at a glance where lecture time earns the most marks — and where it's currently spent on material the exam doesn't ask about at all.</p>
+
+    <div class="cm-why" style="border-left-color:#b91c1c; background:#fef2f2; color:#7f1d1d;">
+      <strong>The single biggest finding: Part A (all 25 MCQs, 50 of the 75 marks) is word-for-word identical between the 2024 and 2025 papers</strong> — same questions, same order, same four options, same correct answer. Part B's short-answer pool is nearly as stable: 6 of the 8 questions are unchanged or near-unchanged; only Q28 and Q31 vary in exact wording year to year (details below). If that pattern holds a third year, this isn't "likely to reappear" — treat every MCQ topic below as a near-certain repeat.
+    </div>
+
+    <style>
+      .exc-bar-row{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+      .exc-bar-label{width:56px; flex-shrink:0; font-size:12px; font-weight:700; font-family:monospace;}
+      .exc-bar-track{flex:1; background:rgba(255,255,255,.08); border-radius:5px; height:22px; position:relative; overflow:hidden;}
+      .exc-bar-fill{height:100%; border-radius:5px; display:flex; align-items:center; padding-left:8px; font-size:11px; font-weight:600; color:#10151c; white-space:nowrap;}
+      .exc-detail{border-radius:var(--radius); padding:12px 16px; margin-bottom:8px;}
+      .exc-detail-head{font-size:13px; font-weight:700; margin-bottom:6px;}
+      .exc-detail ul{margin:0; padding-left:18px; font-size:12.8px; line-height:1.6;}
+      .exc-gap{background:rgba(239,68,68,.12); border:1.5px solid #b91c1c; border-radius:8px; padding:14px 16px; margin-top:14px;}
+    </style>
+
+    <h3 style="font-size:15px; margin:20px 0 10px;">Marks by week (MCQ + short-answer pool, both papers combined)</h3>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 1</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:26%; background:#93c5fd;">8 marks — Q2,3,4,5</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 2</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:53%; background:#86efac;">16 marks — Q8,10,11,26,32</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 3</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:30%; background:#86efac;">9 marks — Q9,12,28(2024)</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 4</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:30%; background:#d8b4fe;">9 marks — Q6,13,28(2025)</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 5</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:13%; background:#d8b4fe;">4 marks — Q7,21</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 6</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:56%; background:#5eead4;">17 marks — Q1,16,27,30,33</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 7</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:13%; background:#5eead4;">4 marks — Q17,18</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 8</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:13%; background:#fca5a5;">4 marks — Q20,24</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 9</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:20%; background:#fca5a5;">6 marks — Q14,15,19</div></div></div>
+    <div class="exc-bar-row"><div class="exc-bar-label">Wk 10</div><div class="exc-bar-track"><div class="exc-bar-fill" style="width:23%; background:#fca5a5;">7 marks — Q25,31</div></div></div>
+    <p style="font-size:11.5px; opacity:.7; margin-top:4px;">Bars are scaled to Week 6's 17 marks (the highest). Short-answer marks assume a question could be one of the 5 a student picks, since you can't know in advance which 5 — so all 8 are "live" every year.</p>
+
+    <h3 style="font-size:15px; margin:26px 0 10px;">Question-by-question, by week</h3>
+
+    <div class="exc-detail" style="background:rgba(59,130,246,.10); border:1px solid rgba(59,130,246,.3);">
+      <div class="exc-detail-head" style="color:#93c5fd;">Week 1 — Introduction &amp; Attacks (8 marks)</div>
+      <ul>
+        <li><strong>Q2</strong> (MCQ) — fill-in-the-blank on "authenticity," from the X.800 service categories</li>
+        <li><strong>Q3</strong> (MCQ) — "prevention of unauthorized use of a resource" = access control, same X.800 list</li>
+        <li><strong>Q4</strong> (MCQ) — which of XSS/SQLi/ARP spoofing/directory traversal is NOT a server-side web attack (answer: ARP spoofing — a network-layer attack, not a web-app one; this MCQ is really testing whether students can tell the two categories apart)</li>
+        <li><strong>Q5</strong> (MCQ) — vertical vs horizontal privilege escalation, exact-definition recall</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(34,197,94,.10); border:1px solid rgba(34,197,94,.3);">
+      <div class="exc-detail-head" style="color:#86efac;">Week 2 — Administering Secure Networks (16 marks — the single highest-yield week)</div>
+      <ul>
+        <li><strong>Q8</strong> (MCQ) — what prevents broadcast storms (loop protection)</li>
+        <li><strong>Q10</strong> (MCQ) — proxy server definition, exact wording, fill-in-the-blank</li>
+        <li><strong>Q11</strong> (MCQ) — VPN definition ("use an unsecured public network as if it were a secure private one")</li>
+        <li><strong>Q26</strong> (short-answer, both years, wording differs slightly) — 2024: "steps to determine an org's need for different secure network layers"; 2025: "the onion model... what layers are needed, what goes in each, how they're separated" — same underlying idea (layered/defense-in-depth network design) asked two different ways</li>
+        <li><strong>Q32</strong> (short-answer, identical both years) — explain ARP poisoning with an illustration, then link it to a DNS-cache-poisoning attack scenario. This is also literally Prac 2's DNS poisoning exercise — a rare case where the hands-on lab IS the exam question</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(34,197,94,.10); border:1px solid rgba(34,197,94,.3);">
+      <div class="exc-detail-head" style="color:#86efac;">Week 3 — Intruders and Firewalls (9 marks)</div>
+      <ul>
+        <li><strong>Q9</strong> (MCQ) — stateful inspection firewall, identifying it from a description</li>
+        <li><strong>Q12</strong> (MCQ) — rule-based detection, definition recall</li>
+        <li><strong>Q28-2024 only</strong> (short-answer) — purpose of salt and pepper in password hashing, where/how stored, why. <em>2025 replaced this question with an IoT-cipher scenario (see Week 4) — so this exact question did not repeat in 2025, unlike almost everything else in the paper.</em></li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(168,85,247,.10); border:1px solid rgba(168,85,247,.3);">
+      <div class="exc-detail-head" style="color:#d8b4fe;">Week 4 — Symmetric Cryptography (9 marks)</div>
+      <ul>
+        <li><strong>Q6</strong> (MCQ) — same key both sides = symmetric encryption</li>
+        <li><strong>Q13</strong> (MCQ) — Kerckhoffs's principle: security depends on secrecy of the <em>key</em>, not the algorithm</li>
+        <li><strong>Q28-2025 only</strong> (short-answer) — an IoT sensor streaming data to a server: which cipher fits and why, what else to consider. <em>This replaced 2024's salt/pepper question — so Q28 is a genuine wildcard slot that could land on either Week 3 or Week 4 content; worth preparing students for both angles.</em></li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(168,85,247,.10); border:1px solid rgba(168,85,247,.3);">
+      <div class="exc-detail-head" style="color:#d8b4fe;">Week 5 — Public-Key Crypto &amp; Hashing (4 marks)</div>
+      <ul>
+        <li><strong>Q7</strong> (MCQ) — most important use of a private key (generating digital signatures)</li>
+        <li><strong>Q21</strong> (MCQ) — an applied hash-collision puzzle (XOR of 8-bit blocks) — the one MCQ that requires actually working through an example rather than recalling a definition</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(20,184,166,.10); border:1px solid rgba(20,184,166,.3);">
+      <div class="exc-detail-head" style="color:#5eead4;">Week 6 — Key Distribution &amp; User Authentication (17 marks — the other highest-yield week)</div>
+      <ul>
+        <li><strong>Q1</strong> (MCQ) — digital certificates establish authenticity of public keys</li>
+        <li><strong>Q16</strong> (MCQ) — a session key is used to distribute further session keys between entities</li>
+        <li><strong>Q27</strong> (short-answer, identical both years) — how key distribution differs between symmetric and public-key systems</li>
+        <li><strong>Q30</strong> (short-answer, identical both years) — Kerberos ticket timestamp and lifetime, why they matter, other ways to protect tickets</li>
+        <li><strong>Q33</strong> (short-answer, identical both years) — SSO with a third-party identity provider, with a diagram</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(20,184,166,.10); border:1px solid rgba(20,184,166,.3);">
+      <div class="exc-detail-head" style="color:#5eead4;">Week 7 — NAC &amp; Cloud Security (4 marks)</div>
+      <ul>
+        <li><strong>Q17</strong> (MCQ) — which of the options is NOT a common NAC enforcement method (spot the odd one out — VPNs, not 802.1X/VLANs/DHCP mgmt)</li>
+        <li><strong>Q18</strong> (MCQ) — RADIUS server's role in EAP authentication (backend authentication service)</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.3);">
+      <div class="exc-detail-head" style="color:#fca5a5;">Week 8 — Transport Layer Security (4 marks)</div>
+      <ul>
+        <li><strong>Q20</strong> (MCQ) — an SSL session is created by the Handshake protocol</li>
+        <li><strong>Q24</strong> (MCQ) — SSL/TLS is what secures web traffic with confidentiality + authentication</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.3);">
+      <div class="exc-detail-head" style="color:#fca5a5;">Week 9 — Wireless Network Security (6 marks)</div>
+      <ul>
+        <li><strong>Q14</strong> (MCQ) — essential step in securing wireless (disabling SSID broadcast, not using WEP)</li>
+        <li><strong>Q15</strong> (MCQ) — man-in-the-middle: attacker convinces user and access point they're talking directly to each other</li>
+        <li><strong>Q19</strong> (MCQ) — malicious association: a rogue device posing as a legitimate access point</li>
+      </ul>
+    </div>
+
+    <div class="exc-detail" style="background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.3);">
+      <div class="exc-detail-head" style="color:#fca5a5;">Week 10 — IP Security (7 marks)</div>
+      <ul>
+        <li><strong>Q25</strong> (MCQ) — IPsec's three functional areas: authentication, confidentiality, key management</li>
+        <li><strong>Q31</strong> (short-answer, both years, wording differs) — 2024: "why employ IPsec, why isn't it used more often"; 2025: "IPsec's modes of operation and where each is used" — same topic, two different angles on it</li>
+      </ul>
+    </div>
+
+    <div class="exc-gap">
+      <strong style="color:#fca5a5;">Three questions don't map to any stated week concept at all:</strong>
+      <ul style="margin:8px 0 0; padding-left:18px; font-size:13px; line-height:1.6;">
+        <li><strong>Q22</strong> (MCQ, both years, 2 marks) — a limitation of SMTP. Not named in any week's concept list on this site.</li>
+        <li><strong>Q23</strong> (MCQ, both years, 2 marks) — the main advantage of blockchain technology. Also not named anywhere in the 10-week structure.</li>
+        <li><strong>Q29</strong> (short-answer, identical both years, worth 5 marks — appears in the pool every year, a strong repeat candidate) — identify and describe two types of malicious software and how to mitigate them. Malware categories (virus, worm, trojan, ransomware, etc.) aren't an explicit bullet in Week 1's concept list, even though "attacks" broadly is Week 1's territory.</li>
+      </ul>
+      <p style="font-size:13px; margin:10px 0 0;">Q22 and Q23 are low-stakes (2 marks each, MCQ, easy to guess or skip covering in depth). Q29 is the one worth acting on — it's worth a full 5 marks, appears in the short-answer pool <em>every year so far</em>, and currently has no dedicated slide or card anywhere on this site. Worth adding a short "types of malware" segment somewhere in Week 1, even briefly, purely because the exam keeps asking for it.</p>
+    </div>
+  </section>
+
 
   <section id="explained">
     <p class="section-eyebrow">Real analogies, not slide bullet points</p>

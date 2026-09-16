@@ -264,6 +264,7 @@
     <a href="#daily">Daily</a>
     <a href="#cheatsheet">Cheat Sheet</a>
     <a href="#playbook">Playbook</a>
+    <a href="#week1live">Week 1 Live</a>
     <a href="#pracguides">Practical Guides</a>
     <a href="#weeks">Weeks</a>
     <a href="#coursemap">Course Map</a>
@@ -495,6 +496,78 @@
       <p style="font-size:13.8px; margin:0;"><strong>Confirm it's working:</strong> load <span class="mono" style="font-size:12px;">http://&lt;beebox-ip&gt;/bWAPP/login.php</span> in the proxied browser, log in with <span class="mono" style="font-size:12px;">bee</span> / <span class="mono" style="font-size:12px;">bug</span>, then check Burp's <strong>Proxy → HTTP history</strong> tab — requests like <span class="mono" style="font-size:12px;">GET /bWAPP/login.php</span> should appear as you click around. <strong>If history stays empty even though the page loaded fine</strong>, that's the tell-tale sign the browser's proxy setting silently didn't take (see the warning above) — go back and re-verify the proxy toggle/fields, fully close and reopen the browser (proxy settings are read at browser startup, not live), then reload the page.</p>
     </div>
   </section>
+
+  <section id="week1live">
+    <p class="section-eyebrow">What actually happened, TR3 2026 — Week 1, live in front of the class</p>
+    <div class="section-title-row"><h2 class="section-title">Week 1 Live Classroom — Post-Mortem</h2><button class="tts-btn" onclick="toggleReadAloud('week1live', this)">Listen</button></div>
+    <p class="section-desc">The Setup Playbook above was built from a solo dry-run before term started. This section is different: it's what actually happened when 20+ students all attempted Practical 1 simultaneously, in real time, on their own laptops. New problems surfaced that the dry-run never hit — most of them environment-specific rather than instruction-specific. Nobody finished the practical in the two-hour slot; every issue below is why, and every fix below is already tested working.</p>
+
+    <div class="crib" id="crib-w1-outcome">
+      <div class="crib-title-row"><div class="crib-title">The headline: nobody finished — and that's an acceptable first-run outcome, not a failure</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-outcome', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0 0 10px;">A brand-new course's first, ungraded practical hit five compounding first-time issues back to back — a blocked download source, a broken warm-up site, a silent campus-network restriction, and the usual first-time friction of a 1.2GB download plus VM/network setup. That's a lot of troubleshooting eating into working time. The honest read: this is the BETTER outcome than the alternative — these same issues surfacing for the first time in Week 4, during a graded checkpoint, with no slack left to recover.</p>
+      <div class="note fix">Response: sent students one consolidated "finish setup at home" document (all fixes below, in order, built into the relevant step) rather than scattered troubleshooting notes. Plan for Week 2: a short, ungraded environment check at the very start of the practical — before touching Week 2's new content — to confirm the class is actually unblocked, rather than assuming it.</div>
+    </div>
+
+    <div class="crib" id="crib-w1-lab-computers">
+      <div class="crib-title-row"><div class="crib-title">Lab computers do NOT have BeeBox/Burp Suite pre-imported — confirmed, contradicts the practical sheet</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-lab-computers', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0 0 10px;">Section 2.1.1 of the official practical sheet assumes the lab-computer path has both VMs already imported. As of TR3 2026, confirmed this is NOT the case on the actual teaching lab machines. Combined with most students already bringing and preferring their own laptops, this made the lab-computer path effectively unavailable for the entire cohort.</p>
+      <div class="note fix">Response for TR3 2026: direct every student to the own-computer path (Section 2.1.2) regardless of which physical machine they're sitting at. Flagged to IT/lab support separately for a proper fix before it's needed again.</div>
+    </div>
+
+    <div class="crib" id="crib-w1-sourceforge">
+      <div class="crib-title-row"><div class="crib-title">SourceForge blocked by Cloudflare — confirmed independent of network</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-sourceforge', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0 0 10px;">A student hit Cloudflare's own "Sorry, you have been blocked" page on <span class="mono" style="font-size:12px;">sourceforge.net/projects/bwapp/files/bee-box/</span> — and confirmed it persisted even on personal mobile data, not campus WiFi. This rules out a campus-specific block; it's SourceForge/Cloudflare's own bot-detection, likely triggered by shared/flagged mobile-carrier IP ranges or browser state, and can affect any student regardless of connection.</p>
+      <div class="note fix">Working alternative, same file, same 1.2GB size, confirmed successful: <span class="mono" style="font-size:12px;">https://download.vulnhub.com/bwapp/bee-box_v1.6.7z</span> (VulnHub — the standard repository for this class of security-training VM). Give this link to students proactively alongside the SourceForge link, not only after they hit the block.</div>
+    </div>
+
+    <div class="crib" id="crib-w1-clientisolation">
+      <div class="crib-title-row"><div class="crib-title">Campus WiFi client isolation silently breaks Bridged Adapter mode</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-clientisolation', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0 0 10px;">Multiple students reported bWAPP wouldn't load in the browser despite BeeBox showing a valid IP via <span class="mono" style="font-size:12px;">ifconfig</span>, and despite Bridged Adapter being correctly selected. Confirmed cause via a direct A/B test: switching the same laptop to mobile-data tethering made it work immediately. This is <strong>client isolation (a.k.a. AP isolation)</strong> — a deliberate, standard campus-WiFi security feature that blocks devices on the same network from talking directly to each other, which also blocks a Bridged VM from reaching (or being reached by) its own host laptop.</p>
+      <div class="note warn">This is an intentional institutional security control, not a misconfiguration — the correct response is a networking mode that doesn't need the physical WiFi at all, never an attempt to bypass the isolation itself.</div>
+      <div class="note fix">
+        <strong>Fix: use Host-only Adapter instead of Bridged Adapter</strong> for BeeBox on the own-laptop path. Host-only creates a private virtual network that exists purely between BeeBox and the laptop, never touching the physical WiFi — so campus isolation can't affect it.
+        <ul style="font-size:13.5px; padding-left:18px; margin:8px 0 0;">
+          <li>BeeBox → Settings → Network → Attached to → <strong>Host-only Adapter</strong></li>
+          <li>If no host-only network appears in the dropdown: File → Tools → Network Manager → Host-only Networks → Create, then select it</li>
+          <li>Re-run <span class="mono" style="font-size:12px;">ifconfig</span> inside BeeBox — expect an address like <span class="mono" style="font-size:12px;">192.168.56.x</span> instead of the campus WiFi's range</li>
+          <li>Browse to <span class="mono" style="font-size:12px;">http://&lt;new-ip&gt;/bWAPP/login.php</span> exactly as before</li>
+        </ul>
+      </div>
+      <p style="font-size:13.5px; margin:10px 0 0; color:var(--text-dim);">Worth testing on the actual lab-computer network once IT restores those VMs (see above) — if the teaching lab's own WiFi also has client isolation enabled, the lab-path's Bridged-Adapter instructions (Section 2.2, both VMs) will hit the exact same wall and need the same fix.</p>
+    </div>
+
+    <div class="crib" id="crib-w1-ifconfig">
+      <div class="crib-title-row"><div class="crib-title">ifconfig confusion: wrong terminal, or VM mouse never captured</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-ifconfig', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0 0 10px;">Beyond the client-isolation issue above, several students separately got stuck simply running the <span class="mono" style="font-size:12px;">ifconfig</span> step itself. Two distinct root causes, both confirmed live:</p>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0 0 10px;">
+        <li><strong>Typed into the wrong window.</strong> <span class="mono" style="font-size:12px;">ifconfig</span> only exists inside BeeBox's own Linux terminal. Windows' own Command Prompt uses the similarly-named but unrelated <span class="mono" style="font-size:12px;">ipconfig</span> — an easy mix-up under pressure, and it fails immediately with no useful error in the wrong window.</li>
+        <li><strong>Mouse never "captured" into the VM.</strong> Until a student clicks inside the BeeBox window, their mouse can't interact with anything on its desktop at all — they can't even open the Terminal, and the VM can look frozen with no obvious way in. The practical sheet does mention the fix (double-press right Ctrl to release the mouse once it's stuck), but it's easy to miss on a first read.</li>
+      </ul>
+      <div class="note fix">Fast diagnostic question for a stuck student: "is the black terminal window showing a Linux-style prompt inside the BeeBox VM, or does it look like Windows?" — answers cause #1 immediately. If they can't even get a terminal open at all, it's almost always cause #2 — tell them to click inside the BeeBox window first.</div>
+    </div>
+
+    <div class="crib" id="crib-w1-vmdk">
+      <div class="crib-title-row"><div class="crib-title">Selecting the .7z archive instead of the extracted .vmdk file</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-vmdk', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0;">When attaching the existing hard disk file in VirtualBox's New VM wizard, the file picker will happily show the downloaded <span class="mono" style="font-size:12px;">.7z</span> archive itself as a selectable file — it just silently doesn't work. The fix is simply making sure the archive was actually extracted first, and pointing the wizard specifically at <span class="mono" style="font-size:12px;">bee-box.vmdk</span> inside the extracted folder, not the archive.</p>
+    </div>
+
+    <div class="crib" id="crib-w1-hackthissite">
+      <div class="crib-title-row"><div class="crib-title">hackthissite.org warm-up: genuinely broken, site-side, confirmed unfixable</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-hackthissite', this)">Listen</button></div>
+      <p style="font-size:13.8px; margin:0 0 10px;">The Section 2 warm-up (<span class="mono" style="font-size:12px;">hackthissite.org/register</span>) returned a TLS certificate error (<span class="mono" style="font-size:12px;">NET::ERR_CERT_COMMON_NAME_INVALID</span>) for the whole class. Confirmed this is NOT a network issue — tried on personal data, tried without "www", still failed. The site's own certificate is mismatched, and because the site enforces HSTS, browsers refuse any manual "proceed anyway" bypass — correctly, since that's a legitimate security protection, not an obstacle to work around.</p>
+      <div class="note warn">This warm-up is explicitly ungraded — it isn't part of the assessed short-answer or hands-on content. Treat it as fully skippable whenever the site is down, rather than letting students burn 20+ minutes troubleshooting something with no available fix.</div>
+      <p style="font-size:13.5px; margin:8px 0 0; color:var(--text-dim);">Separately, per the sheet's own existing warning: registering with a Microsoft-backed email (including JCU student email) may silently fail — students should use a personal, non-Microsoft email if they do try it another time.</p>
+    </div>
+
+    <div class="crib" id="crib-w1-support-decisions">
+      <div class="crib-title-row"><div class="crib-title">Support-channel decisions made this week</div><button class="tts-btn tts-btn-sm" onclick="toggleReadAloud('crib-w1-support-decisions', this)">Listen</button></div>
+      <ul style="font-size:13.5px; padding-left:18px; margin:0;">
+        <li><strong>Discord for practical support: considered, held off.</strong> The real-time peer-troubleshooting benefit (screen-share, voice channels) is genuine, but the moderation overhead — especially keeping it scoped to setup-help only, away from assignment/quiz-answer discussion — was judged too high to take on this trimester. Worth revisiting if the same setup issues recur heavily in later weeks.</li>
+        <li><strong>Student "champion" recordings: still the plan.</strong> Identify a student whose setup worked cleanly, ask consent for a short 5-minute screen recording walking through their working setup end to end, and build a reusable library of these for future trimesters — cheaper than a moderated channel, and produces a lasting asset instead of a one-off chat thread.</li>
+      </ul>
+    </div>
+
+  </section>
+
 
   <section id="pracguides">
     <p class="section-eyebrow">What every menu item is for, and what order to do things in — one guide per practical</p>
@@ -2402,6 +2475,7 @@
 
   // ---------- JOURNAL ----------
   const journalEntries = [
+    {date:"2026-09-15", text:"Week 1 practical ran live for the first time with the full class. Nobody finished in the two-hour slot — five compounding first-time issues: lab computers confirmed missing BeeBox/Burp Suite entirely (redirect everyone to the own-laptop path), SourceForge blocked by Cloudflare regardless of network (VulnHub mirror works), campus WiFi client isolation silently breaking Bridged Adapter (Host-only Adapter fixes it), hackthissite.org's warm-up broken by a site-side TLS cert + HSTS (skip it, ungraded anyway), plus the usual ifconfig-wrong-terminal and .7z-vs-.vmdk mix-ups. Full detail in the new Week 1 Live Classroom section above. Sent students one consolidated fix-it-at-home doc; planning a short environment check at the start of Week 2's practical rather than assuming everyone caught up."},
     {date:"2026-08-17", text:"Went through every uploaded lecture, seminar, and prac file in detail. Corrected several assumptions: Week 6's prac is Adobe Acrobat digital signatures (not Kerberos hands-on), Week 7's prac is TeamViewer + cloud product exploration, Week 9 is QR codes (no wireless hardware needed), Week 10 has zero hands-on component. Also found a real gotcha: the Week 1 seminar slide states the wrong assessment weighting."},
     {date:"2026-08-17", text:"Discovered the seminars carry a cumulative Python coding project across Weeks 3–7: hashlib → Caesar + DES (PyCryptodome) → RSA (rsa library) → optional face recognition → cloud key storage (Azure Key Vault / AWS KMS / GCP KMS, using free trials). This runs in parallel with the Specialised/Prac track."},
     {date:"2026-08-17", text:"Found the real Assessment 2 coaching content in the Week 8 seminar — including a scenario detail (\"Perth branch only\" for the diagram) and specific delivery tips (IEEE referencing, no hand-drawn diagrams, \"I RECOMMEND\" language) that go well beyond the published rubric."},
